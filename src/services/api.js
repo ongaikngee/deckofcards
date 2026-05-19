@@ -1,8 +1,8 @@
 const BASE_URL = "https://deckofcardsapi.com/api/deck/"
 
-export const getNewDeck = async () => {
+export const getNewDeck = async (count = 1) => {
     try {
-        const response = await fetch(`${BASE_URL}new/`)
+        const response = await fetch(`${BASE_URL}new/shuffle/?deck_count=${count}`)
         const data = await response.json()
         return data
     } catch (error) {
