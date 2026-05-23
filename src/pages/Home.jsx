@@ -35,7 +35,8 @@ export const Home = ({ games, setGames }) => {
   const addGame = async () => {
     try {
       const deckData = await getNewDeck();
-      setGames((prevGames) => [...prevGames, deckData.deck_id]);
+      const newGame = { gameId: deckData.deck_id, drawn: [] };
+      setGames((prevGames) => [...prevGames, newGame]);
       navigate(`/game/${deckData.deck_id}`);
     } catch (err) {
       console.log(err);
@@ -43,7 +44,7 @@ export const Home = ({ games, setGames }) => {
     }
   };
   const removeGame = (gameId) => {
-    setGames((prevGames) => prevGames.filter((g) => g !== gameId));
+    setGames((prevGames) => prevGames.filter((g) => g.gameId !== gameId));
   };
 
   if (games.length === 0) {
@@ -64,7 +65,7 @@ export const Home = ({ games, setGames }) => {
       <div className="container my-5">
         <div className="row justify-content-start">
           {games.map((game) => (
-            <div key={game} className="col-12  col-sm-6 col-md-3">
+            <div key={game.gameId} className="col-12  col-sm-6 col-md-3">
               <div className="card">
                 <img
                   src="https://deckofcardsapi.com/static/img/back.png"
@@ -72,11 +73,11 @@ export const Home = ({ games, setGames }) => {
                   alt="Game Image"
                 ></img>
                 <div className="card-body">
-                  <p className="card-title">{game}</p>
+                  <p className="card-title">{game.gameId}</p>
                   <div className="d-flex gap-2">
                     <button
                       className="btn btn-primary btn-sm flex-grow-1"
-                      onClick={() => navigate(`/game/${game}`)}
+                      onClick={() => navigate(`/game/${game.gameId}`)}
                     >
                       Play
                     </button>
@@ -84,7 +85,7 @@ export const Home = ({ games, setGames }) => {
                       className="btn btn-danger btn-sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        removeGame(game);
+                        removeGame(game.gameId);
                       }}
                     >
                       Delete

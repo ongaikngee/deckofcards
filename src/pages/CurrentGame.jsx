@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { drawCardFromDeck } from "../services/api";
 
-export const CurrentGame = () => {
+export const CurrentGame = ({ games, setGames }) => {
   const { deckId } = useParams();
   const navigate = useNavigate();
   const [deckInfo, setDeckInfo] = useState(null);
@@ -28,6 +28,15 @@ export const CurrentGame = () => {
     }
   }, [deckId]);
 
+  // If the games prop contains drawn cards for this deck, load them
+  useEffect(() => {
+    if (!deckId || !games) return;
+    const existing = games.find((g) => g.gameId === deckId);
+    if (existing && Array.isArray(existing.drawn)) {
+      setCards(existing.drawn);
+    }
+  }, [deckId, games]);
+
   const handleDrawCard = async () => {
     setLoading(true);
     setError(null);
@@ -38,11 +47,26 @@ export const CurrentGame = () => {
         throw new Error("Failed to draw a card from the deck.");
       }
 
-      setCards((prevCards) => [...prevCards, ...drawData.cards]);
+      // update local cards state
+      setCards((prevCards) => {
+        const next = [...prevCards, ...drawData.cards];
+        return next;
+      });
+
+      // update deck info
       setDeckInfo((prevInfo) => ({
         ...prevInfo,
         remaining: drawData.remaining,
       }));
+
+      // persist drawn card into the parent games state
+      if (setGames) {
+        setGames((prevGames) =>
+          prevGames.map((g) =>
+            g.gameId === deckId ? { ...g, drawn: [...(g.drawn || []), ...drawData.cards] } : g
+          )
+        );
+      }
     } catch (err) {
       setError(err.message || "Could not draw a card.");
       console.error("Error drawing card:", err);
