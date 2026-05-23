@@ -84,9 +84,8 @@ export const Home = () => {
       <div className="container my-5">
         <div className="row justify-content-start">
           {games.map((game) => (
-            <div className="col-12  col-sm-6 col-md-3">
-              {/* <div key={game} className="card" style={{ width: "12rem" }}> */}
-              <div key={game} className="card">
+            <div key={game} className="col-12  col-sm-6 col-md-3">
+              <div className="card">
                 <img
                   src="https://deckofcardsapi.com/static/img/back.png"
                   className="card-img-top"
