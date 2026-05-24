@@ -13,7 +13,9 @@ export const Games = ({ games, setGames }) => {
     try {
       const deckData = await getNewDeck();
       const inputName = window.prompt("Enter a name for this game (optional):");
-      const name = inputName && inputName.trim() !== "" ? inputName.trim() : `Game ${deckData.deck_id.slice(0,6)}`;
+      // If the user cancels the prompt (clicks Cancel), do not create a new game
+      if (inputName === null) return;
+      const name = inputName.trim() !== "" ? inputName.trim() : `Game ${deckData.deck_id.slice(0,6)}`;
       const newGame = { gameId: deckData.deck_id, name, drawn: [] };
       setGames((prevGames) => [...prevGames, newGame]);
       navigate(`/game/${deckData.deck_id}`);
