@@ -15,7 +15,9 @@ export const CurrentGame = ({ games, setGames }) => {
     // Fetch initial deck information and set up the page
     const fetchDeckInfo = async () => {
       try {
-        const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/`);
+        const response = await fetch(
+          `https://deckofcardsapi.com/api/deck/${deckId}/`,
+        );
         const data = await response.json();
         setDeckInfo(data);
       } catch (err) {
@@ -69,8 +71,10 @@ export const CurrentGame = ({ games, setGames }) => {
       if (setGames) {
         setGames((prevGames) =>
           prevGames.map((g) =>
-            g.gameId === deckId ? { ...g, drawn: [...(g.drawn || []), ...drawData.cards] } : g
-          )
+            g.gameId === deckId
+              ? { ...g, drawn: [...(g.drawn || []), ...drawData.cards] }
+              : g,
+          ),
         );
       }
     } catch (err) {
@@ -93,10 +97,17 @@ export const CurrentGame = ({ games, setGames }) => {
 
     if (setGames) {
       setGames((prevGames) =>
-        prevGames.map((g) => (g.gameId === deckId ? { ...g, players: [...(g.players || []), newPlayer] } : g))
+        prevGames.map((g) =>
+          g.gameId === deckId
+            ? { ...g, players: [...(g.players || []), newPlayer] }
+            : g,
+        ),
       );
     }
   };
+  const currentGame = games?.find((g) => g.gameId === deckId);
+  const gameName = currentGame?.name || deckId;
+  const gamesId = currentGame?.gameId;
 
   if (!deckId) {
     return (
@@ -112,7 +123,10 @@ export const CurrentGame = ({ games, setGames }) => {
   return (
     <div className="container my-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Game: {deckId}</h2>
+        <div>
+          <h2 className="mb-0">{gameName}</h2>
+          <p className="text-secondary">ID: {gamesId}</p>
+        </div>
         <button className="btn btn-secondary" onClick={() => navigate("/")}>
           Back to Games
         </button>
@@ -128,7 +142,8 @@ export const CurrentGame = ({ games, setGames }) => {
               <strong>Deck ID:</strong> {deckInfo.deck_id}
             </p>
             <p>
-              <strong>Cards Remaining:</strong> {deckInfo.remaining} / {deckInfo.remaining + cards.length}
+              <strong>Cards Remaining:</strong> {deckInfo.remaining} /{" "}
+              {deckInfo.remaining + cards.length}
             </p>
             <p>
               <strong>Shuffled:</strong> {deckInfo.shuffled ? "Yes" : "No"}
