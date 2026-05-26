@@ -13,3 +13,29 @@
 		transform: translateY(0);
 	}
 }
+
+/* Cards overlap layout */
+.cards-stack {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	gap: 0; /* gaps handled by margin */
+	overflow: visible;
+}
+
+.card-stack-item {
+	position: relative;
+	transition: margin 180ms ease, transform 180ms ease;
+	/* ensure each item keeps its natural width */
+	flex: 0 0 auto;
+}
+
+.card-stack-item img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.cards-placeholder {
+	color: #6c757d; /* muted */
+}

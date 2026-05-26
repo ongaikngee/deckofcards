@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { drawCardFromDeck } from "../services/api";
 
@@ -10,6 +10,12 @@ export const CurrentGame = ({ games, setGames }) => {
   const [loading, setLoading] = useState(false);
   const [deckLoading, setDeckLoading] = useState(false);
   const [error, setError] = useState(null);
+  const cardsContainerRef = useRef(null);
+  const firstCardRef = useRef(null);
+  const [overlap, setOverlap] = useState(0);
+  // Minimum visible portion (in pixels) of each card when overlapping.
+  // Change this value to increase/decrease how much of each card remains visible.
+  const CARD_OVERLAP_SPACING = 19; // px — configurable: try 10, 15, 20
 
   useEffect(() => {
     // Fetch initial deck information and set up the page
@@ -41,6 +47,61 @@ export const CurrentGame = ({ games, setGames }) => {
       setCards(existing.drawn);
     }
   }, [deckId, games]);
+
+  // Calculate overlap amount so cards remain in one row and overlap when needed
+  useLayoutEffect(() => {
+    let cancelled = false;
+
+    const calc = () => {
+      const container = cardsContainerRef.current;
+      const firstCard = firstCardRef.current;
+      if (!container || cards.length === 0) {
+        setOverlap(0);
+        return;
+      }
+
+      // Wait until images inside the container have loaded, otherwise measurements may be 0
+      const imgs = Array.from(container.querySelectorAll('img'));
+      const notLoaded = imgs.filter((img) => !img.complete || img.naturalWidth === 0);
+      if (notLoaded.length > 0) {
+        const onLoaded = () => {
+          if (cancelled) return;
+          requestAnimationFrame(calc);
+        };
+        notLoaded.forEach((img) => img.addEventListener('load', onLoaded));
+
+        // fallback: try again after a short delay in case load events didn't fire
+        const fallback = setTimeout(() => { if (!cancelled) requestAnimationFrame(calc); }, 300);
+
+        return () => {
+          cancelled = true;
+          notLoaded.forEach((img) => img.removeEventListener('load', onLoaded));
+          clearTimeout(fallback);
+        };
+      }
+
+      const containerW = container.clientWidth || 0;
+      const cardW = firstCard ? firstCard.clientWidth : 160; // fallback
+      const totalWidth = cardW * cards.length;
+
+      if (totalWidth <= containerW) {
+        setOverlap(0);
+        return;
+      }
+
+      // ensure at least `minVisible` px of each card remains visible
+      // `CARD_OVERLAP_SPACING` controls how many pixels of each card remain visible
+      const minVisible = Math.min(CARD_OVERLAP_SPACING, Math.floor(cardW * 0.9));
+      const maxOverlapPerGap = cardW - minVisible;
+
+      const neededOverlap = Math.ceil((totalWidth - containerW) / (cards.length - 1));
+      setOverlap(Math.min(neededOverlap, maxOverlapPerGap));
+    };
+
+    calc();
+    window.addEventListener("resize", calc);
+    return () => { cancelled = true; window.removeEventListener("resize", calc); };
+  }, [cards]);
 
   const handleDrawCard = async () => {
     setLoading(true);
@@ -148,18 +209,27 @@ export const CurrentGame = ({ games, setGames }) => {
       {cards.length > 0 && (
         <div className="mt-4">
           <h5>Cards Drawn</h5>
-          <div className="row">
+          <div
+            ref={cardsContainerRef}
+            className="d-flex cards-stack mt-2"
+            aria-live="polite"
+          >
             {cards.map((card, index) => (
-              <div key={index} className="col-md-3 col-sm-6 mb-3">
+              <div
+                key={index}
+                ref={index === 0 ? firstCardRef : null}
+                className="card-stack-item mb-3"
+                style={{ marginLeft: index === 0 ? 0 : `-${overlap}px`, zIndex: index }}
+              >
                 <img
                   src={card.image}
                   alt={`${card.value} of ${card.suit}`}
                   className="img-fluid"
                   style={{ maxHeight: "200px" }}
                 />
-                <p className="text-center mt-2">
+                {/* <p className="text-center mt-2 mb-0">
                   {card.value} of {card.suit}
-                </p>
+                </p> */}
               </div>
             ))}
           </div>
