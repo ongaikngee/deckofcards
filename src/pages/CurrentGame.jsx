@@ -8,11 +8,14 @@ export const CurrentGame = ({ games, setGames }) => {
   const [deckInfo, setDeckInfo] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [deckLoading, setDeckLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     // Fetch initial deck information and set up the page
     const fetchDeckInfo = async () => {
+      setDeckLoading(true);
+      setError(null);
       try {
         const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/`);
         const data = await response.json();
@@ -20,6 +23,8 @@ export const CurrentGame = ({ games, setGames }) => {
       } catch (err) {
         setError("Failed to load deck information");
         console.error(err);
+      } finally {
+        setDeckLoading(false);
       }
     };
 
@@ -104,29 +109,41 @@ export const CurrentGame = ({ games, setGames }) => {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {deckInfo && (
-        <div className="card mb-4">
-          <div className="card-body">
-            <h5 className="card-title">Deck Information</h5>
-            <p>
-              <strong>Deck ID:</strong> {deckInfo.deck_id}
-            </p>
-            <p>
-              <strong>Cards Remaining:</strong> {deckInfo.remaining} / {deckInfo.remaining + cards.length}
-            </p>
-            <p>
-              <strong>Shuffled:</strong> {deckInfo.shuffled ? "Yes" : "No"}
-            </p>
-            <button
-              className="btn btn-primary"
-              onClick={handleDrawCard}
-              disabled={loading || deckInfo.remaining === 0}
-            >
-              {loading ? "Drawing..." : "Draw Card"}
-            </button>
-          </div>
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">Deck Information</h5>
+
+          {deckLoading && !deckInfo ? (
+            <div className="d-flex justify-content-center my-4">
+              <div className="spinner-grow text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : deckInfo ? (
+            <>
+              <p>
+                <strong>Deck ID:</strong> {deckInfo.deck_id}
+              </p>
+              <p>
+                <strong>Cards Remaining:</strong> {deckInfo.remaining} / {deckInfo.remaining + cards.length}
+              </p>
+              <p>
+                <strong>Shuffled:</strong> {deckInfo.shuffled ? "Yes" : "No"}
+              </p>
+            </>
+          ) : (
+            <p className="text-muted">Deck information will appear here.</p>
+          )}
+
+          <button
+            className="btn btn-primary"
+            onClick={handleDrawCard}
+            disabled={loading || deckLoading || (deckInfo?.remaining === 0)}
+          >
+            {loading ? "Drawing..." : "Draw Card"}
+          </button>
         </div>
-      )}
+      </div>
 
       {cards.length > 0 && (
         <div className="mt-4">
