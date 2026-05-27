@@ -6,7 +6,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Games } from './pages/Games';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
-import { CurrentGame } from './pages/CurrentGame';
+import { CurrentGame } from './features/games/CurrentGame';
 
 function App() {
   const [games, setGames] = useState([]);
