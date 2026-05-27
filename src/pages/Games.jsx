@@ -65,7 +65,7 @@ export const Games = ({ games, setGames }) => {
           </thead>
           <tbody className="table-group-divider">
             {games.map((game, index) => (
-              <tr classname="col_id" key={game.gameId}>
+              <tr className="col_id" key={game.gameId}>
                 <th scope="row"><img
                   style={{ width: "120px" }}
                   src="https://deckofcardsapi.com/static/img/back.png"
