@@ -25,7 +25,6 @@ export const CurrentGame = ({ games, setGames }) => {
       try {
         const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/`);
         const data = await response.json();
-        console.log("Fetched deck info:", data);
         setDeckInfo(data);
       } catch (err) {
         setError("Failed to load deck information");

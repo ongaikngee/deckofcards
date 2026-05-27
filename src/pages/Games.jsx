@@ -4,7 +4,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNewDeck } from "../services/deckService";
-import NewGameBtn from "../components/NewGameBtn";
+// import { NewDeckForm } from "../components/NewDeckForm";
+import NewDeckForm from "../components/NewDeckForm";
 
 dayjs.extend(relativeTime);
 
@@ -13,11 +14,8 @@ export const Games = ({ games, setGames }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const addGame = async () => {
+  const addGame = async ({inputName, inputDeckNumber}) => {
     try {
-      const inputName = window.prompt("Enter a name for this game (optional):");
-      // If the user cancels the prompt (clicks Cancel), do not create a new game
-      if (inputName === null) return;
       const deckData = await getNewDeck();
       const name = inputName.trim() !== "" ? inputName.trim() : `Game ${deckData.deck_id.slice(0, 6)}`;
       const newGame = {
@@ -42,7 +40,7 @@ export const Games = ({ games, setGames }) => {
       <div className="container">
         <h2>No Games Yet</h2>
         <p>Start adding games and they will appear here.</p>
-        <NewGameBtn addGame={addGame} />
+        <NewDeckForm addGame={addGame} />
       </div>
     );
   }
@@ -50,7 +48,7 @@ export const Games = ({ games, setGames }) => {
   return (
     <>
       <div className="container">
-        <NewGameBtn addGame={addGame} />
+        <NewDeckForm addGame={addGame} />
       </div>
       <div className="container">
         <table className="table table-hover">
@@ -100,3 +98,4 @@ export const Games = ({ games, setGames }) => {
 };
 
 export default Games;
+  
