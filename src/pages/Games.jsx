@@ -14,14 +14,21 @@ export const Games = ({ games, setGames }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const addGame = async ({inputName, inputNoOfDecks, inputJokersEnabled}) => {
+  const addGame = async ({ inputName, inputNoOfDecks, inputJokersEnabled }) => {
     try {
-      const deckData = await getNewDeck({noOfDecks: inputNoOfDecks, jokersEnabled: inputJokersEnabled});
-      const name = inputName.trim() !== "" ? inputName.trim() : `Game ${deckData.deck_id.slice(0, 6)}`;
+      const deckData = await getNewDeck({
+        noOfDecks: inputNoOfDecks,
+        jokersEnabled: inputJokersEnabled,
+      });
+      const name =
+        inputName.trim() !== ""
+          ? inputName.trim()
+          : `Game ${deckData.deck_id.slice(0, 6)}`;
       const newGame = {
         gameId: deckData.deck_id,
-        name, drawn: [],
-        timestamp: deckData.timestamp
+        name,
+        drawn: [],
+        timestamp: deckData.timestamp,
       };
       setGames((prevGames) => [...prevGames, newGame]);
       navigate(`/game/${deckData.deck_id}`);
@@ -55,39 +62,75 @@ export const Games = ({ games, setGames }) => {
           <thead>
             <tr>
               <th scope="col">Game</th>
-              <th scope="col">Name</th>
-              <th scope="col">Started on</th>
-              <th scope="col">Play</th>
-              <th scope="col">Delete</th>
+              {/* Desktop */}
+              <th className="d-none d-md-table-cell">Name</th>
+              <th className="d-none d-md-table-cell">Started on</th>
+              <th className="d-none d-md-table-cell">Play</th>
+              <th className="d-none d-md-table-cell">Delete</th>
+
+              {/* Mobile */}
+              <th class="d-table-cell d-md-none">Name</th>
             </tr>
           </thead>
           <tbody className="table-group-divider">
             {games.map((game, index) => (
               <tr className="col_id" key={game.gameId}>
-                <th scope="row"><img
-                  style={{ width: "120px" }}
-                  src="https://deckofcardsapi.com/static/img/back.png"
-                  className="card-img-top"
-                  alt="Game Image"
-                ></img></th>
-                <td>{game.name || game.gameId}</td>
-                {/* <td>{game.timestamp}</td> */}
-                <td>{game.timestamp ? dayjs(game.timestamp).fromNow() : "N/A"}</td>
-                <td><button
-                  className="btn btn-primary btn-sm flex-grow-1"
-                  onClick={() => navigate(`/game/${game.gameId}`)}
-                >
-                  Play
-                </button></td>
-                <td><button
-                  className="btn btn-danger btn-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeGame(game.gameId);
-                  }}
-                >
-                  Delete
-                </button></td>
+                <td>
+                  <img
+                    style={{ width: "120px" }}
+                    src="https://deckofcardsapi.com/static/img/back.png"
+                    className="card-img-top"
+                    alt="Game Image"
+                  ></img>
+                </td>
+                <td className="d-none d-md-table-cell">
+                  <h3>{game.name || game.gameId}</h3>
+                </td>
+                <td className="d-none d-md-table-cell">
+                  {game.timestamp ? dayjs(game.timestamp).fromNow() : "N/A"}
+                </td>
+                <td className="d-none d-md-table-cell">
+                  <button
+                    className="btn btn-primary btn-sm flex-grow-1"
+                    onClick={() => navigate(`/game/${game.gameId}`)}
+                  >
+                    Play
+                  </button>
+                </td>
+                <td className="d-none d-md-table-cell">
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeGame(game.gameId);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+
+                {/* Mobile */}
+                <td className="d-table-cell d-md-none align-top">
+                  <h3 className="text">{game.name || game.gameId}</h3>
+                  <p className="text-secondary">
+                    {game.timestamp ? dayjs(game.timestamp).fromNow() : "N/A"}
+                  </p>
+                  <button
+                    className="me-2 btn btn-primary btn-sm flex-grow-1"
+                    onClick={() => navigate(`/game/${game.gameId}`)}
+                  >
+                    Play
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeGame(game.gameId);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -98,4 +141,3 @@ export const Games = ({ games, setGames }) => {
 };
 
 export default Games;
-  
