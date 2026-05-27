@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { drawCardFromDeck } from "../services/api";
+import { drawCardFromDeck } from "../services/deckService";
 
 export const CurrentGame = ({ games, setGames }) => {
   const { deckId } = useParams();

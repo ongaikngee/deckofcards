@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getNewDeck } from "../services/api";
+import { getNewDeck } from "../services/deckService";
 import NewGameBtn from "../components/NewGameBtn";
 
 export const Games = ({ games, setGames }) => {
