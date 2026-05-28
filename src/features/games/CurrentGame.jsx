@@ -14,7 +14,6 @@ export const CurrentGame = ({ games, setGames }) => {
   const cardsContainerRef = useRef(null);
   const firstCardRef = useRef(null);
   const [overlap, setOverlap] = useState(0);
- 
 
   useEffect(() => {
     // Fetch initial deck information and set up the page
@@ -22,7 +21,9 @@ export const CurrentGame = ({ games, setGames }) => {
       setDeckLoading(true);
       setError(null);
       try {
-        const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/`);
+        const response = await fetch(
+          `https://deckofcardsapi.com/api/deck/${deckId}/`,
+        );
         const data = await response.json();
         setDeckInfo(data);
       } catch (err) {
@@ -60,21 +61,25 @@ export const CurrentGame = ({ games, setGames }) => {
       }
 
       // Wait until images inside the container have loaded, otherwise measurements may be 0
-      const imgs = Array.from(container.querySelectorAll('img'));
-      const notLoaded = imgs.filter((img) => !img.complete || img.naturalWidth === 0);
+      const imgs = Array.from(container.querySelectorAll("img"));
+      const notLoaded = imgs.filter(
+        (img) => !img.complete || img.naturalWidth === 0,
+      );
       if (notLoaded.length > 0) {
         const onLoaded = () => {
           if (cancelled) return;
           requestAnimationFrame(calc);
         };
-        notLoaded.forEach((img) => img.addEventListener('load', onLoaded));
+        notLoaded.forEach((img) => img.addEventListener("load", onLoaded));
 
         // fallback: try again after a short delay in case load events didn't fire
-        const fallback = setTimeout(() => { if (!cancelled) requestAnimationFrame(calc); }, 300);
+        const fallback = setTimeout(() => {
+          if (!cancelled) requestAnimationFrame(calc);
+        }, 300);
 
         return () => {
           cancelled = true;
-          notLoaded.forEach((img) => img.removeEventListener('load', onLoaded));
+          notLoaded.forEach((img) => img.removeEventListener("load", onLoaded));
           clearTimeout(fallback);
         };
       }
@@ -90,16 +95,24 @@ export const CurrentGame = ({ games, setGames }) => {
 
       // ensure at least `minVisible` px of each card remains visible
       // `CARD_OVERLAP_SPACING` controls how many pixels of each card remain visible
-      const minVisible = Math.min(CARD_OVERLAP_SPACING, Math.floor(cardW * 0.9));
+      const minVisible = Math.min(
+        CARD_OVERLAP_SPACING,
+        Math.floor(cardW * 0.9),
+      );
       const maxOverlapPerGap = cardW - minVisible;
 
-      const neededOverlap = Math.ceil((totalWidth - containerW) / (cards.length - 1));
+      const neededOverlap = Math.ceil(
+        (totalWidth - containerW) / (cards.length - 1),
+      );
       setOverlap(Math.min(neededOverlap, maxOverlapPerGap));
     };
 
     calc();
     window.addEventListener("resize", calc);
-    return () => { cancelled = true; window.removeEventListener("resize", calc); };
+    return () => {
+      cancelled = true;
+      window.removeEventListener("resize", calc);
+    };
   }, [cards]);
 
   const handleDrawCard = async () => {
@@ -128,8 +141,10 @@ export const CurrentGame = ({ games, setGames }) => {
       if (setGames) {
         setGames((prevGames) =>
           prevGames.map((g) =>
-            g.gameId === deckId ? { ...g, drawn: [...(g.drawn || []), ...drawData.cards] } : g
-          )
+            g.gameId === deckId
+              ? { ...g, drawn: [...(g.drawn || []), ...drawData.cards] }
+              : g,
+          ),
         );
       }
     } catch (err) {
@@ -140,9 +155,9 @@ export const CurrentGame = ({ games, setGames }) => {
     }
   };
 
-      const currentGame = games?.find((g) => g.gameId === deckId);
-      const gameName = currentGame?.name || deckId;
-      const gamesId = currentGame?.gameId
+  const currentGame = games?.find((g) => g.gameId === deckId);
+  const gameName = currentGame?.name || deckId;
+  const gamesId = currentGame?.gameId;
 
   if (!deckId) {
     return (
@@ -159,8 +174,8 @@ export const CurrentGame = ({ games, setGames }) => {
     <div className="container my-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-        <h2 className="mb-0">{gameName}</h2>
-        <p className="text-secondary">ID: {gamesId}</p>
+          <h2 className="mb-0">{gameName}</h2>
+          <p className="text-secondary">ID: {gamesId}</p>
         </div>
         <button className="btn btn-secondary" onClick={() => navigate("/")}>
           Back to Games
@@ -185,7 +200,8 @@ export const CurrentGame = ({ games, setGames }) => {
                 <strong>Deck ID:</strong> {deckInfo.deck_id}
               </p>
               <p>
-                <strong>Cards Remaining:</strong> {deckInfo.remaining} / {deckInfo.remaining + cards.length}
+                <strong>Cards Remaining:</strong> {deckInfo.remaining} /{" "}
+                {deckInfo.remaining + cards.length}
               </p>
               <p>
                 <strong>Shuffled:</strong> {deckInfo.shuffled ? "Yes" : "No"}
@@ -198,7 +214,7 @@ export const CurrentGame = ({ games, setGames }) => {
           <button
             className="btn btn-primary"
             onClick={handleDrawCard}
-            disabled={loading || deckLoading || (deckInfo?.remaining === 0)}
+            disabled={loading || deckLoading || deckInfo?.remaining === 0}
           >
             {loading ? "Drawing..." : "Draw Card"}
           </button>
@@ -218,7 +234,10 @@ export const CurrentGame = ({ games, setGames }) => {
                 key={index}
                 ref={index === 0 ? firstCardRef : null}
                 className="card-stack-item mb-3"
-                style={{ marginLeft: index === 0 ? 0 : `-${overlap}px`, zIndex: index }}
+                style={{
+                  marginLeft: index === 0 ? 0 : `-${overlap}px`,
+                  zIndex: index,
+                }}
               >
                 <img
                   src={card.image}
