@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react";
 
-export const About = () => {
+const About = () => {
   return (
     <div className="container my-4">
       <h2>About / How to play</h2>
@@ -23,8 +23,8 @@ export const About = () => {
           same game.
         </li>
         <li>
-          <strong>Delete:</strong> Use <em>Delete</em> to remove a game from
-          the list.
+          <strong>Delete:</strong> Use <em>Delete</em> to remove a game from the
+          list.
         </li>
       </ul>
 
@@ -35,5 +35,7 @@ export const About = () => {
         application runs. Refreshing the page will reset the in-memory state.
       </p>
     </div>
-  )
-}
+  );
+};
+
+export default About;

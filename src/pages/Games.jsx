@@ -8,7 +8,7 @@ import NewDeckForm from "../components/NewDeckForm";
 
 dayjs.extend(relativeTime);
 
-export const Games = ({ games, setGames }) => {
+const Games = ({ games, setGames }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
