@@ -1,26 +1,13 @@
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
-
-import {PokerChipIcon, GearIcon} from "@phosphor-icons/react";
+import UserNavBar from "../components/UserNavBar";
+import { Outlet } from "react-router-dom";
 
 const User = () => {
   return (
     <div className="row">
-      <div className="col-12 bg-secondary">
-        <nav className="nav">
-          <NavLink to="chips" className="nav-link text-white">
-            <PokerChipIcon size={24} />
-            Chips
-          </NavLink>
+      <UserNavBar />
 
-          <NavLink to="settings" className="nav-link text-white">
-            <GearIcon size={24} />
-            Settings
-          </NavLink>
-        </nav>
-      </div>
-
-      <div className="row">
+      <div className="row my-4">
         <Outlet />
       </div>
     </div>

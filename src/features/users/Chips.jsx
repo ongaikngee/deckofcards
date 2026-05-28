@@ -5,7 +5,7 @@ import {PokerChipIcon} from "@phosphor-icons/react";
 const Chips = () => {
   return (
     <div>
-      <h1><PokerChipIcon size={44} />Chips</h1>
+      <h2><PokerChipIcon size={44} />Chips</h2>
     </div>
   );
 };

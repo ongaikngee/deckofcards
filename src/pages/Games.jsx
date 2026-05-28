@@ -43,7 +43,7 @@ const Games = ({ games, setGames }) => {
 
   if (!games || games.length === 0) {
     return (
-      <div className="container">
+      <div className="container my-4">
         <h2>No Games Yet</h2>
         <p>Start adding games and they will appear here.</p>
         <NewDeckForm addGame={addGame} />
@@ -53,7 +53,7 @@ const Games = ({ games, setGames }) => {
 
   return (
     <>
-      <div className="container">
+      <div className="container my-4">
         <NewDeckForm addGame={addGame} />
       </div>
       <div className="container">
