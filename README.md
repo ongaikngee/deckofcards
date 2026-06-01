@@ -1,32 +1,119 @@
 # Deck of Cards Game
 
-A React application that integrates with the Deck of Cards API to create and manage card game sessions.
+A React + Vite application that integrates with the Deck of Cards API to create, manage, and play card game sessions.
 
-Users can create a new game, which generates a fresh shuffled deck from the Deck of Cards API. Once a game is created, players can draw cards from the deck and view the remaining cards available.
+Players can start a new game with a shuffled deck, draw cards from an active game, and view deck status and drawn cards in a responsive interface.
+
+## Table of Contents
+
+- [Features](#features)
+- [Demo](#demo)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Routes](#routes)
+- [Installation](#installation)
+- [Available Scripts](#available-scripts)
+- [API Integration](#api-integration)
+- [Future Enhancements](#future-enhancements)
+- [License](#license)
 
 ## Features
 
-- Create a new game with a freshly shuffled deck
-- Retrieve deck information from the Deck of Cards API
-- Draw cards from an active deck
-- Display drawn cards
-- Track remaining cards in the deck
-- Responsive user interface built with React and Vite
+- Create a new game session using the Deck of Cards API
+- Generate a freshly shuffled deck with optional jokers
+- Draw cards one at a time from an active deck
+- View remaining cards and deck metadata
+- Display drawn cards with responsive overlap styling
+- Protect routes with authentication context
+- User dashboard with profile, chips, and settings pages
+- Responsive layout using Bootstrap
 
-## Demo Workflow
+## Demo
 
-1. Create a new game
-2. Application requests a new shuffled deck from the Deck of Cards API
-3. Deck ID is stored for the game session
-4. Player draws cards from the deck
-5. Drawn cards are displayed in the interface
-6. Remaining card count is updated after each draw
+1. Visit the login page and authenticate.
+2. Create a new game from the Games page.
+3. The app requests a new shuffled deck from the Deck of Cards API.
+4. The new game is stored in local state and the user is navigated to the current game view.
+5. Draw cards and watch the remaining count update in real time.
+6. Return to Games to manage existing sessions.
+
+## Technology Stack
+
+- React 19
+- Vite
+- React Router DOM
+- Bootstrap 5
+- Axios
+- Day.js
+- JavaScript (ES6+)
+
+## Project Structure
+
+```text
+src/
+├── components/
+│   ├── NavBar.jsx
+│   ├── NewDeckForm.jsx
+│   └── UserNavBar.jsx
+├── constants/
+│   └── games.js
+├── features/
+│   ├── auth/
+│   │   ├── AuthContext.jsx
+│   │   └── ProtectedRoute.jsx
+│   ├── games/
+│   │   └── CurrentGame.jsx
+│   └── users/
+│       ├── Chips.jsx
+│       ├── Settings.jsx
+│       └── UserMain.jsx
+├── pages/
+│   ├── About.jsx
+│   ├── Contact.jsx
+│   ├── Games.jsx
+│   ├── LoginPage.jsx
+│   └── User.jsx
+├── services/
+│   ├── authApi.js
+│   └── deckService.js
+├── App.jsx
+├── index.css
+├── main.jsx
+└── App.css
+```
+
+## Routes
+
+- `/` — Home / Games page (protected)
+- `/login` — Login page
+- `/about` — About page
+- `/contact` — Contact page
+- `/user` — User dashboard (protected)
+- `/user/chips` — User chips page (protected)
+- `/user/settings` — User settings page (protected)
+- `/game/:deckId` — Current game view for drawing cards
+
+## Installation
+
+```bash
+git clone https://github.com/<your-username>/<repository-name>.git
+cd <repository-name>
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+## Available Scripts
+
+- `npm run dev` — Start local development server
+- `npm run build` — Build production bundle
+- `npm run preview` — Preview the production build locally
+- `npm run lint` — Run ESLint checks
 
 ## API Integration
 
-This application uses the public Deck of Cards API:
-
-https://deckofcardsapi.com/
+This project uses the public Deck of Cards API.
 
 ### Create a New Deck
 
@@ -40,101 +127,13 @@ GET https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1
 GET https://deckofcardsapi.com/api/deck/{deck_id}/draw/?count=1
 ```
 
-## Technology Stack
-
-- React
-- Vite
-- JavaScript (ES6+)
-- Fetch API
-- CSS / Styling Framework (update if applicable)
-
-## Project Structure
-
-```text
-src/
-├── components/
-├── pages/
-├── services/
-├── hooks/
-├── utils/
-├── App.jsx
-└── main.jsx
-```
-
-> Update the structure above to match your actual project layout.
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/<your-username>/<repository-name>.git
-```
-
-Navigate into the project directory:
-
-```bash
-cd <repository-name>
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-The application will be available at:
-
-```text
-http://localhost:5173
-```
-
-## Build for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-Preview the production build locally:
-
-```bash
-npm run preview
-```
-
-## Design Considerations
-
-- Separation of UI and API logic
-- Reusable React components
-- Simple and intuitive user experience
-- Efficient state management for game sessions and card draws
-- Clear handling of API loading and error states
-
 ## Future Enhancements
 
-- Support multiple players
-- Game history tracking
-- Persistent game sessions
-- Card discard pile
-- Multiple deck support
-- Player scoring system
-- Dark mode support
-
-## Error Handling
-
-The application handles:
-
-- Network request failures
-- Invalid deck identifiers
-- Empty deck scenarios
-- API response errors
+- Persist game sessions in local storage or backend
+- Add multiplayer support and score tracking
+- Implement game history and session recovery
+- Add card discard / hand management
+- Add dark mode and theme support
 
 ## License
 
