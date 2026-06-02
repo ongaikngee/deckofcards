@@ -11,6 +11,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import User from "./pages/User";
 import LoginPage from "./pages/LoginPage";
+import StudPoker from "./pages/StudPoker";
 
 import UserMain from "./features/users/UserMain";
 import Settings from "./features/users/Settings";
@@ -42,6 +43,7 @@ function App() {
             path="/game/:deckId"
             element={<CurrentGame games={games} setGames={setGames} />}
           />
+          <Route path="/studpoker" element={<ProtectedRoute><StudPoker /></ProtectedRoute>} />
         </Routes>
       </div>
     </>

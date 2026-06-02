@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getNewDeck } from "../services/deckService";
 import NewDeckForm from "../components/NewDeckForm";
+import { IMG_DECK_BACK } from "../constants/games";
 
 dayjs.extend(relativeTime);
 
@@ -77,7 +78,7 @@ const Games = ({ games, setGames }) => {
                 <td>
                   <img
                     style={{ width: "120px" }}
-                    src="https://deckofcardsapi.com/static/img/back.png"
+                    src={IMG_DECK_BACK}
                     className="card-img-top"
                     alt="Game Image"
                   ></img>
