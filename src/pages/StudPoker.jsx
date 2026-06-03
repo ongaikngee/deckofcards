@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { IMG_DECK_BACK } from "../constants/games";
 import { Hand } from "pokersolver";
+import { CheckIcon } from "@phosphor-icons/react";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState("idle");
@@ -54,7 +55,6 @@ const StudPoker = () => {
 
       if (winner.length > 1) return "Push";
       return winner[0] === dealerSolved ? "Dealer" : "Player";
-
     } catch (e) {
       console.error("getWinner error:", e);
       return null;
@@ -115,9 +115,25 @@ const StudPoker = () => {
     return (
       <div className="container my-4">
         <h2>Stud Poker</h2>
-        <div className="container">
+        <div>
+          <p>
+            Stud Poker is a head-to-head card game between you and the dealer.
+            Each player is dealt a five-card hand from a single shuffled deck.
+            You cannot swap or draw new cards — your hand is final once dealt.
+          </p>
+
+          <p>
+            The dealer keeps most of their cards hidden until the reveal. After
+            reviewing your hand, you can choose to Ante (bet) or Fold. The
+            winner is decided using standard poker hand rankings like pairs,
+            straights, flushes, and full houses.
+          </p>
+
+          <p>If both hands have equal strength, the round ends in a push.</p>
+        </div>
+        <div>
           <button type="button" className="btn btn-primary" onClick={startGame}>
-            Start Game
+            New Game
           </button>
         </div>
       </div>
@@ -140,7 +156,7 @@ const StudPoker = () => {
       <div className="container my-4">
         <h2>Stud Poker</h2>
         <p>Deck: {deck?.deck_id}</p>
-        <div className="container">
+        <div className="container mb-5">
           <h2>Dealer's Hand</h2>
           {dealerHand.map((card, index) =>
             index === 4 ? (
@@ -161,7 +177,7 @@ const StudPoker = () => {
           )}
         </div>
 
-        <div className="container">
+        <div className="container mb-5">
           <h2>Player's Hand</h2>
           {playerHand.map((card) => (
             <img
@@ -176,10 +192,18 @@ const StudPoker = () => {
         <div className="container">
           <h2>Action</h2>
           <span>
-            <button type="button" className="btn btn-success" onClick={bet}>
-              Ante
+            <button
+              type="button"
+              className="btn btn-success cursor-pointer me-3"
+              onClick={bet}
+            >
+              Bet
             </button>
-            <button type="button" className="btn btn-danger" onClick={fold}>
+            <button
+              type="button"
+              className="btn btn-danger cursor-pointer"
+              onClick={fold}
+            >
               fold
             </button>
           </span>
@@ -193,8 +217,14 @@ const StudPoker = () => {
       <div className="container my-4">
         <h2>Stud Poker</h2>
         <p>Deck: {deck?.deck_id}</p>
-        <div className="container">
-          <h2>Dealer's Hand</h2>
+        <div className="container mb-5">
+
+          <div className="d-flex align-items-center gap-2">
+            <h2>Dealer's Hand</h2>
+            {winner === "Dealer" && (
+              <CheckIcon size={32} weight="bold" className="text-success" />
+            )}
+          </div>
           {dealerHand.map((card) => (
             <img
               key={card.code}
@@ -206,8 +236,13 @@ const StudPoker = () => {
           <h3>{dealerStrength}</h3>
         </div>
 
-        <div className="container">
-          <h2>Player's Hand</h2>
+        <div className="container mb-5">
+          <div className="d-flex align-items-center gap-2">
+            <h2>Player's Hand</h2>
+            {winner === "Player" && (
+              <CheckIcon size={32} weight="bold" className="text-success" />
+            )}
+          </div>
           {playerHand.map((card) => (
             <img
               key={card.code}
@@ -219,10 +254,8 @@ const StudPoker = () => {
           <h3>{playerStrength}</h3>
         </div>
         <div className="container">
-          <h2>Result</h2>
-          <h3>{winner}</h3>
           <button type="button" className="btn btn-primary" onClick={startGame}>
-            Start Game
+            Next Game
           </button>
         </div>
       </div>
