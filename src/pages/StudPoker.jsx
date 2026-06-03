@@ -1,7 +1,7 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { IMG_DECK_BACK } from "../constants/games";
+import { Hand } from "pokersolver";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState("idle");
@@ -10,6 +10,9 @@ const StudPoker = () => {
 
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
+  const [playerStrength, setPlayerStrength] = useState("");
+  const [dealerStrength, setDealerStrength] = useState("");
+  const [winner, setWinner] = useState("");
 
   const getDeck = async () => {
     try {
@@ -33,6 +36,48 @@ const StudPoker = () => {
       throw e;
     }
   };
+
+  const getWinner = () => {
+    if (
+      !dealerHand ||
+      !playerHand ||
+      dealerHand.length === 0 ||
+      playerHand.length === 0
+    )
+      return null;
+    try {
+      const dealerCodes = dealerHand.map((card) => card.code.replace("0", "T"));
+      const playerCodes = playerHand.map((card) => card.code.replace("0", "T"));
+      const dealerSolved = Hand.solve(dealerCodes);
+      const playerSolved = Hand.solve(playerCodes);
+      const winner = Hand.winners([dealerSolved, playerSolved]);
+
+      if (winner.length > 1) return "Push";
+      return winner[0] === dealerSolved ? "Dealer" : "Player";
+
+    } catch (e) {
+      console.error("getWinner error:", e);
+      return null;
+    }
+  };
+
+  const getStrengthOfHand = (hands) => {
+    const codes = hands.map((card) => card.code.replace("0", "T"));
+    const hand = Hand.solve(codes);
+    return hand.descr;
+  };
+
+  useEffect(() => {
+    if (gameState === "playerMove" && playerHand.length === 5) {
+      const hand = getStrengthOfHand(playerHand);
+      setPlayerStrength(hand);
+    }
+    if (gameState === "strength" && dealerHand.length === 5) {
+      const hand = getStrengthOfHand(dealerHand);
+      setDealerStrength(hand);
+      setWinner(getWinner());
+    }
+  }, [gameState, playerHand, dealerHand]);
 
   const startGame = async () => {
     setGameState("loading");
@@ -126,6 +171,7 @@ const StudPoker = () => {
               style={{ maxHeight: "150px" }}
             />
           ))}
+          <h3>{playerStrength}</h3>
         </div>
         <div className="container">
           <h2>Action</h2>
@@ -157,6 +203,7 @@ const StudPoker = () => {
               style={{ maxHeight: "100px" }}
             />
           ))}
+          <h3>{dealerStrength}</h3>
         </div>
 
         <div className="container">
@@ -169,16 +216,15 @@ const StudPoker = () => {
               style={{ maxHeight: "150px" }}
             />
           ))}
+          <h3>{playerStrength}</h3>
         </div>
         <div className="container">
           <h2>Result</h2>
-
+          <h3>{winner}</h3>
           <button type="button" className="btn btn-primary" onClick={startGame}>
             Start Game
           </button>
         </div>
-        {/* <p>Player: {JSON.stringify(playerHand)}</p>
-        <p>Dealer: {JSON.stringify(dealerHand)}</p> */}
       </div>
     );
   }
