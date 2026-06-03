@@ -218,10 +218,13 @@ const StudPoker = () => {
         <h2>Stud Poker</h2>
         <p>Deck: {deck?.deck_id}</p>
         <div className="container mb-5">
-          {winner === "Dealer" && (
-            <CheckIcon size={32} weight="bold" className="text-success" />
-          )}
-          <h2>Dealer's Hand</h2>
+
+          <div className="d-flex align-items-center gap-2">
+            <h2>Dealer's Hand</h2>
+            {winner === "Dealer" && (
+              <CheckIcon size={32} weight="bold" className="text-success" />
+            )}
+          </div>
           {dealerHand.map((card) => (
             <img
               key={card.code}
@@ -235,10 +238,10 @@ const StudPoker = () => {
 
         <div className="container mb-5">
           <div className="d-flex align-items-center gap-2">
+            <h2>Player's Hand</h2>
             {winner === "Player" && (
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
-            <h2>Player's Hand</h2>
           </div>
           {playerHand.map((card) => (
             <img
