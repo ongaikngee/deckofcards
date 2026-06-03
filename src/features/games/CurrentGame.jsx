@@ -159,9 +159,7 @@ export const CurrentGame = ({ games, setGames }) => {
   const gameName = currentGame?.name || deckId;
   const gamesId = currentGame?.gameId;
 
-  const totalCards = deckInfo
-    ? deckInfo.remaining + cards.length
-    : 0;
+  const totalCards = deckInfo ? deckInfo.remaining + cards.length : 0;
 
   const progressPercentage = totalCards
     ? (deckInfo.remaining / totalCards) * 100
@@ -212,8 +210,18 @@ export const CurrentGame = ({ games, setGames }) => {
                 {deckInfo.remaining + cards.length}
               </p>
               <div>
-                <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
-                  <div className="progress-bar" style={{ width: `${progressPercentage}%` }}></div>
+                <div
+                  className="progress"
+                  role="progressbar"
+                  aria-label="Basic example"
+                  aria-valuenow="50"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
                 </div>
               </div>
               <p>
