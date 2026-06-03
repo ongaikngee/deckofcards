@@ -82,7 +82,7 @@ const DisplayCards = ({ cards, size = 150, type = "standard" }) => {
 
         return (
           <div
-            key={card.code || index}
+            key={index}
             ref={index === 0 ? firstCardRef : null}
             style={{
               marginLeft: index === 0 ? 0 : `-${overlap}px`,
