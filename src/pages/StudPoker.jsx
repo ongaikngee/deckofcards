@@ -3,6 +3,7 @@ import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { IMG_DECK_BACK } from "../constants/games";
 import { Hand } from "pokersolver";
 import { CheckIcon } from "@phosphor-icons/react";
+import DisplayCards from "../components/DisplayCards";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState("idle");
@@ -158,35 +159,12 @@ const StudPoker = () => {
         <p>Deck: {deck?.deck_id}</p>
         <div className="container mb-5">
           <h2>Dealer's Hand</h2>
-          {dealerHand.map((card, index) =>
-            index === 4 ? (
-              <img
-                key={card.code || index}
-                src={card.image}
-                className="img-fluid"
-                style={{ maxHeight: "100px" }}
-              />
-            ) : (
-              <img
-                key={card.code || index}
-                src={IMG_DECK_BACK}
-                className="img-fluid"
-                style={{ maxHeight: "100px" }}
-              />
-            ),
-          )}
+          <DisplayCards cards={dealerHand} size={100} type="revealOne"/>
         </div>
 
         <div className="container mb-5">
           <h2>Player's Hand</h2>
-          {playerHand.map((card) => (
-            <img
-              key={card.code || index}
-              src={card.image}
-              className="img-fluid"
-              style={{ maxHeight: "150px" }}
-            />
-          ))}
+          <DisplayCards cards={playerHand} />
           <h3>{playerStrength}</h3>
         </div>
         <div className="container">
@@ -218,21 +196,13 @@ const StudPoker = () => {
         <h2>Stud Poker</h2>
         <p>Deck: {deck?.deck_id}</p>
         <div className="container mb-5">
-
           <div className="d-flex align-items-center gap-2">
             <h2>Dealer's Hand</h2>
             {winner === "Dealer" && (
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          {dealerHand.map((card) => (
-            <img
-              key={card.code}
-              src={card.image}
-              className="img-fluid"
-              style={{ maxHeight: "100px" }}
-            />
-          ))}
+          <DisplayCards cards={dealerHand} size={100}/>
           <h3>{dealerStrength}</h3>
         </div>
 
@@ -243,14 +213,7 @@ const StudPoker = () => {
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          {playerHand.map((card) => (
-            <img
-              key={card.code}
-              src={card.image}
-              className="img-fluid"
-              style={{ maxHeight: "150px" }}
-            />
-          ))}
+          <DisplayCards cards={playerHand} />
           <h3>{playerStrength}</h3>
         </div>
         <div className="container">
