@@ -10,7 +10,6 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-
   const formLogin = async ({ username, password }) => {
     try {
       const response = await login(username, password);

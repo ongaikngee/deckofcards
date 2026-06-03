@@ -1,8 +1,6 @@
 import React, { useState, useRef, useLayoutEffect } from "react";
 import { IMG_DECK_BACK } from "../constants/games";
-
-// Minimum visible portion of each card when overlapping (in pixels)
-const MIN_CARD_VISIBLE_SPACE = 19;
+import { MIN_CARD_VISIBLE_SPACE } from "../constants/games";
 
 const DisplayCards = ({ cards, size = 150, type = "standard" }) => {
   const displayRef = useRef(null);

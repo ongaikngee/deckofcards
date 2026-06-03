@@ -159,7 +159,7 @@ const StudPoker = () => {
         <p>Deck: {deck?.deck_id}</p>
         <div className="container mb-5">
           <h2>Dealer's Hand</h2>
-          <DisplayCards cards={dealerHand} size={100} type="revealOne"/>
+          <DisplayCards cards={dealerHand} size={100} type="revealOne" />
         </div>
 
         <div className="container mb-5">
@@ -202,7 +202,7 @@ const StudPoker = () => {
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          <DisplayCards cards={dealerHand} size={100}/>
+          <DisplayCards cards={dealerHand} size={100} />
           <h3>{dealerStrength}</h3>
         </div>
 

@@ -8,10 +8,9 @@ const Settings = () => {
 
   const navigate = useNavigate();
   const formLogout = () => {
-    logout()
-    navigate("/login")
-    
-  }
+    logout();
+    navigate("/login");
+  };
   return (
     <div>
       <h2>
@@ -20,7 +19,13 @@ const Settings = () => {
       </h2>
       <div className="container m-3">
         <form>
-          <button className="btn btn-primary" type="button" onClick={()=>formLogout()}>Log out</button>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={() => formLogout()}
+          >
+            Log out
+          </button>
         </form>
       </div>
     </div>
