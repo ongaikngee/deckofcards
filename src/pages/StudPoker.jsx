@@ -108,7 +108,7 @@ const StudPoker = () => {
     }
     if (gameState === "playerBet") {
       const winner = getWinner();
-      const winning = 2
+      const winning = 2;
 
       if (!isDealerQualified) {
         // Dealer doesn't qualify → player wins ante only
@@ -173,9 +173,9 @@ const StudPoker = () => {
   if (gameState === "idle") {
     return (
       <div className="container my-4">
-        <div className="d-flex justify-content-between mb-3">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <p className="h2">Stud Poker</p>
-          <div className="border p-3 rounded bg-success bg-opacity-25">
+          <div className="border p-3 mb-4 rounded bg-success bg-opacity-25 ">
             <p className="h5">Chips: {formatCurrency(chips)}</p>
             <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
           </div>
@@ -213,11 +213,11 @@ const StudPoker = () => {
   if (gameState === "loading") {
     return (
       <div className="container my-4">
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <div>
             <p className="h2">Stud Poker</p>
           </div>
-          <div className="border p-3 rounded bg-success bg-opacity-25">
+          <div className="border p-3 mb-4 rounded bg-success bg-opacity-25 ">
             <p className="h5">Chips: {formatCurrency(chips)}</p>
             <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
           </div>
@@ -232,12 +232,12 @@ const StudPoker = () => {
   if (gameState === "playerMove") {
     return (
       <div className="container my-4">
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <div>
             <p className="h2">Stud Poker</p>
             <p className="small text-muted">Deck: {deck?.deck_id}</p>
           </div>
-          <div className="border p-3 rounded bg-success bg-opacity-25">
+          <div className="border p-3 mb-4 rounded bg-success bg-opacity-25 ">
             <p className="h5">Chips: {formatCurrency(chips)}</p>
             <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
           </div>
@@ -279,12 +279,12 @@ const StudPoker = () => {
   if (gameState === "playerBet" || gameState === "playerFolds") {
     return (
       <div className="container my-4">
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <div>
             <p className="h2">Stud Poker</p>
             <p className="small text-muted">Deck: {deck?.deck_id}</p>
           </div>
-          <div className="border p-3 rounded bg-success bg-opacity-25">
+          <div className="border p-3 mb-4 rounded bg-success bg-opacity-25 ">
             <p className="h5">Chips: {formatCurrency(chips)}</p>
             <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
           </div>
