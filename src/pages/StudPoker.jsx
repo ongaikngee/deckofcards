@@ -4,17 +4,22 @@ import { IMG_DECK_BACK } from "../constants/games";
 import { Hand } from "pokersolver";
 import { CheckIcon } from "@phosphor-icons/react";
 import DisplayCards from "../components/DisplayCards";
+import { formatCurrency } from "../utils/formatCurrency";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState("idle");
   //   idle, loading, playerMove, playerBet, playerFolds
   const [deck, setDeck] = useState(null);
-
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
   const [playerStrength, setPlayerStrength] = useState("");
   const [dealerStrength, setDealerStrength] = useState("");
   const [winner, setWinner] = useState("");
+
+  const [chips, setChips] = useState(1000);
+  const [betAmount, setBetAmount] = useState(50);
+
+ 
 
   const getDeck = async () => {
     try {
@@ -79,6 +84,11 @@ const StudPoker = () => {
     }
     if (gameState === "playerBet") {
       setWinner(getWinner());
+      if (getWinner() === "Player") {
+        setChips((prev) => prev + betAmount * 4);
+      } else if (getWinner() === "Dealer") {
+        setChips((prev) => prev - betAmount * 2);
+      }
     }
     if (gameState === "playerFolds") {
       setWinner("Dealer");
@@ -88,24 +98,32 @@ const StudPoker = () => {
   const startGame = async () => {
     setGameState("loading");
     try {
+      // reset all state for new game
       setPlayerHand([]);
       setDealerHand([]);
+      setPlayerStrength("");
+      setDealerStrength("");
+      setWinner("");
       setDeck(null);
 
       const fetchDeck = await getDeck();
       if (!fetchDeck) return;
 
       setDeck(fetchDeck);
-      setGameState("playerMove");
 
       const playerHand = await getHand(fetchDeck.deck_id);
       setPlayerHand(playerHand.cards);
 
       const dealerHand = await getHand(fetchDeck.deck_id);
       setDealerHand(dealerHand.cards);
+
+      // deduct chips for the bet
+      setChips((prev) => prev - betAmount);
     } catch (e) {
       console.error(e);
       throw e;
+    } finally {
+      setGameState("playerMove");
     }
   };
 
@@ -120,7 +138,13 @@ const StudPoker = () => {
   if (gameState === "idle") {
     return (
       <div className="container my-4">
-        <h2>Stud Poker</h2>
+        <div className="d-flex justify-content-between mb-3">
+          <p className="h2">Stud Poker</p>
+          <div className="border p-3 rounded bg-success bg-opacity-25">
+            <p className="h5">Chips: {formatCurrency(chips)}</p>
+            <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
+          </div>
+        </div>
         <div>
           <p>
             Stud Poker is a head-to-head card game between you and the dealer.
@@ -138,7 +162,12 @@ const StudPoker = () => {
           <p>If both hands have equal strength, the round ends in a push.</p>
         </div>
         <div>
-          <button type="button" className="btn btn-primary" onClick={startGame}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={startGame}
+            disabled={chips < betAmount}
+          >
             New Game
           </button>
         </div>
@@ -149,7 +178,15 @@ const StudPoker = () => {
   if (gameState === "loading") {
     return (
       <div className="container my-4">
-        <h2>Stud Poker</h2>
+        <div className="d-flex justify-content-between">
+          <div>
+            <p className="h2">Stud Poker</p>
+          </div>
+          <div className="border p-3 rounded bg-success bg-opacity-25">
+            <p className="h5">Chips: {formatCurrency(chips)}</p>
+            <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
+          </div>
+        </div>
         <div className="spinner-grow" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
@@ -160,8 +197,16 @@ const StudPoker = () => {
   if (gameState === "playerMove") {
     return (
       <div className="container my-4">
-        <h2>Stud Poker</h2>
-        <p>Deck: {deck?.deck_id}</p>
+        <div className="d-flex justify-content-between">
+          <div>
+            <p className="h2">Stud Poker</p>
+            <p className="small text-muted">Deck: {deck?.deck_id}</p>
+          </div>
+          <div className="border p-3 rounded bg-success bg-opacity-25">
+            <p className="h5">Chips: {formatCurrency(chips)}</p>
+            <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
+          </div>
+        </div>
         <div className="container mb-5">
           <h2>Dealer's Hand</h2>
           <DisplayCards cards={dealerHand} size={100} type="revealOne" />
@@ -179,8 +224,9 @@ const StudPoker = () => {
               type="button"
               className="btn btn-success cursor-pointer me-3"
               onClick={bet}
+              disabled={chips < betAmount * 2}
             >
-              Bet
+              Bet {formatCurrency(betAmount * 2)}
             </button>
             <button
               type="button"
@@ -198,8 +244,16 @@ const StudPoker = () => {
   if (gameState === "playerBet" || gameState === "playerFolds") {
     return (
       <div className="container my-4">
-        <h2>Stud Poker</h2>
-        <p>Deck: {deck?.deck_id}</p>
+        <div className="d-flex justify-content-between">
+          <div>
+            <p className="h2">Stud Poker</p>
+            <p className="small text-muted">Deck: {deck?.deck_id}</p>
+          </div>
+          <div className="border p-3 rounded bg-success bg-opacity-25">
+            <p className="h5">Chips: {formatCurrency(chips)}</p>
+            <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
+          </div>
+        </div>
         <div className="container mb-5">
           <div className="d-flex align-items-center gap-2">
             <h2>Dealer's Hand</h2>
@@ -218,11 +272,19 @@ const StudPoker = () => {
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          <DisplayCards cards={playerHand} type={gameState === "playerFolds" ? "revealNone" : "revealAll"} />
+          <DisplayCards
+            cards={playerHand}
+            type={gameState === "playerFolds" ? "revealNone" : "revealAll"}
+          />
           <h3>{playerStrength}</h3>
         </div>
         <div className="container">
-          <button type="button" className="btn btn-primary" onClick={startGame}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={startGame}
+            disabled={chips < betAmount}
+          >
             Next Game
           </button>
         </div>

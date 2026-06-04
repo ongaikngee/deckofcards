@@ -98,7 +98,7 @@ const DisplayCards = ({ cards, size = 150, type = "revealAll" }) => {
             <img
               src={src}
               className="img-fluid"
-              style={{ maxHeight: `${size}px` }}
+              style={{ width: `${size}px` }}
             />
           </div>
         );
