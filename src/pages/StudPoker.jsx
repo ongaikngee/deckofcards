@@ -7,7 +7,7 @@ import DisplayCards from "../components/DisplayCards";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState("idle");
-  //   idle, loading, playerMove, strength
+  //   idle, loading, playerMove, playerBet, playerFolds
   const [deck, setDeck] = useState(null);
 
   const [playerHand, setPlayerHand] = useState([]);
@@ -70,13 +70,18 @@ const StudPoker = () => {
 
   useEffect(() => {
     if (gameState === "playerMove" && playerHand.length === 5) {
-      const hand = getStrengthOfHand(playerHand);
-      setPlayerStrength(hand);
+      const strength = getStrengthOfHand(playerHand);
+      setPlayerStrength(strength);
     }
-    if (gameState === "strength" && dealerHand.length === 5) {
-      const hand = getStrengthOfHand(dealerHand);
-      setDealerStrength(hand);
+    if (gameState === "playerMove" && dealerHand.length === 5) {
+      const strength = getStrengthOfHand(dealerHand);
+      setDealerStrength(strength);
+    }
+    if (gameState === "playerBet") {
       setWinner(getWinner());
+    }
+    if (gameState === "playerFolds") {
+      setWinner("Dealer");
     }
   }, [gameState, playerHand, dealerHand]);
 
@@ -105,11 +110,11 @@ const StudPoker = () => {
   };
 
   const bet = () => {
-    setGameState("strength");
+    setGameState("playerBet");
   };
 
   const fold = () => {
-    setGameState("idle");
+    setGameState("playerFolds");
   };
 
   if (gameState === "idle") {
@@ -190,7 +195,7 @@ const StudPoker = () => {
     );
   }
 
-  if (gameState === "strength") {
+  if (gameState === "playerBet" || gameState === "playerFolds") {
     return (
       <div className="container my-4">
         <h2>Stud Poker</h2>
@@ -213,7 +218,7 @@ const StudPoker = () => {
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          <DisplayCards cards={playerHand} />
+          <DisplayCards cards={playerHand} type={gameState === "playerFolds" ? "revealNone" : "revealAll"} />
           <h3>{playerStrength}</h3>
         </div>
         <div className="container">

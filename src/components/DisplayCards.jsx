@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import { IMG_DECK_BACK } from "../constants/games";
 import { MIN_CARD_VISIBLE_SPACE } from "../constants/games";
 
-const DisplayCards = ({ cards, size = 150, type = "standard" }) => {
+const DisplayCards = ({ cards, size = 150, type = "revealAll" }) => {
   const displayRef = useRef(null);
   const firstCardRef = useRef(null);
   const [overlap, setOverlap] = useState(0);
@@ -74,7 +74,14 @@ const DisplayCards = ({ cards, size = 150, type = "standard" }) => {
   return (
     <div className="d-flex flex-nowrap" ref={displayRef}>
       {cards.map((card, index) => {
-        const isRevealed = type !== "revealOne" || index === cards.length - 1;
+        let isRevealed = null; // default to null for safety
+        if (type === "revealAll") {
+          isRevealed = true;
+        } else if (type === "revealOne") {
+          isRevealed = index === cards.length - 1;
+        } else if (type === "revealNone") {
+          isRevealed = false;
+        }
 
         const src = isRevealed ? card.image : IMG_DECK_BACK;
 
