@@ -176,7 +176,7 @@ export const CurrentGame = ({ games, setGames }) => {
         <div className="mt-4">
           <h5>Cards Drawn</h5>
           <div className="mt-2" aria-live="polite">
-            <DisplayCards cards={cards} size={200} />
+            <DisplayCards cards={cards} size={100} />
           </div>
         </div>
       )}

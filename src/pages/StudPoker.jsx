@@ -9,7 +9,6 @@ const StudPoker = () => {
   const [gameState, setGameState] = useState("idle");
   //   idle, loading, playerMove, playerBet, playerFolds
   const [deck, setDeck] = useState(null);
-
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
   const [playerStrength, setPlayerStrength] = useState("");
@@ -88,15 +87,18 @@ const StudPoker = () => {
   const startGame = async () => {
     setGameState("loading");
     try {
+      // reset all state for new game
       setPlayerHand([]);
       setDealerHand([]);
+      setPlayerStrength("");
+      setDealerStrength("");
+      setWinner("");
       setDeck(null);
 
       const fetchDeck = await getDeck();
       if (!fetchDeck) return;
 
       setDeck(fetchDeck);
-      setGameState("playerMove");
 
       const playerHand = await getHand(fetchDeck.deck_id);
       setPlayerHand(playerHand.cards);
@@ -106,6 +108,8 @@ const StudPoker = () => {
     } catch (e) {
       console.error(e);
       throw e;
+    } finally {
+      setGameState("playerMove");
     }
   };
 
@@ -218,7 +222,10 @@ const StudPoker = () => {
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          <DisplayCards cards={playerHand} type={gameState === "playerFolds" ? "revealNone" : "revealAll"} />
+          <DisplayCards
+            cards={playerHand}
+            type={gameState === "playerFolds" ? "revealNone" : "revealAll"}
+          />
           <h3>{playerStrength}</h3>
         </div>
         <div className="container">
