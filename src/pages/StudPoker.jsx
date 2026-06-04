@@ -67,13 +67,13 @@ const StudPoker = () => {
     }
   };
 
-  // Dealer needs to have at least a Ace King to qualify. 
-  // If the dealer does not qualify, the player wins and is paid 1:1 on the ante bet, 
-  // and the play bet is returned to the player. 
-  // If the dealer qualifies, then the hands are compared to determine the winner. 
-  // If the dealer's hand is better than the player's hand, the dealer wins and takes both the 
-  // ante and play bets. 
-  // If the player's hand is better than the dealer's hand, the player wins and is paid 1:1 on both the 
+  // Dealer needs to have at least a Ace King to qualify.
+  // If the dealer does not qualify, the player wins and is paid 1:1 on the ante bet,
+  // and the play bet is returned to the player.
+  // If the dealer qualifies, then the hands are compared to determine the winner.
+  // If the dealer's hand is better than the player's hand, the dealer wins and takes both the
+  // ante and play bets.
+  // If the player's hand is better than the dealer's hand, the player wins and is paid 1:1 on both the
   // ante and play bets.
   const checkDealerQualification = (strength) => {
     if (strength.rank > 1) {
@@ -104,16 +104,25 @@ const StudPoker = () => {
       const strength = getStrengthOfHand(dealerHand);
       setDealerStrength(strength.descr);
       const dealerQ = checkDealerQualification(strength);
-      console.log("did dealer qualify?", dealerQ);
       setIsDealerQualified(dealerQ);
     }
     if (gameState === "playerBet") {
-      // TODO: Do you need to call the functions 3 times?
-      setWinner(getWinner());
-      if (getWinner() === "Player") {
-        setChips((prev) => prev + betAmount * 4);
-      } else if (getWinner() === "Dealer") {
-        setChips((prev) => prev - betAmount * 2);
+      const winner = getWinner();
+      const winning = 2
+
+      if (!isDealerQualified) {
+        // Dealer doesn't qualify → player wins ante only
+        setChips((prev) => prev + betAmount * winning);
+        setWinner("Player");
+      } else {
+        if (winner === "Player") {
+          // Win both ante and bet
+          setChips((prev) => prev + betAmount * winning * winning);
+        } else if (winner === "Dealer") {
+          // Lose both ante and bet
+          setChips((prev) => prev - betAmount * winning);
+        }
+        setWinner(winner);
       }
     }
     if (gameState === "playerFolds") {
@@ -287,7 +296,11 @@ const StudPoker = () => {
               <CheckIcon size={32} weight="bold" className="text-success" />
             )}
           </div>
-          {isDealerQualified ? <p>Dealer qualified</p> : <p>Dealer did not qualified</p>}
+          {isDealerQualified ? (
+            <p>Dealer qualified</p>
+          ) : (
+            <p>Dealer did not qualified</p>
+          )}
           <DisplayCards cards={dealerHand} size={100} />
           <h3>{dealerStrength}</h3>
         </div>
