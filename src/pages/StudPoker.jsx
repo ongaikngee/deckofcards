@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getNewDeck, drawCardFromDeck } from "../services/deckService";
-import { IMG_DECK_BACK, GAME_STATE, GAME_RESULT } from "../constants/games";
-import { Hand } from "pokersolver";
-import { CheckIcon } from "@phosphor-icons/react";
 import DisplayCards from "../components/DisplayCards";
+
+import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { formatCurrency } from "../utils/formatCurrency";
+import { IMG_DECK_BACK, GAME_STATE, GAME_RESULT } from "../constants/games";
+import { CheckIcon } from "@phosphor-icons/react";
+import { Hand } from "pokersolver";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState(GAME_STATE.IDLE);
