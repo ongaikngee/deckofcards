@@ -12,9 +12,9 @@ export const getNewDeck = async ({noOfDecks = 1, jokersEnabled = true}) => {
     }
 }
 
-export const drawCardFromDeck = async (deckId, count = 1) => {
+export const drawCardFromDeck = async (deckId, numCount = 1) => {
     try {
-        const response = await fetch(`${BASE_URL}${deckId}/draw/?count=${count}`)
+        const response = await fetch(`${BASE_URL}${deckId}/draw/?count=${numCount}`)
         const data = await response.json()
         return data
     } catch (error) {
