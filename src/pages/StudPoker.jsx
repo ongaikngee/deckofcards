@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
-import { IMG_DECK_BACK } from "../constants/games";
+import { IMG_DECK_BACK, GAME_STATE, GAME_RESULT } from "../constants/games";
 import { Hand } from "pokersolver";
 import { CheckIcon } from "@phosphor-icons/react";
 import DisplayCards from "../components/DisplayCards";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const StudPoker = () => {
-  const [gameState, setGameState] = useState("idle");
-  //   idle, loading, playerMove, playerBet, playerFolds
+  const [gameState, setGameState] = useState(GAME_STATE.IDLE);
   const [deck, setDeck] = useState(null);
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
@@ -59,8 +58,8 @@ const StudPoker = () => {
       const playerSolved = Hand.solve(playerCodes);
       const winner = Hand.winners([dealerSolved, playerSolved]);
 
-      if (winner.length > 1) return "Push";
-      return winner[0] === dealerSolved ? "Dealer" : "Player";
+      if (winner.length > 1) return GAME_RESULT.GAME_TIE;
+      return winner[0] === dealerSolved ? GAME_RESULT.WINNER_DEALER : GAME_RESULT.WINNER_PLAYER;
     } catch (e) {
       console.error("getWinner error:", e);
       return null;
@@ -96,42 +95,42 @@ const StudPoker = () => {
   };
 
   useEffect(() => {
-    if (gameState === "playerMove" && playerHand.length === 5) {
+    if (gameState === GAME_STATE.PLAYER_MOVE && playerHand.length === 5) {
       const strength = getStrengthOfHand(playerHand);
       setPlayerStrength(strength.descr);
     }
-    if (gameState === "playerMove" && dealerHand.length === 5) {
+    if (gameState === GAME_STATE.PLAYER_MOVE && dealerHand.length === 5) {
       const strength = getStrengthOfHand(dealerHand);
       setDealerStrength(strength.descr);
       const dealerQ = checkDealerQualification(strength);
       setIsDealerQualified(dealerQ);
     }
-    if (gameState === "playerBet") {
+    if (gameState === GAME_STATE.PLAYER_BET) {
       const winner = getWinner();
       const winning = 2;
 
       if (!isDealerQualified) {
         // Dealer doesn't qualify → player wins ante only
         setChips((prev) => prev + betAmount * winning);
-        setWinner("Player");
+        setWinner(GAME_RESULT.WINNER_PLAYER);
       } else {
-        if (winner === "Player") {
+        if (winner === GAME_RESULT.WINNER_PLAYER) {
           // Win both ante and bet
           setChips((prev) => prev + betAmount * winning * winning);
-        } else if (winner === "Dealer") {
+        } else if (winner === GAME_RESULT.WINNER_DEALER) {
           // Lose both ante and bet
           setChips((prev) => prev - betAmount * winning);
         }
         setWinner(winner);
       }
     }
-    if (gameState === "playerFolds") {
-      setWinner("Dealer");
+    if (gameState === GAME_STATE.PLAYER_FOLDS) {
+      setWinner(GAME_RESULT.WINNER_DEALER);
     }
   }, [gameState, playerHand, dealerHand]);
 
   const startGame = async () => {
-    setGameState("loading");
+    setGameState(GAME_STATE.LOADING);
     try {
       // reset all state for new game
       setPlayerHand([]);
@@ -158,19 +157,19 @@ const StudPoker = () => {
       console.error(e);
       throw e;
     } finally {
-      setGameState("playerMove");
+      setGameState(GAME_STATE.PLAYER_MOVE);
     }
   };
 
   const bet = () => {
-    setGameState("playerBet");
+    setGameState(GAME_STATE.PLAYER_BET);
   };
 
   const fold = () => {
-    setGameState("playerFolds");
+    setGameState(GAME_STATE.PLAYER_FOLDS);
   };
 
-  if (gameState === "idle") {
+  if (gameState === GAME_STATE.IDLE) {
     return (
       <div className="container my-4">
         <div className="d-flex flex-column flex-sm-row justify-content-between">
@@ -210,7 +209,7 @@ const StudPoker = () => {
     );
   }
 
-  if (gameState === "loading") {
+  if (gameState === GAME_STATE.LOADING) {
     return (
       <div className="container my-4">
         <div className="d-flex flex-column flex-sm-row justify-content-between">
@@ -229,7 +228,7 @@ const StudPoker = () => {
     );
   }
 
-  if (gameState === "playerMove") {
+  if (gameState === GAME_STATE.PLAYER_MOVE) {
     return (
       <div className="container my-4">
         <div className="d-flex flex-column flex-sm-row justify-content-between">
@@ -276,7 +275,7 @@ const StudPoker = () => {
     );
   }
 
-  if (gameState === "playerBet" || gameState === "playerFolds") {
+  if (gameState === GAME_STATE.PLAYER_BET || gameState === GAME_STATE.PLAYER_FOLDS) {
     return (
       <div className="container my-4">
         <div className="d-flex flex-column flex-sm-row justify-content-between">
@@ -314,7 +313,7 @@ const StudPoker = () => {
           </div>
           <DisplayCards
             cards={playerHand}
-            type={gameState === "playerFolds" ? "revealNone" : "revealAll"}
+            type={gameState === GAME_STATE.PLAYER_FOLDS ? "revealNone" : "revealAll"}
           />
           <h3>{playerStrength}</h3>
         </div>
