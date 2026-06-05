@@ -60,9 +60,8 @@ const StudPoker = () => {
       try {
         const fetchCards = await drawCardFromDeck(deck.deck_id, 4);
         setDealerHand((prev) => [...prev, ...fetchCards.cards]);
-        const dealerFinalCards = [...dealerHand, ...fetchCards.cards]
-        if (dealerFinalCards.length === 5){
-          console.log('coming to d Strength', dealerFinalCards)
+        const dealerFinalCards = [...dealerHand, ...fetchCards.cards];
+        if (dealerFinalCards.length === 5) {
           const strength = getStrengthOfHand(dealerFinalCards);
           setDealerStrength(strength.descr);
         }
@@ -72,13 +71,14 @@ const StudPoker = () => {
       }
     };
 
-    console.log("UseEffect Triggred....", gameState);
-
     if (gameState === GAME_STATE.LOADING) {
       initGame();
     }
 
-    if (gameState === GAME_STATE.PLAYER_FOLDS) {
+    if (
+      gameState === GAME_STATE.PLAYER_FOLDS ||
+      gameState === GAME_STATE.PLAYER_BET
+    ) {
       getDealerRemainingCards();
     }
   }, [gameState]);
@@ -128,12 +128,12 @@ const StudPoker = () => {
           </div>
         )}
 
-        {gameState === GAME_STATE.PLAYER_FOLDS && dealerHand && (
+        {(gameState === GAME_STATE.PLAYER_FOLDS || gameState === GAME_STATE.PLAYER_BET) && dealerHand && (
           <div>
             <div className="container mb-5">
               <h2>Dealer's Hand</h2>
               <DisplayCards cards={dealerHand} size={100} />
-                <h3>{dealerStrength}</h3>
+              <h3>{dealerStrength}</h3>
             </div>
           </div>
         )}
@@ -163,13 +163,28 @@ const StudPoker = () => {
               </div>
             </div>
           )}
+
+        {gameState === GAME_STATE.PLAYER_BET &&
+          playerHand &&
+          playerStrength && (
+            <div>
+              <div className="container mb-5">
+                <h2>Player's Hand</h2>
+                <DisplayCards cards={playerHand} />
+                <h3>{playerStrength}</h3>
+              </div>
+            </div>
+          )}
       </div>
       {/* SECTION: Action */}
 
       <div>
         <hr></hr>
         <h2>Action</h2>
-        {(gameState === GAME_STATE.IDLE || gameState === GAME_STATE.PLAYER_FOLDS) && (
+        {(gameState === GAME_STATE.IDLE ||
+          gameState === GAME_STATE.PLAYER_FOLDS ||
+          gameState === GAME_STATE.PLAYER_BET 
+        ) && (
           <div>
             <button
               type="button"
