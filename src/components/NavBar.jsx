@@ -4,7 +4,7 @@ import {UsersIcon, PersonArmsSpreadIcon} from "@phosphor-icons/react";
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           Deck of Cards
