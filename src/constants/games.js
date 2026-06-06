@@ -10,8 +10,15 @@ export const GAME_STATE = Object.freeze({
 	IDLE: "idle",
 	LOADING: "loading",
 	PLAYER_MOVE: "playerMove",
-	PLAYER_BET: "playerBet",
-	PLAYER_FOLDS: "playerFolds",
+	PLAYER_ACTED: "playerActed",
+	DETERMINE_WINNER: "determineWinner",
+	// PLAYER_BET: "playerBet",
+	// PLAYER_FOLDS: "playerFolds",
+});
+
+export const PLAYER_ACTION = Object.freeze({
+	BET: "bet",
+	FOLD: "fold",
 });
 
 export const GAME_RESULT = Object.freeze({
