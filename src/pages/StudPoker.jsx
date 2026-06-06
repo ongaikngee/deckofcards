@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 // componenets
 import DisplayCards from "../components/DisplayCards";
+import Spinner from "../components/Spinner";
 import IntroStudPoker from "../features/games/IntroStudPoker";
 
 // helpers
@@ -205,11 +206,7 @@ const StudPoker = () => {
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState === GAME_STATE.LOADING && (
-          <div className="spinner-grow" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        )}
+        {gameState === GAME_STATE.LOADING && <Spinner />}
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
             <div className="container mb-5">
@@ -248,53 +245,31 @@ const StudPoker = () => {
         {gameState === GAME_STATE.PLAYER_MOVE &&
           playerHand &&
           playerStrength && (
-            <div>
-              <div className="container mb-5">
+            <div className="container mb-5">
+              <h2>Player's Hand</h2>
+              <DisplayCards cards={playerHand} />
+              <h3>{playerStrength.descr}</h3>
+            </div>
+          )}
+
+        {gameState === GAME_STATE.DETERMINE_WINNER &&
+          playerAction &&
+          playerHand &&
+          playerStrength && (
+            <div className="container mb-5">
+              <div className="d-flex align-items-center gap-2">
+                {winner === GAME_RESULT.WINNER_PLAYER && (
+                  <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
+                )}
                 <h2>Player's Hand</h2>
-                <DisplayCards cards={playerHand} />
-                <h3>{playerStrength.descr}</h3>
               </div>
+              <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              <h3>{playerStrength.descr}</h3>
             </div>
           )}
 
-        {gameState === GAME_STATE.DETERMINE_WINNER &&
-          playerAction === PLAYER_ACTION.FOLD &&
-          playerHand &&
-          playerStrength && (
-            <div>
-              <div className="container mb-5">
-                <div className="d-flex align-items-center gap-2">
-                  {winner === GAME_RESULT.WINNER_PLAYER && (
-                    <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
-                  )}
-                  <h2>Player's Hand</h2>
-                </div>
-                <DisplayCards cards={playerHand} type="revealNone" />
-                <h3>{playerStrength.descr}</h3>
-              </div>
-            </div>
-          )}
-
-        {gameState === GAME_STATE.DETERMINE_WINNER &&
-          playerAction === PLAYER_ACTION.BET &&
-          playerHand &&
-          playerStrength && (
-            <div>
-              <div className="container mb-5">
-                <div className="d-flex align-items-center gap-2">
-                  {winner === GAME_RESULT.WINNER_PLAYER && (
-                    <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
-                  )}
-                  <h2>Player's Hand</h2>
-                </div>
-                <DisplayCards cards={playerHand} />
-                <h3>{playerStrength.descr}</h3>
-              </div>
-            </div>
-          )}
       </div>
       {/* SECTION: Action */}
-
       <div>
         <hr></hr>
         <h2>Action</h2>
