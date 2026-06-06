@@ -72,7 +72,7 @@ const StudPoker = () => {
 
       if (fetchCards.cards.length === 5) {
         const strength = getStrengthOfHand(fetchCards.cards);
-        setPlayerStrength(strength.descr);
+        setPlayerStrength(strength);
       }
 
       fetchCards = await drawCardFromDeck(fetchDeck.deck_id);
@@ -95,7 +95,7 @@ const StudPoker = () => {
       setDealerHand(dealerFinalCards);
       if (dealerFinalCards.length === 5) {
         const strength = getStrengthOfHand(dealerFinalCards);
-        setDealerStrength(strength.descr);
+        setDealerStrength(strength);
         const dealerQ = checkDealerQualification(strength);
 
         setIsDealerQualified(dealerQ);
@@ -128,20 +128,17 @@ const StudPoker = () => {
 
     // Comparing hands
     try {
-      const dealerCodes = dealerHand.map((card) => card.code.replace("0", "T"));
-      const playerCodes = playerHand.map((card) => card.code.replace("0", "T"));
-      const dealerSolved = Hand.solve(dealerCodes);
-      const playerSolved = Hand.solve(playerCodes);
-      const winner = Hand.winners([dealerSolved, playerSolved]);
+      // Using PokerSolver's winners() to determine winner
+      const winner = Hand.winners([dealerStrength, playerStrength]);
 
-      // When both strength has equal values
+      // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
         return;
       }
 
       const determinedWinner =
-        winner[0] === dealerSolved
+        winner[0] === dealerStrength
           ? GAME_RESULT.WINNER_DEALER
           : GAME_RESULT.WINNER_PLAYER;
 
@@ -236,7 +233,7 @@ const StudPoker = () => {
                 <p>Dealer did not qualified</p>
               )}
               <DisplayCards cards={dealerHand} size={100} />
-              <h3>{dealerStrength}</h3>
+              <h3>{dealerStrength.descr}</h3>
             </div>
           </div>
         )}
@@ -250,7 +247,7 @@ const StudPoker = () => {
               <div className="container mb-5">
                 <h2>Player's Hand</h2>
                 <DisplayCards cards={playerHand} />
-                <h3>{playerStrength}</h3>
+                <h3>{playerStrength.descr}</h3>
               </div>
             </div>
           )}
@@ -272,7 +269,7 @@ const StudPoker = () => {
                   )}
                 </div>
                 <DisplayCards cards={playerHand} type="revealNone" />
-                <h3>{playerStrength}</h3>
+                <h3>{playerStrength.descr}</h3>
               </div>
             </div>
           )}
@@ -294,7 +291,7 @@ const StudPoker = () => {
                   )}
                 </div>
                 <DisplayCards cards={playerHand} />
-                <h3>{playerStrength}</h3>
+                <h3>{playerStrength.descr}</h3>
               </div>
             </div>
           )}
@@ -306,17 +303,17 @@ const StudPoker = () => {
         <h2>Action</h2>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
-          <div>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={startGame}
-              disabled={chips < betAmount}
-            >
-              New Game
-            </button>
-          </div>
-        )}
+            <div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={startGame}
+                disabled={chips < betAmount}
+              >
+                New Game
+              </button>
+            </div>
+          )}
         {gameState === GAME_STATE.PLAYER_MOVE && (
           <span>
             <button
