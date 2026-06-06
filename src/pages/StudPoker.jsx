@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 // componenets
 import DisplayCards from "../components/DisplayCards";
+import Spinner from "../components/Spinner";
 import IntroStudPoker from "../features/games/IntroStudPoker";
 
 // helpers
@@ -25,6 +26,11 @@ const StudPoker = () => {
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
   const [winner, setWinner] = useState("");
+
+  //settings
+  const dealerCardSize = 80
+  const checkIconSize = 26
+  const checkIconWeight = "bold"
 
   const getStrengthOfHand = (hands) => {
     const codes = hands.map((card) => card.code.replace("0", "T"));
@@ -189,29 +195,25 @@ const StudPoker = () => {
     <div className="container my-4">
       <div className="d-flex flex-column flex-sm-row justify-content-between">
         <div>
-          <p className="h2">Stud Poker</p>
-          {deck && <p className="text-muted">Deck id: {deck.deck_id}</p>}
+          <div className="h2 mb-0">Stud Poker</div>
+          {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
         </div>
-        <div className="border p-3 mb-4 rounded bg-success bg-opacity-25 ">
-          <p className="h5">Chips: {formatCurrency(chips)}</p>
-          <p className="h5">Bet Amount: {formatCurrency(betAmount)}</p>
+        <div className="border px-3 py-1 mb-4 rounded bg-success bg-opacity-25 ">
+          <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
+          <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
         </div>
       </div>
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState === GAME_STATE.LOADING && (
-          <div className="spinner-grow" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        )}
+        {gameState === GAME_STATE.LOADING && <Spinner />}
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
             <div className="container mb-5">
               <h2>Dealer's Hand</h2>
               <DisplayCards
                 cards={[1, 1, 1, 1, ...dealerHand]}
-                size={100}
+                size={dealerCardSize}
                 type="revealOne"
               />
             </div>
@@ -222,17 +224,17 @@ const StudPoker = () => {
           <div>
             <div className="container mb-5">
               <div className="d-flex align-items-center gap-2">
-                <h2>Dealer's Hand</h2>
                 {winner === GAME_RESULT.WINNER_DEALER && (
-                  <CheckIcon size={32} weight="bold" className="text-success" />
+                  <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
+                )}
+                <h2>Dealer's Hand</h2>
+                {isDealerQualified ? (
+                  <span className="badge text-bg-success">Qualified</span>
+                ) : (
+                  <span className="badge text-bg-danger">Did not qualified</span>
                 )}
               </div>
-              {isDealerQualified ? (
-                <p>Dealer qualified</p>
-              ) : (
-                <p>Dealer did not qualified</p>
-              )}
-              <DisplayCards cards={dealerHand} size={100} />
+              <DisplayCards cards={dealerHand} size={dealerCardSize} />
               <h3>{dealerStrength.descr}</h3>
             </div>
           </div>
@@ -243,61 +245,31 @@ const StudPoker = () => {
         {gameState === GAME_STATE.PLAYER_MOVE &&
           playerHand &&
           playerStrength && (
-            <div>
-              <div className="container mb-5">
+            <div className="container mb-5">
+              <h2>Player's Hand</h2>
+              <DisplayCards cards={playerHand} />
+              <h3>{playerStrength.descr}</h3>
+            </div>
+          )}
+
+        {gameState === GAME_STATE.DETERMINE_WINNER &&
+          playerAction &&
+          playerHand &&
+          playerStrength && (
+            <div className="container mb-5">
+              <div className="d-flex align-items-center gap-2">
+                {winner === GAME_RESULT.WINNER_PLAYER && (
+                  <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
+                )}
                 <h2>Player's Hand</h2>
-                <DisplayCards cards={playerHand} />
-                <h3>{playerStrength.descr}</h3>
               </div>
+              <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              <h3>{playerStrength.descr}</h3>
             </div>
           )}
 
-        {gameState === GAME_STATE.DETERMINE_WINNER &&
-          playerAction === PLAYER_ACTION.FOLD &&
-          playerHand &&
-          playerStrength && (
-            <div>
-              <div className="container mb-5">
-                <div className="d-flex align-items-center gap-2">
-                  <h2>Player's Hand</h2>
-                  {winner === GAME_RESULT.WINNER_PLAYER && (
-                    <CheckIcon
-                      size={32}
-                      weight="bold"
-                      className="text-success"
-                    />
-                  )}
-                </div>
-                <DisplayCards cards={playerHand} type="revealNone" />
-                <h3>{playerStrength.descr}</h3>
-              </div>
-            </div>
-          )}
-
-        {gameState === GAME_STATE.DETERMINE_WINNER &&
-          playerAction === PLAYER_ACTION.BET &&
-          playerHand &&
-          playerStrength && (
-            <div>
-              <div className="container mb-5">
-                <div className="d-flex align-items-center gap-2">
-                  <h2>Player's Hand</h2>
-                  {winner === GAME_RESULT.WINNER_PLAYER && (
-                    <CheckIcon
-                      size={32}
-                      weight="bold"
-                      className="text-success"
-                    />
-                  )}
-                </div>
-                <DisplayCards cards={playerHand} />
-                <h3>{playerStrength.descr}</h3>
-              </div>
-            </div>
-          )}
       </div>
       {/* SECTION: Action */}
-
       <div>
         <hr></hr>
         <h2>Action</h2>
