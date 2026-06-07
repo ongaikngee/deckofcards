@@ -28,8 +28,8 @@ const StudPoker = () => {
   const [winner, setWinner] = useState("");
 
   //settings
-  const dealerCardSize = 80
-  const checkIconSize = 26
+  const dealerCardSize = 60
+  const checkIconSize = 16
   const checkIconWeight = "bold"
 
   const getStrengthOfHand = (hands) => {
@@ -209,8 +209,8 @@ const StudPoker = () => {
         {gameState === GAME_STATE.LOADING && <Spinner />}
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
-            <div className="container mb-5">
-              <h2>Dealer's Hand</h2>
+            <div className="container mb-3">
+              <div className="h5">Dealer's Hand</div>
               <DisplayCards
                 cards={[1, 1, 1, 1, ...dealerHand]}
                 size={dealerCardSize}
@@ -222,20 +222,20 @@ const StudPoker = () => {
 
         {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
           <div>
-            <div className="container mb-5">
+            <div className="container mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_DEALER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
                 )}
-                <h2>Dealer's Hand</h2>
+                <div className="h5">Dealer's Hand</div>
                 {isDealerQualified ? (
-                  <span className="badge text-bg-success">Qualified</span>
+                  <h6><span className="badge text-bg-success">Qualified</span></h6>
                 ) : (
-                  <span className="badge text-bg-danger">Did not qualified</span>
+                  <h6><span className="badge text-bg-danger">Did not qualified</span></h6>
                 )}
               </div>
               <DisplayCards cards={dealerHand} size={dealerCardSize} />
-              <h3>{dealerStrength.descr}</h3>
+              <div>{dealerStrength.descr}</div>
             </div>
           </div>
         )}
@@ -245,10 +245,10 @@ const StudPoker = () => {
         {gameState === GAME_STATE.PLAYER_MOVE &&
           playerHand &&
           playerStrength && (
-            <div className="container mb-5">
-              <h2>Player's Hand</h2>
+            <div className="container mb-3">
+              <div className="h5">Player's Hand</div>
               <DisplayCards cards={playerHand} />
-              <h3>{playerStrength.descr}</h3>
+              <div>{playerStrength.descr}</div>
             </div>
           )}
 
@@ -256,15 +256,15 @@ const StudPoker = () => {
           playerAction &&
           playerHand &&
           playerStrength && (
-            <div className="container mb-5">
+            <div className="container mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_PLAYER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
                 )}
-                <h2>Player's Hand</h2>
+                <div className="h5">Player's Hand</div>
               </div>
               <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
-              <h3>{playerStrength.descr}</h3>
+              <div>{playerStrength.descr}</div>
             </div>
           )}
 
@@ -272,7 +272,7 @@ const StudPoker = () => {
       {/* SECTION: Action */}
       <div>
         <hr></hr>
-        <h2>Action</h2>
+        <div className="h5">Action</div>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
             <div>

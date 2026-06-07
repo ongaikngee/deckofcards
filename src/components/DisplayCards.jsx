@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import { IMG_DECK_BACK } from "../constants/games";
 import { MIN_CARD_VISIBLE_SPACE } from "../constants/games";
 
-const DisplayCards = ({ cards, size = 150, type = "revealAll" }) => {
+const DisplayCards = ({ cards, size = 100, type = "revealAll" }) => {
   const displayRef = useRef(null);
   const firstCardRef = useRef(null);
   const [overlap, setOverlap] = useState(0);
