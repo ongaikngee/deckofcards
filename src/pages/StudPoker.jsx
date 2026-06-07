@@ -31,8 +31,8 @@ const StudPoker = () => {
   const dealerCardSize = 60
   const checkIconSize = 16
   const checkIconWeight = "bold"
-  const headerFontSize = "h3"
-  const strengthFontSize = "h5"
+  const headerFontSize = "h2"
+  const strengthFontSize = "h4"
 
   const getStrengthOfHand = (hands) => {
     const codes = hands.map((card) => card.code.replace("0", "T"));
