@@ -29,7 +29,7 @@ const StudPoker = () => {
 
   //settings
   const dealerCardSize = 60
-  const checkIconSize = 16
+  const checkIconSize = 28
   const checkIconWeight = "bold"
   const headerFontSize = "h2"
   const strengthFontSize = "h4"
@@ -200,7 +200,7 @@ const StudPoker = () => {
           <div className="h2 mb-0">Stud Poker</div>
           {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
         </div>
-        <div className="border px-3 py-1 mb-4 rounded bg-success bg-opacity-25 ">
+        <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
         </div>
@@ -208,23 +208,41 @@ const StudPoker = () => {
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState === GAME_STATE.LOADING && <Spinner />}
+        {gameState === GAME_STATE.LOADING && (
+          <div>
+            <div className="mb-3">
+              <div className={headerFontSize}>Dealer's Hand</div>
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <div className="d-flex justify-content-start align-items-center gap-2">
+                  <DisplayCards
+                    cards={[1, 1, 1, 1]}
+                    size={dealerCardSize}
+                    type="revealNone"
+                  />
+                  <Spinner />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
-              <DisplayCards
-                cards={[1, 1, 1, 1, ...dealerHand]}
-                size={dealerCardSize}
-                type="revealOne"
-              />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <DisplayCards
+                  cards={[1, 1, 1, 1, ...dealerHand]}
+                  size={dealerCardSize}
+                  type="revealOne"
+                />
+              </div>
             </div>
           </div>
         )}
 
         {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
           <div>
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_DEALER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
@@ -236,7 +254,9 @@ const StudPoker = () => {
                   <h6><span className="badge text-bg-danger">Did not qualified</span></h6>
                 )}
               </div>
-              <DisplayCards cards={dealerHand} size={dealerCardSize} />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <DisplayCards cards={dealerHand} size={dealerCardSize} />
+              </div>
               <div className={strengthFontSize}>{dealerStrength.descr}</div>
             </div>
           </div>
@@ -244,12 +264,30 @@ const StudPoker = () => {
       </div>
       {/* SECTION : Player Deck */}
       <div>
+        {gameState === GAME_STATE.LOADING && (
+          <div className="mb-3">
+            <div className="d-flex align-items-center gap-2">
+              <div className={headerFontSize}>Player's Hand</div>
+            </div>
+            <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+              <DisplayCards className="bg-success"
+                cards={[1, 1, 1, 1, 1]}
+                type="revealNone"
+              />
+            </div>
+            <div className={`${strengthFontSize} placeholder-glow`}>
+              <span class="placeholder col-12 bg-warning"></span>
+            </div>
+          </div>
+        )}
         {gameState === GAME_STATE.PLAYER_MOVE &&
           playerHand &&
           playerStrength && (
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className={headerFontSize}>Player's Hand</div>
-              <DisplayCards cards={playerHand} />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+                <DisplayCards cards={playerHand} />
+              </div>
               <div className={strengthFontSize}>{playerStrength.descr}</div>
             </div>
           )}
@@ -258,14 +296,16 @@ const StudPoker = () => {
           playerAction &&
           playerHand &&
           playerStrength && (
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_PLAYER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
                 )}
                 <div className={headerFontSize}>Player's Hand</div>
               </div>
-              <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+                <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              </div>
               <div className={strengthFontSize}>{playerStrength.descr}</div>
             </div>
           )}
@@ -288,6 +328,26 @@ const StudPoker = () => {
               </button>
             </div>
           )}
+        {gameState === GAME_STATE.LOADING && (
+          <span>
+            <button
+              type="button"
+              className="btn btn-success cursor-pointer me-3"
+              onClick={bet}
+              disabled={true}
+            >
+              Bet {formatCurrency(betAmount * 2)}
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger cursor-pointer"
+              onClick={fold}
+              disabled={true}
+            >
+              fold
+            </button>
+          </span>
+        )}
         {gameState === GAME_STATE.PLAYER_MOVE && (
           <span>
             <button
