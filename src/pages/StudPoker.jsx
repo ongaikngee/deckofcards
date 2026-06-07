@@ -276,6 +276,9 @@ const StudPoker = () => {
                 type="revealNone"
               />
             </div>
+            <div className={`${strengthFontSize} placeholder-glow`}>
+              <span class="placeholder col-12 bg-warning"></span>
+            </div>
           </div>
         )}
         {gameState === GAME_STATE.PLAYER_MOVE &&
@@ -326,6 +329,26 @@ const StudPoker = () => {
               </button>
             </div>
           )}
+        {gameState === GAME_STATE.LOADING && (
+          <span>
+            <button
+              type="button"
+              className="btn btn-success cursor-pointer me-3"
+              onClick={bet}
+              disabled={true}
+            >
+              Bet {formatCurrency(betAmount * 2)}
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger cursor-pointer"
+              onClick={fold}
+              disabled={true}
+            >
+              fold
+            </button>
+          </span>
+        )}
         {gameState === GAME_STATE.PLAYER_MOVE && (
           <span>
             <button
