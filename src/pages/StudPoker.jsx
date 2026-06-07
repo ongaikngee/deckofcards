@@ -208,16 +208,27 @@ const StudPoker = () => {
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState === GAME_STATE.LOADING && <Spinner />}
+        {gameState === GAME_STATE.LOADING && (
+          <div>
+            <div className="container mb-3">
+              <div className={headerFontSize}>Dealer's Hand</div>
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <Spinner />
+              </div>
+            </div>
+          </div>
+        )}
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
             <div className="container mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
-              <DisplayCards
-                cards={[1, 1, 1, 1, ...dealerHand]}
-                size={dealerCardSize}
-                type="revealOne"
-              />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <DisplayCards
+                  cards={[1, 1, 1, 1, ...dealerHand]}
+                  size={dealerCardSize}
+                  type="revealOne"
+                />
+              </div>
             </div>
           </div>
         )}
@@ -236,7 +247,9 @@ const StudPoker = () => {
                   <h6><span className="badge text-bg-danger">Did not qualified</span></h6>
                 )}
               </div>
-              <DisplayCards cards={dealerHand} size={dealerCardSize} />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <DisplayCards cards={dealerHand} size={dealerCardSize} />
+              </div>
               <div className={strengthFontSize}>{dealerStrength.descr}</div>
             </div>
           </div>
@@ -244,6 +257,12 @@ const StudPoker = () => {
       </div>
       {/* SECTION : Player Deck */}
       <div>
+        {gameState === GAME_STATE.LOADING && (
+          <div className="container mb-3 border border-primary">
+            <div className={headerFontSize}>Player's Hand</div>
+            <Spinner />
+          </div>
+        )}
         {gameState === GAME_STATE.PLAYER_MOVE &&
           playerHand &&
           playerStrength && (
