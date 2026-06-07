@@ -31,6 +31,8 @@ const StudPoker = () => {
   const dealerCardSize = 60
   const checkIconSize = 16
   const checkIconWeight = "bold"
+  const headerFontSize = "h3"
+  const strengthFontSize = "h5"
 
   const getStrengthOfHand = (hands) => {
     const codes = hands.map((card) => card.code.replace("0", "T"));
@@ -210,7 +212,7 @@ const StudPoker = () => {
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
             <div className="container mb-3">
-              <div className="h5">Dealer's Hand</div>
+              <div className={headerFontSize}>Dealer's Hand</div>
               <DisplayCards
                 cards={[1, 1, 1, 1, ...dealerHand]}
                 size={dealerCardSize}
@@ -227,7 +229,7 @@ const StudPoker = () => {
                 {winner === GAME_RESULT.WINNER_DEALER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
                 )}
-                <div className="h5">Dealer's Hand</div>
+                <div className={headerFontSize}>Dealer's Hand</div>
                 {isDealerQualified ? (
                   <h6><span className="badge text-bg-success">Qualified</span></h6>
                 ) : (
@@ -235,7 +237,7 @@ const StudPoker = () => {
                 )}
               </div>
               <DisplayCards cards={dealerHand} size={dealerCardSize} />
-              <div>{dealerStrength.descr}</div>
+              <div className={strengthFontSize}>{dealerStrength.descr}</div>
             </div>
           </div>
         )}
@@ -246,9 +248,9 @@ const StudPoker = () => {
           playerHand &&
           playerStrength && (
             <div className="container mb-3">
-              <div className="h5">Player's Hand</div>
+              <div className={headerFontSize}>Player's Hand</div>
               <DisplayCards cards={playerHand} />
-              <div>{playerStrength.descr}</div>
+              <div className={strengthFontSize}>{playerStrength.descr}</div>
             </div>
           )}
 
@@ -261,10 +263,10 @@ const StudPoker = () => {
                 {winner === GAME_RESULT.WINNER_PLAYER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
                 )}
-                <div className="h5">Player's Hand</div>
+                <div className={headerFontSize}>Player's Hand</div>
               </div>
               <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
-              <div>{playerStrength.descr}</div>
+              <div className={strengthFontSize}>{playerStrength.descr}</div>
             </div>
           )}
 
@@ -272,7 +274,7 @@ const StudPoker = () => {
       {/* SECTION: Action */}
       <div>
         <hr></hr>
-        <div className="h5">Action</div>
+        <div className={headerFontSize}>Action</div>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
             <div>
