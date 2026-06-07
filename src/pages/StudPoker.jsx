@@ -200,7 +200,7 @@ const StudPoker = () => {
           <div className="h2 mb-0">Stud Poker</div>
           {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
         </div>
-        <div className="border px-3 py-1 mb-4 rounded bg-success bg-opacity-25 ">
+        <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
         </div>
@@ -210,7 +210,7 @@ const StudPoker = () => {
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
         {gameState === GAME_STATE.LOADING && (
           <div>
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <div className="d-flex justify-content-start align-items-center gap-2">
@@ -227,7 +227,7 @@ const StudPoker = () => {
         )}
         {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
           <div>
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <DisplayCards
@@ -242,7 +242,7 @@ const StudPoker = () => {
 
         {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
           <div>
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_DEALER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
@@ -265,8 +265,7 @@ const StudPoker = () => {
       {/* SECTION : Player Deck */}
       <div>
         {gameState === GAME_STATE.LOADING && (
-          <div className="container mb-3">
-            {/* <div className={headerFontSize}>Player's Hand</div> */}
+          <div className="mb-3">
             <div className="d-flex align-items-center gap-2">
               <div className={headerFontSize}>Player's Hand</div>
             </div>
@@ -284,7 +283,7 @@ const StudPoker = () => {
         {gameState === GAME_STATE.PLAYER_MOVE &&
           playerHand &&
           playerStrength && (
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className={headerFontSize}>Player's Hand</div>
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
                 <DisplayCards cards={playerHand} />
@@ -297,7 +296,7 @@ const StudPoker = () => {
           playerAction &&
           playerHand &&
           playerStrength && (
-            <div className="container mb-3">
+            <div className="mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_PLAYER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />

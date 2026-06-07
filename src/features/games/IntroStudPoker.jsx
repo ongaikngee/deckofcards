@@ -2,7 +2,7 @@ import React from "react";
 
 const IntroStudPoker = () => {
   return (
-    <div>
+    <div className="my-3">
       <p>
         Stud Poker is a head-to-head card game between you and the dealer. Each
         player is dealt a five-card hand from a single shuffled deck. You cannot
