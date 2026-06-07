@@ -29,7 +29,7 @@ const StudPoker = () => {
 
   //settings
   const dealerCardSize = 60
-  const checkIconSize = 16
+  const checkIconSize = 28
   const checkIconWeight = "bold"
   const headerFontSize = "h2"
   const strengthFontSize = "h4"
@@ -213,7 +213,14 @@ const StudPoker = () => {
             <div className="container mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
-                <Spinner />
+                <div className="d-flex justify-content-start align-items-center gap-2">
+                  <DisplayCards
+                    cards={[1, 1, 1, 1]}
+                    size={dealerCardSize}
+                    type="revealNone"
+                  />
+                  <Spinner />
+                </div>
               </div>
             </div>
           </div>
@@ -258,9 +265,17 @@ const StudPoker = () => {
       {/* SECTION : Player Deck */}
       <div>
         {gameState === GAME_STATE.LOADING && (
-          <div className="container mb-3 border border-primary">
-            <div className={headerFontSize}>Player's Hand</div>
-            <Spinner />
+          <div className="container mb-3">
+            {/* <div className={headerFontSize}>Player's Hand</div> */}
+            <div className="d-flex align-items-center gap-2">
+              <div className={headerFontSize}>Player's Hand</div>
+            </div>
+            <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+              <DisplayCards className="bg-success"
+                cards={[1, 1, 1, 1, 1]}
+                type="revealNone"
+              />
+            </div>
           </div>
         )}
         {gameState === GAME_STATE.PLAYER_MOVE &&
@@ -268,7 +283,9 @@ const StudPoker = () => {
           playerStrength && (
             <div className="container mb-3">
               <div className={headerFontSize}>Player's Hand</div>
-              <DisplayCards cards={playerHand} />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+                <DisplayCards cards={playerHand} />
+              </div>
               <div className={strengthFontSize}>{playerStrength.descr}</div>
             </div>
           )}
@@ -284,7 +301,9 @@ const StudPoker = () => {
                 )}
                 <div className={headerFontSize}>Player's Hand</div>
               </div>
-              <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+                <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              </div>
               <div className={strengthFontSize}>{playerStrength.descr}</div>
             </div>
           )}
