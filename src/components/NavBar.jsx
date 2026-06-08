@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../features/auth/AuthContext";
+
 import Collapse from "bootstrap/js/dist/collapse"
 
 import { PersonArmsSpreadIcon } from "@phosphor-icons/react";
 
 function Navbar() {
+  const { user } = useAuth();
+
   const closeNavbar = () => {
     const nav = document.getElementById("navbarNav");
     if (nav) {
@@ -13,7 +17,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-sm navbar-dark bg-dark" data-bs-theme="dark">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
           Deck of Cards
@@ -30,33 +34,46 @@ function Navbar() {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/studpoker" onClick={closeNavbar}>
-                Stud Poker
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/" onClick={closeNavbar}>
-                Games
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/about" onClick={closeNavbar}>
-                About
-              </Link>
-            </li>
-
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/contact" onClick={closeNavbar}>
-                Contact
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/user" onClick={closeNavbar}>
-                <PersonArmsSpreadIcon size={24} />
-              </Link>
-            </li>
+            {!user && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/about" onClick={closeNavbar}>
+                    About
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/contact" onClick={closeNavbar}>
+                    Contact
+                  </Link>
+                </li>
+              </>
+            )}
+            {user && (
+              <>
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Games
+                  </a>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link className="dropdown-item" to="/" onClick={closeNavbar}>
+                        Deck of Cards
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/studpoker" onClick={closeNavbar}>
+                        Stud Poker
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/user" onClick={closeNavbar}>
+                    <PersonArmsSpreadIcon size={24} />
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
