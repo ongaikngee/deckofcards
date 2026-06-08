@@ -246,7 +246,7 @@ const StudPoker = () => {
 
         {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
           <div>
-            <div className="mb-3">
+            <div className="mb-2">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_DEALER && (
                   <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
@@ -261,7 +261,9 @@ const StudPoker = () => {
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <DisplayCards cards={dealerHand} size={dealerCardSize} />
               </div>
-              <div className={strengthFontSize}>{dealerStrength.descr}</div>
+              <div className={strengthFontSize}>
+                <span class="badge text-bg-light">{dealerStrength.descr}</span>
+              </div>
             </div>
           </div>
         )}
@@ -291,7 +293,9 @@ const StudPoker = () => {
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
                 <DisplayCards cards={playerHand} />
               </div>
-              <div className={strengthFontSize}>{playerStrength.descr}</div>
+              <div className={strengthFontSize}>
+                <span class="badge text-bg-light">{playerStrength.descr}</span>
+              </div>
             </div>
           )}
 
@@ -311,7 +315,9 @@ const StudPoker = () => {
               <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
                 <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
               </div>
-              <div className={strengthFontSize}>{playerStrength.descr}</div>
+              <div className={strengthFontSize}>
+                <span class="badge text-bg-light">{playerStrength.descr}</span>
+              </div>
             </div>
           )}
 
@@ -319,13 +325,12 @@ const StudPoker = () => {
       {/* SECTION: Action */}
       <div>
         <hr></hr>
-        <div className={headerFontSize}>Action</div>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
             <div>
               <button
                 type="button"
-                className="btn btn-primary"
+                className="btn btn-primary btn-lg col-4"
                 onClick={startGame}
                 disabled={chips < betAmount}
               >
@@ -337,7 +342,7 @@ const StudPoker = () => {
           <span>
             <button
               type="button"
-              className="btn btn-success cursor-pointer me-3"
+              className="btn btn-success btn-lg col-4 cursor-pointer me-3 "
               onClick={bet}
               disabled={true}
             >
@@ -345,7 +350,7 @@ const StudPoker = () => {
             </button>
             <button
               type="button"
-              className="btn btn-danger cursor-pointer"
+              className="btn btn-danger btn-lg col-4 cursor-pointer"
               onClick={fold}
               disabled={true}
             >
@@ -357,7 +362,7 @@ const StudPoker = () => {
           <span>
             <button
               type="button"
-              className="btn btn-success cursor-pointer me-3"
+              className="btn btn-success btn-lg col-4 cursor-pointer me-3"
               onClick={bet}
               disabled={chips < betAmount * 2}
             >
@@ -365,7 +370,7 @@ const StudPoker = () => {
             </button>
             <button
               type="button"
-              className="btn btn-danger cursor-pointer"
+              className="btn btn-danger btn-lg col-4 cursor-pointer"
               onClick={fold}
             >
               fold
