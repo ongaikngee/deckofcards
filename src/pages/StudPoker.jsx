@@ -330,7 +330,7 @@ const StudPoker = () => {
             <div>
               <button
                 type="button"
-                className="btn btn-primary btn-lg col-4"
+                className="btn btn-primary btn-lg col-6"
                 onClick={startGame}
                 disabled={chips < betAmount}
               >
@@ -342,7 +342,7 @@ const StudPoker = () => {
           <span>
             <button
               type="button"
-              className="btn btn-success btn-lg col-4 cursor-pointer me-3 "
+              className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
               onClick={bet}
               disabled={true}
             >
@@ -350,7 +350,7 @@ const StudPoker = () => {
             </button>
             <button
               type="button"
-              className="btn btn-danger btn-lg col-4 cursor-pointer"
+              className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
               onClick={fold}
               disabled={true}
             >
