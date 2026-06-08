@@ -1,0 +1,72 @@
+import React from 'react'
+import DisplayCards from '../../components/DisplayCards'
+
+// helpers
+import { GAME_RESULT, PLAYER_ACTION } from '../../constants/games';
+
+// 3rd party libraries
+import { CheckIcon } from "@phosphor-icons/react";
+
+
+export const StudPokerHistory = ({ SPGames }) => {
+
+	if (!SPGames || SPGames.length === 0) {
+		return (
+			<div className="container my-4">
+				<h2>No Games History</h2>
+				<p>Start playing games by clicking on the button above. Good Luck!</p>
+			</div>
+		)
+	}
+	return (
+		<div>
+			<h2>History of games</h2>
+			<table className="table">
+				<thead>
+					<tr>
+						<th scope="col">PlayerHand</th>
+						<th scope="col">DealerHand</th>
+					</tr>
+				</thead>
+				<tbody>
+					{SPGames.map((game, index) => (
+						<>
+							<tr key={index}
+								className={`container ${game.winner === GAME_RESULT.WINNER_PLAYER ? "table-primary" : "table-danger"}`}
+							>
+								<td>
+									<div>
+										<DisplayCards cards={game.playerHand} size={85} />
+										<div className="d-flex align-items-center gap-2 p-1">
+											{game.winner === GAME_RESULT.WINNER_PLAYER && (
+												<CheckIcon size={20} weight="bold" className="text-success" />
+											)}
+											<div>{game.playerStrength.descr}</div>
+											{game.playerAction === PLAYER_ACTION.FOLD &&
+												<span className="badge text-bg-danger">Fold</span>}
+										</div>
+									</div>
+								</td>
+								<td>
+									<div>
+										<DisplayCards cards={game.dealerHand} size={85} />
+										<div className="d-flex align-items-center gap-2 p-1">
+											{game.winner === GAME_RESULT.WINNER_DEALER && (
+												<CheckIcon size={20} weight="bold" className="text-success" />
+											)}
+											<div>{game.dealerStrength.descr}</div>
+											{game.playerAction === "Did not qualified" &&
+												<span className="badge text-bg-danger">Did not qualified</span>}
+										</div>
+									</div>
+								</td>
+							</tr>
+						</>
+					))}
+				</tbody>
+			</table>
+		</div>
+	)
+}
+
+export default StudPokerHistory
