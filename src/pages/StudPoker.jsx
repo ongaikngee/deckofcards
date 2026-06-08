@@ -430,10 +430,12 @@ const StudPoker = () => {
         )}
       </div>
       {/* SECTION: Game History */}
-      <div>
-        <hr></hr>
-        <StudPokerHistory SPGames={gameHistory} />
-      </div>
+      {gameState === GAME_STATE.IDLE || (
+        <div>
+          <hr></hr>
+          <StudPokerHistory SPGames={gameHistory} />
+        </div>
+      )}
     </div>
   );
 };
