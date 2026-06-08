@@ -262,7 +262,7 @@ const StudPoker = () => {
                 <DisplayCards cards={dealerHand} size={dealerCardSize} />
               </div>
               <div className={strengthFontSize}>
-                <span class="badge text-bg-light">{dealerStrength.descr}</span>
+                <span className="badge text-bg-light">{dealerStrength.descr}</span>
               </div>
             </div>
           </div>
@@ -294,7 +294,7 @@ const StudPoker = () => {
                 <DisplayCards cards={playerHand} />
               </div>
               <div className={strengthFontSize}>
-                <span class="badge text-bg-light">{playerStrength.descr}</span>
+                <span className="badge text-bg-light">{playerStrength.descr}</span>
               </div>
             </div>
           )}
@@ -316,7 +316,7 @@ const StudPoker = () => {
                 <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
               </div>
               <div className={strengthFontSize}>
-                <span class="badge text-bg-light">{playerStrength.descr}</span>
+                <span className="badge text-bg-light">{playerStrength.descr}</span>
               </div>
             </div>
           )}
