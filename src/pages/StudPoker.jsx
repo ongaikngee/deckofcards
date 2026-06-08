@@ -99,7 +99,7 @@ const StudPoker = () => {
   const getDealerRemainingCards = async () => {
     try {
       const fetchCards = await drawCardFromDeck(deck.deck_id, 4);
-      const dealerFinalCards = [...dealerHand, ...fetchCards.cards];
+      const dealerFinalCards = [...fetchCards.cards, ...dealerHand];
       setDealerHand(dealerFinalCards);
       if (dealerFinalCards.length === 5) {
         const strength = getStrengthOfHand(dealerFinalCards);
@@ -222,23 +222,27 @@ const StudPoker = () => {
                   <Spinner />
                 </div>
               </div>
+              <div className={strengthFontSize}><span className="placeholder"></span></div>
             </div>
           </div>
         )}
-        {gameState === GAME_STATE.PLAYER_MOVE && dealerHand && (
-          <div>
-            <div className="mb-3">
-              <div className={headerFontSize}>Dealer's Hand</div>
-              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
-                <DisplayCards
-                  cards={[1, 1, 1, 1, ...dealerHand]}
-                  size={dealerCardSize}
-                  type="revealOne"
-                />
+        {(gameState === GAME_STATE.PLAYER_MOVE ||
+          gameState === GAME_STATE.PLAYER_ACTED) &&
+          dealerHand && (
+            <div>
+              <div className="mb-3">
+                <div className={headerFontSize}>Dealer's Hand</div>
+                <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                  <DisplayCards
+                    cards={[1, 1, 1, 1, ...dealerHand]}
+                    size={dealerCardSize}
+                    type="revealOne"
+                  />
+                </div>
+                <div className={strengthFontSize}><span className="placeholder"></span></div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
           <div>
@@ -275,9 +279,8 @@ const StudPoker = () => {
                 type="revealNone"
               />
             </div>
-            <div className={`${strengthFontSize} placeholder-glow`}>
-              <span class="placeholder col-12 bg-warning"></span>
-            </div>
+            <div className={strengthFontSize}><span className="placeholder"></span></div>
+
           </div>
         )}
         {gameState === GAME_STATE.PLAYER_MOVE &&
@@ -292,7 +295,9 @@ const StudPoker = () => {
             </div>
           )}
 
-        {gameState === GAME_STATE.DETERMINE_WINNER &&
+        {(gameState === GAME_STATE.DETERMINE_WINNER ||
+          gameState === GAME_STATE.PLAYER_ACTED
+        ) &&
           playerAction &&
           playerHand &&
           playerStrength && (
