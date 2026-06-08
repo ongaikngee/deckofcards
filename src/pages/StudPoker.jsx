@@ -4,19 +4,21 @@ import React, { useState, useEffect } from "react";
 import DisplayCards from "../components/DisplayCards";
 import Spinner from "../components/Spinner";
 import IntroStudPoker from "../features/games/IntroStudPoker";
+import StudPokerHistory from "../features/games/StudPokerHistory";
 
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { GAME_STATE, PLAYER_ACTION, GAME_RESULT } from "../constants/games";
 
-//3rd party libraries
+// 3rd party libraries
 import { Hand } from "pokersolver";
 import { CheckIcon } from "@phosphor-icons/react";
 
 const StudPoker = () => {
   const [gameState, setGameState] = useState(GAME_STATE.IDLE);
   const [deck, setDeck] = useState(null);
+  const [error, setError] = useState("");
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
   const [playerStrength, setPlayerStrength] = useState(null);
@@ -26,6 +28,8 @@ const StudPoker = () => {
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
   const [winner, setWinner] = useState("");
+
+  const [gameHistory, setGameHistory] = useState([])
 
   //settings
   const dealerCardSize = 60
@@ -119,10 +123,46 @@ const StudPoker = () => {
   // This will determine the winner and calculate the payout
   const determineWinner = () => {
     const winning = 2;
+    const gameRecord = {
+      "deckId": "",
+      "winner": null,
+      "playerHand": null,
+      "dealerHand": null,
+      "playerAction": null,
+      "playerStrength": null,
+      "dealerStrength": null
+    }
+
+    // storing Hands in gameRecord
+    if (
+      Array.isArray(dealerHand) &&
+      dealerHand.length > 0 &&
+      Array.isArray(playerHand) &&
+      playerHand.length > 0 &&
+      deck !== null &&
+      deck !== undefined &&
+      playerStrength != null &&
+      dealerStrength != null
+    ) {
+      Object.assign(gameRecord, {
+        deckId: deck,
+        playerHand,
+        dealerHand,
+        playerStrength,
+        dealerStrength,
+      })
+    } else {
+      const errorMsg = "Error when saving game history."
+      setError(errorMsg)
+      throw new Error(errorMsg)
+    }
 
     // player fold,
     if (playerAction === PLAYER_ACTION.FOLD) {
       setWinner(GAME_RESULT.WINNER_DEALER);
+      gameRecord.winner = GAME_RESULT.WINNER_DEALER
+      gameRecord.playerAction = PLAYER_ACTION.FOLD
+      setGameHistory((prev) => [gameRecord, ...prev])
       return;
     }
 
@@ -130,6 +170,10 @@ const StudPoker = () => {
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
       setChips((prev) => prev + betAmount * winning);
+
+      gameRecord.winner = GAME_RESULT.WINNER_PLAYER
+      gameRecord.playerAction = "Did not qualified"
+      setGameHistory((prev) => [gameRecord, ...prev])
 
       return;
     }
@@ -142,6 +186,9 @@ const StudPoker = () => {
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
+        gameRecord.winner = GAME_RESULT.GAME_TIE
+        gameRecord.playerAction = GAME_RESULT.GAME_TIE
+        setGameHistory((prev) => [gameRecord, ...prev])
         return;
       }
 
@@ -155,10 +202,14 @@ const StudPoker = () => {
       if (determinedWinner === GAME_RESULT.WINNER_PLAYER) {
         // Win both ante and bet
         setChips((prev) => prev + betAmount * winning * winning);
+        gameRecord.winner = GAME_RESULT.WINNER_PLAYER
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setChips((prev) => prev - betAmount * winning);
+        gameRecord.winner = GAME_RESULT.WINNER_DEALER
       }
+      gameRecord.playerAction = PLAYER_ACTION.BET
+      setGameHistory((prev) => [gameRecord, ...prev])
     } catch (e) {
       console.error("getWinner error:", e);
       return null;
@@ -377,6 +428,11 @@ const StudPoker = () => {
             </button>
           </span>
         )}
+      </div>
+      {/* SECTION: Game History */}
+      <div>
+        <hr></hr>
+        <StudPokerHistory SPGames={gameHistory} />
       </div>
     </div>
   );
