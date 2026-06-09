@@ -24,8 +24,8 @@ export const StudPokerHistory = ({ SPGames }) => {
 			<table className="table">
 				<thead>
 					<tr>
-						<th scope="col">PlayerHand</th>
-						<th scope="col">DealerHand</th>
+						<th scope="col" className='w-50'>PlayerHand</th>
+						<th scope="col" className='w-50'>DealerHand</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -36,7 +36,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 							>
 								<td>
 									<div>
-										<DisplayCards cards={game.playerHand} size={85} />
+										<DisplayCards cards={game.playerHand} size={80} />
 										<div className="d-flex align-items-center gap-2 p-1">
 											{game.winner === GAME_RESULT.WINNER_PLAYER && (
 												<CheckIcon size={20} weight="bold" className="text-success" />
@@ -49,7 +49,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 								</td>
 								<td>
 									<div>
-										<DisplayCards cards={game.dealerHand} size={85} />
+										<DisplayCards cards={game.dealerHand} size={80} />
 										<div className="d-flex align-items-center gap-2 p-1">
 											{game.winner === GAME_RESULT.WINNER_DEALER && (
 												<CheckIcon size={20} weight="bold" className="text-success" />
