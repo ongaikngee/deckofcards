@@ -30,8 +30,21 @@ export const STUD_POKER_PAYOUT = Object.freeze({
 	STRAIGHT_FLUSH: 50,
 	FOUR_OF_A_KIND: 20,
 	FULL_HOUSE: 7,
+	FLUSH: 5,
 	STRAIGHT: 4,
 	THREE_OF_A_KIND: 3,
 	TWO_PAIRS: 2,
-	ONE_PAIR_OR_LESS:1,
+	ONE_PAIR_OR_LESS: 1,
+})
+
+export const STUD_POKER_HAND = Object.freeze({
+	ROYAL_FLUSH: "Royal Flush",
+	STRAIGHT_FLUSH: "Straight Flush",
+	FOUR_OF_A_KIND: "Four of a Kind",
+	FULL_HOUSE: "Full House",
+	FLUSH: "Flush",
+	STRAIGHT: "Straight",
+	THREE_OF_A_KIND: "Three of a Kind",
+	TWO_PAIRS: "Two Pair",
+	ONE_PAIR_OR_LESS: "One Pair or less",
 })

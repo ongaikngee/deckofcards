@@ -9,7 +9,13 @@ import StudPokerHistory from "../features/games/StudPokerHistory";
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
-import { GAME_STATE, PLAYER_ACTION, GAME_RESULT } from "../constants/games";
+import {
+  GAME_STATE,
+  PLAYER_ACTION,
+  GAME_RESULT,
+  STUD_POKER_PAYOUT,
+  STUD_POKER_HAND
+} from "../constants/games";
 
 // 3rd party libraries
 import { Hand } from "pokersolver";
@@ -25,9 +31,13 @@ const StudPoker = () => {
   const [dealerStrength, setDealerStrength] = useState(null);
   const [chips, setChips] = useState(1000);
   const [betAmount, setBetAmount] = useState(50);
+
+  const [payout, setpayout] = useState("")
+  const [payoutAmt, setPayoutAmt] = useState(0)
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
   const [winner, setWinner] = useState("");
+  const [winningHand, setWinningHand] = useState("")
 
   const [gameHistory, setGameHistory] = useState([])
 
@@ -59,6 +69,37 @@ const StudPoker = () => {
     return false;
   };
 
+  const determinePlayerPayoutMultiplier = () => {
+    switch (playerStrength.rank) {
+      case 2:
+        setWinningHand(STUD_POKER_HAND.ONE_PAIR_OR_LESS)
+        return STUD_POKER_PAYOUT.ONE_PAIR_OR_LESS
+      case 3:
+        setWinningHand(STUD_POKER_HAND.TWO_PAIRS)
+        return STUD_POKER_PAYOUT.TWO_PAIRS
+      case 4:
+        setWinningHand(STUD_POKER_HAND.THREE_OF_A_KIND)
+        return STUD_POKER_PAYOUT.THREE_OF_A_KIND
+      case 5:
+        setWinningHand(STUD_POKER_HAND.STRAIGHT)
+        return STUD_POKER_PAYOUT.STRAIGHT
+      case 6:
+        setWinningHand(STUD_POKER_HAND.FLUSH)
+        return STUD_POKER_PAYOUT.FLUSH
+      case 7:
+        setWinningHand(STUD_POKER_HAND.FULL_HOUSE)
+        return STUD_POKER_PAYOUT.FULL_HOUSE
+      case 8:
+        setWinningHand(STUD_POKER_HAND.FOUR_OF_A_KIND)
+        return STUD_POKER_PAYOUT.FOUR_OF_A_KIND
+      case 9:
+        setWinningHand(STUD_POKER_HAND.STRAIGHT_FLUSH)
+        return STUD_POKER_PAYOUT.STRAIGHT_FLUSH
+      default:
+        return 0;
+    }
+  }
+
   const initGame = async () => {
     //Reset
     setDeck(null);
@@ -69,6 +110,9 @@ const StudPoker = () => {
     setIsDealerQualified(undefined);
     setPlayerAction(null);
     setWinner("");
+    setpayout("");
+    setPayoutAmt(0);
+    setWinningHand("")
 
     try {
       const fetchDeck = await getNewDeck({
@@ -122,7 +166,6 @@ const StudPoker = () => {
 
   // This will determine the winner and calculate the payout
   const determineWinner = () => {
-    const winning = 2;
     const gameRecord = {
       "deckId": "",
       "winner": null,
@@ -162,6 +205,7 @@ const StudPoker = () => {
       setWinner(GAME_RESULT.WINNER_DEALER);
       gameRecord.winner = GAME_RESULT.WINNER_DEALER
       gameRecord.playerAction = PLAYER_ACTION.FOLD
+      setPayoutAmt(-1 * betAmount)
       setGameHistory((prev) => [gameRecord, ...prev])
       return;
     }
@@ -169,7 +213,8 @@ const StudPoker = () => {
     // Player bet, Dealer did not qualified, pays the bet
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
-      setChips((prev) => prev + betAmount * winning);
+      setPayoutAmt(betAmount)
+      setChips((prev) => prev + betAmount + betAmount);
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER
       gameRecord.playerAction = "Did not qualified"
@@ -186,6 +231,7 @@ const StudPoker = () => {
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
+        setChips((prev) => prev + betAmount);
         gameRecord.winner = GAME_RESULT.GAME_TIE
         gameRecord.playerAction = GAME_RESULT.GAME_TIE
         setGameHistory((prev) => [gameRecord, ...prev])
@@ -201,11 +247,17 @@ const StudPoker = () => {
 
       if (determinedWinner === GAME_RESULT.WINNER_PLAYER) {
         // Win both ante and bet
-        setChips((prev) => prev + betAmount * winning * winning);
+
+        const multiplier = determinePlayerPayoutMultiplier()
+        const winning = betAmount * multiplier
+        setPayoutAmt(winning)
+        setpayout(`Bet + Ante with ${multiplier}x`)
+        setChips((prev) => prev + betAmount + winning);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
-        setChips((prev) => prev - betAmount * winning);
+        setPayoutAmt(betAmount * -3)
+        setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER
       }
       gameRecord.playerAction = PLAYER_ACTION.BET
@@ -254,6 +306,13 @@ const StudPoker = () => {
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
+          {payoutAmt !== 0 && (
+            <>
+              <hr></hr>
+              <div>{payout}</div>
+              <div>{payoutAmt !== 0 ? formatCurrency(payoutAmt) : null}</div>
+            </>
+          )}
         </div>
       </div>
       {/* SECTION: intro or Dealer Section */}
