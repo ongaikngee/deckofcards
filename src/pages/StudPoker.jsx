@@ -70,34 +70,46 @@ const StudPoker = () => {
   };
 
   const determinePlayerPayoutMultiplier = () => {
+    let payoutMultiplier = 0
+    let playerPokerHand = null
     switch (playerStrength.rank) {
       case 2:
-        setWinningHand(STUD_POKER_HAND.ONE_PAIR_OR_LESS)
-        return STUD_POKER_PAYOUT.ONE_PAIR_OR_LESS
+        payoutMultiplier = STUD_POKER_PAYOUT.ONE_PAIR_OR_LESS
+        playerPokerHand = STUD_POKER_HAND.ONE_PAIR_OR_LESS
+        break;
       case 3:
-        setWinningHand(STUD_POKER_HAND.TWO_PAIRS)
-        return STUD_POKER_PAYOUT.TWO_PAIRS
+        payoutMultiplier = STUD_POKER_PAYOUT.TWO_PAIRS
+        playerPokerHand = STUD_POKER_HAND.TWO_PAIRS
+        break;
       case 4:
-        setWinningHand(STUD_POKER_HAND.THREE_OF_A_KIND)
-        return STUD_POKER_PAYOUT.THREE_OF_A_KIND
+        payoutMultiplier = STUD_POKER_PAYOUT.THREE_OF_A_KIND
+        playerPokerHand = STUD_POKER_HAND.THREE_OF_A_KIND
+        break;
       case 5:
-        setWinningHand(STUD_POKER_HAND.STRAIGHT)
-        return STUD_POKER_PAYOUT.STRAIGHT
+        payoutMultiplier = STUD_POKER_PAYOUT.STRAIGHT
+        playerPokerHand = STUD_POKER_HAND.STRAIGHT
+        break;
       case 6:
-        setWinningHand(STUD_POKER_HAND.FLUSH)
-        return STUD_POKER_PAYOUT.FLUSH
+        payoutMultiplier = STUD_POKER_PAYOUT.FLUSH
+        playerPokerHand = STUD_POKER_HAND.FLUSH
+        break;
       case 7:
-        setWinningHand(STUD_POKER_HAND.FULL_HOUSE)
-        return STUD_POKER_PAYOUT.FULL_HOUSE
+        payoutMultiplier = STUD_POKER_PAYOUT.FULL_HOUSE
+        playerPokerHand = STUD_POKER_HAND.FULL_HOUSE
+        break;
       case 8:
-        setWinningHand(STUD_POKER_HAND.FOUR_OF_A_KIND)
-        return STUD_POKER_PAYOUT.FOUR_OF_A_KIND
+        payoutMultiplier = STUD_POKER_PAYOUT.FOUR_OF_A_KIND
+        playerPokerHand = STUD_POKER_HAND.FOUR_OF_A_KIND
+        break;
       case 9:
-        setWinningHand(STUD_POKER_HAND.STRAIGHT_FLUSH)
-        return STUD_POKER_PAYOUT.STRAIGHT_FLUSH
+        payoutMultiplier = STUD_POKER_PAYOUT.STRAIGHT_FLUSH
+        playerPokerHand = STUD_POKER_HAND.STRAIGHT_FLUSH
+        break;
       default:
-        return 0;
+        payoutMultiplier = 0;
+
     }
+    return { payoutMultiplier, playerPokerHand }
   }
 
   const initGame = async () => {
@@ -173,7 +185,10 @@ const StudPoker = () => {
       "dealerHand": null,
       "playerAction": null,
       "playerStrength": null,
-      "dealerStrength": null
+      "dealerStrength": null,
+      "winningPokerHandClass": null,
+      "winningMultiplier": null,
+      "payoutAmt": 0,
     }
 
     // storing Hands in gameRecord
@@ -203,9 +218,10 @@ const StudPoker = () => {
     // player fold,
     if (playerAction === PLAYER_ACTION.FOLD) {
       setWinner(GAME_RESULT.WINNER_DEALER);
+      setPayoutAmt(-1 * betAmount)
       gameRecord.winner = GAME_RESULT.WINNER_DEALER
       gameRecord.playerAction = PLAYER_ACTION.FOLD
-      setPayoutAmt(-1 * betAmount)
+      gameRecord.payoutAmt = -1 * betAmount
       setGameHistory((prev) => [gameRecord, ...prev])
       return;
     }
@@ -218,6 +234,7 @@ const StudPoker = () => {
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER
       gameRecord.playerAction = "Did not qualified"
+      gameRecord.payoutAmt = betAmount
       setGameHistory((prev) => [gameRecord, ...prev])
 
       return;
@@ -247,18 +264,21 @@ const StudPoker = () => {
 
       if (determinedWinner === GAME_RESULT.WINNER_PLAYER) {
         // Win both ante and bet
-
-        const multiplier = determinePlayerPayoutMultiplier()
-        const winning = betAmount * multiplier
-        setPayoutAmt(winning)
-        setpayout(`Bet + Ante with ${multiplier}x`)
-        setChips((prev) => prev + betAmount + winning);
+        const { payoutMultiplier, playerPokerHand } = determinePlayerPayoutMultiplier()
+        const winning = betAmount * payoutMultiplier
+        setPayoutAmt((betAmount * 2) + winning)
+        setpayout(`Bet + Ante with ${payoutMultiplier}x`)
+        setChips((prev) => prev + (betAmount * 3) + winning);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER
+        gameRecord.payoutAmt = (betAmount * 2) + winning
+        gameRecord.winningPokerHandClass = playerPokerHand
+        gameRecord.winningMultiplier = payoutMultiplier
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setPayoutAmt(betAmount * -3)
         setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER
+        gameRecord.payoutAmt = betAmount * -3
       }
       gameRecord.playerAction = PLAYER_ACTION.BET
       setGameHistory((prev) => [gameRecord, ...prev])

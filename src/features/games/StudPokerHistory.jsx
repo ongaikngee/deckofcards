@@ -2,7 +2,8 @@ import React from 'react'
 import DisplayCards from '../../components/DisplayCards'
 
 // helpers
-import { GAME_RESULT, PLAYER_ACTION } from '../../constants/games';
+import { GAME_RESULT, PLAYER_ACTION } from '../../constants/games'
+import { formatCurrency } from '../../utils/formatCurrency';
 
 // 3rd party libraries
 import { CheckIcon } from "@phosphor-icons/react";
@@ -44,6 +45,20 @@ export const StudPokerHistory = ({ SPGames }) => {
 											<div>{game.playerStrength.descr}</div>
 											{game.playerAction === PLAYER_ACTION.FOLD &&
 												<span className="badge text-bg-danger">Fold</span>}
+										</div>
+
+										<div className="d-flex align-items-center gap-2">
+											{game.payoutAmt !== 0 && (
+												<span
+													className={`badge ${game.payoutAmt > 0 ? 'text-bg-success' : 'text-bg-danger'
+														}`}
+												>
+													{formatCurrency(game.payoutAmt)}
+												</span>
+											)}
+											{game.winningMultiplier && (
+												<span className="badge text-bg-warning">{game.winningMultiplier}x - {game.winningPokerHandClass}</span>
+											)}
 										</div>
 									</div>
 								</td>
