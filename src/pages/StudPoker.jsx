@@ -324,15 +324,17 @@ const StudPoker = () => {
           {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
-          <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
+          <div className="d-flex align-items-center gap-2">
+            <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
+            {payoutAmt !== 0 && (
+              <span
+                className={`badge bg-opacity-75 ${payoutAmt > 0 ? 'text-bg-success' : 'text-bg-danger'}`}
+              >
+                {formatCurrency(payoutAmt)}
+              </span>
+            )}
+          </div>
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
-          {payoutAmt !== 0 && (
-            <>
-              <hr></hr>
-              <div>{payout}</div>
-              <div>{payoutAmt !== 0 ? formatCurrency(payoutAmt) : null}</div>
-            </>
-          )}
         </div>
       </div>
       {/* SECTION: intro or Dealer Section */}
