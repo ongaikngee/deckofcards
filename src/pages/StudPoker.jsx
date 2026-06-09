@@ -266,7 +266,7 @@ const StudPoker = () => {
               <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <div className="d-flex justify-content-start align-items-center gap-2">
                   <DisplayCards
-                    cards={[1, 1, 1, 1]}
+                    cards={[1, 1, 1, 1, 1]}
                     size={dealerCardSize}
                     type="revealNone"
                   />
