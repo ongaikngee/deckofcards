@@ -5,6 +5,7 @@ import DisplayCards from "../components/DisplayCards";
 import Spinner from "../components/Spinner";
 import IntroStudPoker from "../features/games/IntroStudPoker";
 import StudPokerHistory from "../features/games/StudPokerHistory";
+import StudPokerLineChart from "../features/games/StudPokerLineChart";
 
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
@@ -30,6 +31,7 @@ const StudPoker = () => {
   const [dealerStrength, setDealerStrength] = useState(null);
   const [chips, setChips] = useState(1000);
   const [betAmount, setBetAmount] = useState(50);
+  const [chartData, setChartData] = useState([])
 
   const [payout, setpayout] = useState("")
   const [payoutAmt, setPayoutAmt] = useState(0)
@@ -258,6 +260,16 @@ const StudPoker = () => {
     }
   }, [gameState]);
 
+  useEffect(() => {
+    if (gameHistory.length > 0) {
+      setChartData(prev => [...prev, [gameHistory.length, chips]]);
+    } else {
+      setChartData([["Games", "Chips"], [0, chips]]);
+
+    }
+
+  }, [gameHistory])
+
   const startGame = () => {
     setGameState(GAME_STATE.LOADING);
   };
@@ -470,6 +482,7 @@ const StudPoker = () => {
       {gameState === GAME_STATE.IDLE || (
         <div>
           <hr></hr>
+          <StudPokerLineChart chartData={chartData} />
           <StudPokerHistory SPGames={gameHistory} />
         </div>
       )}
