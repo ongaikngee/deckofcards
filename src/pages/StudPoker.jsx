@@ -263,7 +263,7 @@ const StudPoker = () => {
           <div>
             <div className="mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
-              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <div className="d-flex justify-content-start align-items-center gap-2">
                   <DisplayCards
                     cards={[1, 1, 1, 1]}
@@ -283,7 +283,7 @@ const StudPoker = () => {
             <div>
               <div className="mb-3">
                 <div className={headerFontSize}>Dealer's Hand</div>
-                <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                   <DisplayCards
                     cards={[1, 1, 1, 1, ...dealerHand]}
                     size={dealerCardSize}
@@ -309,7 +309,7 @@ const StudPoker = () => {
                   <h6><span className="badge text-bg-danger">Did not qualified</span></h6>
                 )}
               </div>
-              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <DisplayCards cards={dealerHand} size={dealerCardSize} />
               </div>
               <div className={strengthFontSize}>
@@ -326,7 +326,7 @@ const StudPoker = () => {
             <div className="d-flex align-items-center gap-2">
               <div className={headerFontSize}>Player's Hand</div>
             </div>
-            <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+            <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
               <DisplayCards className="bg-success"
                 cards={[1, 1, 1, 1, 1]}
                 type="revealNone"
@@ -341,7 +341,7 @@ const StudPoker = () => {
           playerStrength && (
             <div className="mb-3">
               <div className={headerFontSize}>Player's Hand</div>
-              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
                 <DisplayCards cards={playerHand} />
               </div>
               <div className={strengthFontSize}>
@@ -363,7 +363,7 @@ const StudPoker = () => {
                 )}
                 <div className={headerFontSize}>Player's Hand</div>
               </div>
-              <div className="p-3 bg-success bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
                 <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
               </div>
               <div className={strengthFontSize}>
