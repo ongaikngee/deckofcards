@@ -5,6 +5,7 @@ import DisplayCards from "../components/DisplayCards";
 import Spinner from "../components/Spinner";
 import IntroStudPoker from "../features/games/IntroStudPoker";
 import StudPokerHistory from "../features/games/StudPokerHistory";
+import StudPokerLineChart from "../features/games/StudPokerLineChart";
 
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
@@ -470,6 +471,7 @@ const StudPoker = () => {
       {gameState === GAME_STATE.IDLE || (
         <div>
           <hr></hr>
+          <StudPokerLineChart />
           <StudPokerHistory SPGames={gameHistory} />
         </div>
       )}
