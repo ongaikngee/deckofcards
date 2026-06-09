@@ -9,7 +9,12 @@ import StudPokerHistory from "../features/games/StudPokerHistory";
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
-import { GAME_STATE, PLAYER_ACTION, GAME_RESULT } from "../constants/games";
+import { determinePlayerPayoutMultiplier } from "../utils/studPokerHelper";
+import {
+  GAME_STATE,
+  PLAYER_ACTION,
+  GAME_RESULT,
+} from "../constants/games";
 
 // 3rd party libraries
 import { Hand } from "pokersolver";
@@ -25,9 +30,13 @@ const StudPoker = () => {
   const [dealerStrength, setDealerStrength] = useState(null);
   const [chips, setChips] = useState(1000);
   const [betAmount, setBetAmount] = useState(50);
+
+  const [payout, setpayout] = useState("")
+  const [payoutAmt, setPayoutAmt] = useState(0)
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
   const [winner, setWinner] = useState("");
+  const [winningHand, setWinningHand] = useState("")
 
   const [gameHistory, setGameHistory] = useState([])
 
@@ -69,6 +78,9 @@ const StudPoker = () => {
     setIsDealerQualified(undefined);
     setPlayerAction(null);
     setWinner("");
+    setpayout("");
+    setPayoutAmt(0);
+    setWinningHand("")
 
     try {
       const fetchDeck = await getNewDeck({
@@ -122,7 +134,6 @@ const StudPoker = () => {
 
   // This will determine the winner and calculate the payout
   const determineWinner = () => {
-    const winning = 2;
     const gameRecord = {
       "deckId": "",
       "winner": null,
@@ -130,7 +141,10 @@ const StudPoker = () => {
       "dealerHand": null,
       "playerAction": null,
       "playerStrength": null,
-      "dealerStrength": null
+      "dealerStrength": null,
+      "winningPokerHandClass": null,
+      "winningMultiplier": null,
+      "payoutAmt": 0,
     }
 
     // storing Hands in gameRecord
@@ -160,8 +174,10 @@ const StudPoker = () => {
     // player fold,
     if (playerAction === PLAYER_ACTION.FOLD) {
       setWinner(GAME_RESULT.WINNER_DEALER);
+      setPayoutAmt(-1 * betAmount)
       gameRecord.winner = GAME_RESULT.WINNER_DEALER
       gameRecord.playerAction = PLAYER_ACTION.FOLD
+      gameRecord.payoutAmt = -1 * betAmount
       setGameHistory((prev) => [gameRecord, ...prev])
       return;
     }
@@ -169,10 +185,12 @@ const StudPoker = () => {
     // Player bet, Dealer did not qualified, pays the bet
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
-      setChips((prev) => prev + betAmount * winning);
+      setPayoutAmt(betAmount)
+      setChips((prev) => prev + betAmount + betAmount);
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER
       gameRecord.playerAction = "Did not qualified"
+      gameRecord.payoutAmt = betAmount
       setGameHistory((prev) => [gameRecord, ...prev])
 
       return;
@@ -186,6 +204,7 @@ const StudPoker = () => {
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
+        setChips((prev) => prev + betAmount);
         gameRecord.winner = GAME_RESULT.GAME_TIE
         gameRecord.playerAction = GAME_RESULT.GAME_TIE
         setGameHistory((prev) => [gameRecord, ...prev])
@@ -201,12 +220,21 @@ const StudPoker = () => {
 
       if (determinedWinner === GAME_RESULT.WINNER_PLAYER) {
         // Win both ante and bet
-        setChips((prev) => prev + betAmount * winning * winning);
+        const { payoutMultiplier, pokerHand } = determinePlayerPayoutMultiplier(playerStrength)
+        const winning = betAmount * payoutMultiplier
+        setPayoutAmt((betAmount * 2) + winning)
+        setpayout(`Bet + Ante with ${payoutMultiplier}x`)
+        setChips((prev) => prev + (betAmount * 3) + winning);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER
+        gameRecord.payoutAmt = (betAmount * 2) + winning
+        gameRecord.winningPokerHandClass = pokerHand
+        gameRecord.winningMultiplier = payoutMultiplier
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
-        setChips((prev) => prev - betAmount * winning);
+        setPayoutAmt(betAmount * -3)
+        setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER
+        gameRecord.payoutAmt = betAmount * -3
       }
       gameRecord.playerAction = PLAYER_ACTION.BET
       setGameHistory((prev) => [gameRecord, ...prev])
@@ -252,7 +280,16 @@ const StudPoker = () => {
           {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
-          <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
+          <div className="d-flex align-items-center gap-2">
+            <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
+            {payoutAmt !== 0 && (
+              <span
+                className={`badge bg-opacity-75 ${payoutAmt > 0 ? 'text-bg-success' : 'text-bg-danger'}`}
+              >
+                {formatCurrency(payoutAmt)}
+              </span>
+            )}
+          </div>
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
         </div>
       </div>
@@ -266,7 +303,7 @@ const StudPoker = () => {
               <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
                 <div className="d-flex justify-content-start align-items-center gap-2">
                   <DisplayCards
-                    cards={[1, 1, 1, 1]}
+                    cards={[1, 1, 1, 1, 1]}
                     size={dealerCardSize}
                     type="revealNone"
                   />
