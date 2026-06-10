@@ -147,6 +147,7 @@ const StudPoker = () => {
       "winningPokerHandClass": null,
       "winningMultiplier": null,
       "payoutAmt": 0,
+      "betAmount": null,
     }
 
     // storing Hands in gameRecord
@@ -158,7 +159,8 @@ const StudPoker = () => {
       deck !== null &&
       deck !== undefined &&
       playerStrength != null &&
-      dealerStrength != null
+      dealerStrength != null &&
+      betAmount != 0
     ) {
       Object.assign(gameRecord, {
         deckId: deck,
@@ -166,6 +168,7 @@ const StudPoker = () => {
         dealerHand,
         playerStrength,
         dealerStrength,
+        betAmount
       })
     } else {
       const errorMsg = "Error when saving game history."
@@ -188,7 +191,8 @@ const StudPoker = () => {
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
       setPayoutAmt(betAmount)
-      setChips((prev) => prev + betAmount + betAmount);
+      setChips((prev) => prev + betAmount + betAmount)
+
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER
       gameRecord.playerAction = "Did not qualified"
@@ -428,14 +432,28 @@ const StudPoker = () => {
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
             <div>
-              <button
-                type="button"
-                className="btn btn-primary btn-lg col-6"
-                onClick={startGame}
-                disabled={chips < betAmount}
-              >
-                New Game
-              </button>
+              <div className="d-grid gap-2 col-sm-6">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  onClick={startGame}
+                  disabled={chips < betAmount}
+                >
+                  Bet Ante {formatCurrency(betAmount)}
+                </button>
+              </div>
+              <div className="col-sm-6 mt-3">
+                <input
+                  type="range"
+                  className="form-range"
+                  id="betSize"
+                  min="25"
+                  max="500"
+                  step="25"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(e.target.valueAsNumber)}>
+                </input>
+              </div>
             </div>
           )}
         {(gameState === GAME_STATE.LOADING ||
