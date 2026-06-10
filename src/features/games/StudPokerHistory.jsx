@@ -46,7 +46,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 											<span className="badge text-bg-danger">Fold</span>}
 									</div>
 
-									<div className="d-flex align-items-center gap-2">
+									<div className="d-flex flex-wrap align-items-center gap-2 ">
 										{game.payoutAmt !== 0 && (
 											<span
 												className={`badge ${game.payoutAmt > 0 ? 'text-bg-success' : 'text-bg-danger'
@@ -64,7 +64,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 							<td>
 								<div>
 									<DisplayCards cards={game.dealerHand} size={80} />
-									<div className="d-flex align-items-center gap-2 p-1">
+									<div className="d-flex flex-wrap align-items-center gap-2">
 										{game.winner === GAME_RESULT.WINNER_DEALER && (
 											<CheckIcon size={20} weight="bold" className="text-success" />
 										)}
