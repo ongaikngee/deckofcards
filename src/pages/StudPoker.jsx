@@ -264,7 +264,7 @@ const StudPoker = () => {
     if (gameHistory.length > 0) {
       setChartData(prev => [...prev, [gameHistory.length, chips]]);
     } else {
-      setChartData([["Games", "Chips"], [0, chips]]);
+      setChartData([["Games", "Chip count"], [0, chips]]);
 
     }
 
