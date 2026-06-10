@@ -147,6 +147,7 @@ const StudPoker = () => {
       "winningPokerHandClass": null,
       "winningMultiplier": null,
       "payoutAmt": 0,
+      "betAmount": null,
     }
 
     // storing Hands in gameRecord
@@ -158,7 +159,8 @@ const StudPoker = () => {
       deck !== null &&
       deck !== undefined &&
       playerStrength != null &&
-      dealerStrength != null
+      dealerStrength != null &&
+      betAmount != 0
     ) {
       Object.assign(gameRecord, {
         deckId: deck,
@@ -166,6 +168,7 @@ const StudPoker = () => {
         dealerHand,
         playerStrength,
         dealerStrength,
+        betAmount
       })
     } else {
       const errorMsg = "Error when saving game history."

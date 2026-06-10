@@ -36,6 +36,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 						>
 							<td>
 								<div>
+									<div className='h6'>Bet Amount: {formatCurrency(game.betAmount)}</div>
 									<DisplayCards cards={game.playerHand} size={77} />
 									<div className="d-flex flex-wrap align-items-center gap-2">
 										{game.winner === GAME_RESULT.WINNER_PLAYER && (
@@ -62,6 +63,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 							</td>
 							<td>
 								<div>
+									<div className='h6'>{<>&nbsp;</>}</div>
 									<DisplayCards cards={game.dealerHand} size={77} />
 									<div className="d-flex flex-wrap align-items-center gap-2">
 										{game.winner === GAME_RESULT.WINNER_DEALER && (
