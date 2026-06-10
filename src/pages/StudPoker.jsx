@@ -289,7 +289,7 @@ const StudPoker = () => {
       <div className="d-flex flex-column flex-sm-row justify-content-between">
         <div>
           <div className="h2 mb-0">Stud Poker</div>
-          {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
+          <div className="text-muted"> {deck ? "Deck id: " + deck.deck_id : <>&nbsp;</>}</div>
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
