@@ -264,7 +264,7 @@ const StudPoker = () => {
     if (gameHistory.length > 0) {
       setChartData(prev => [...prev, [gameHistory.length, chips]]);
     } else {
-      setChartData([["Games", "Chips"], [0, chips]]);
+      setChartData([["Games", "Chip count"], [0, chips]]);
 
     }
 
@@ -286,10 +286,10 @@ const StudPoker = () => {
 
   return (
     <div className="container my-4">
-      <div className="d-flex flex-column flex-sm-row justify-content-between">
+      <div className="d-flex flex-column flex-sm-row justify-content-between mb-2">
         <div>
           <div className="h2 mb-0">Stud Poker</div>
-          {deck && <div className="text-muted">Deck id: {deck.deck_id}</div>}
+          <div className="text-muted"> {deck ? "Deck id: " + deck.deck_id : <>&nbsp;</>}</div>
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
@@ -438,26 +438,27 @@ const StudPoker = () => {
               </button>
             </div>
           )}
-        {gameState === GAME_STATE.LOADING && (
-          <span>
-            <button
-              type="button"
-              className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
-              onClick={bet}
-              disabled={true}
-            >
-              Bet {formatCurrency(betAmount * 2)}
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-              onClick={fold}
-              disabled={true}
-            >
-              fold
-            </button>
-          </span>
-        )}
+        {(gameState === GAME_STATE.LOADING ||
+          gameState === GAME_STATE.PLAYER_ACTED) && (
+            <span>
+              <button
+                type="button"
+                className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
+                onClick={bet}
+                disabled={true}
+              >
+                Bet {formatCurrency(betAmount * 2)}
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
+                onClick={fold}
+                disabled={true}
+              >
+                fold
+              </button>
+            </span>
+          )}
         {gameState === GAME_STATE.PLAYER_MOVE && (
           <span>
             <button

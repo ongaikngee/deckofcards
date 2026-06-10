@@ -25,6 +25,18 @@ function StudPokerLineChart({ chartData }) {
       title: 'Win/Loss Performance',
       // curveType: 'function',
       legend: { position: 'bottom' },
+      hAxis: {
+        gridlines: {
+          color: 'transparent',
+          multiple: 5
+        }
+      },
+      vAxis: {
+        gridlines: {
+          color: 'transparent',
+          multiple: 200
+        }
+      }
     };
 
     const chart = new google.visualization.LineChart(
