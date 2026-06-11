@@ -531,18 +531,18 @@ const StudPoker = () => {
               <button
                 type="button"
                 className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
-                onClick={bet}
                 disabled={true}
               >
-                Bet {formatCurrency(betAmount * 2)}
+                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                <span role="status">Loading...</span>
               </button>
               <button
                 type="button"
                 className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-                onClick={fold}
                 disabled={true}
               >
-                fold
+                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                <span role="status">fold</span>
               </button>
             </span>
           )}
