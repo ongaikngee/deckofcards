@@ -487,9 +487,9 @@ const StudPoker = () => {
                 type="button"
                 className="btn btn-primary btn-lg"
                 disabled={chips < betAmount}
-                onClick={betAmount * 3 < chips ? startGame : null}
-                data-bs-toggle="modal"
-                data-bs-target={betAmount * 3 < chips ? null : "#overbet"}
+                onClick={betAmount * 3 < chips ? startGame : undefined}
+                data-bs-toggle={betAmount * 3 < chips ? undefined : "modal"}
+                data-bs-target={betAmount * 3 < chips ? undefined : "#overbet"}
               >
                 Bet Ante {formatCurrency(betAmount)}
               </button>

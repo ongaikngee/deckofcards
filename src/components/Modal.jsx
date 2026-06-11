@@ -41,11 +41,8 @@ const Modal = ({
             <button
               type="button"
               className="btn btn-primary"
-              onClick={(e) => {
-                // e.currentTarget.blur(); // Remove focus from the button after click
-                // okBtnFunc();
-                okBtnFunc?.();
-              }}
+              data-bs-dismiss="modal"
+              onClick={() => okBtnFunc?.()}
             >
               {okBtnLabel}
             </button>
