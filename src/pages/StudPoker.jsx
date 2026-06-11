@@ -6,16 +6,13 @@ import Spinner from "../components/Spinner";
 import IntroStudPoker from "../features/games/IntroStudPoker";
 import StudPokerHistory from "../features/games/StudPokerHistory";
 import StudPokerLineChart from "../features/games/StudPokerLineChart";
+import Modal from "../components/Modal";
 
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { determinePlayerPayoutMultiplier } from "../utils/studPokerHelper";
-import {
-  GAME_STATE,
-  PLAYER_ACTION,
-  GAME_RESULT,
-} from "../constants/games";
+import { GAME_STATE, PLAYER_ACTION, GAME_RESULT } from "../constants/games";
 
 // 3rd party libraries
 import { Hand } from "pokersolver";
@@ -31,23 +28,23 @@ const StudPoker = () => {
   const [dealerStrength, setDealerStrength] = useState(null);
   const [chips, setChips] = useState(1000);
   const [betAmount, setBetAmount] = useState(50);
-  const [chartData, setChartData] = useState([])
+  const [chartData, setChartData] = useState([]);
 
-  const [payout, setpayout] = useState("")
-  const [payoutAmt, setPayoutAmt] = useState(0)
+  const [payout, setpayout] = useState("");
+  const [payoutAmt, setPayoutAmt] = useState(0);
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
   const [winner, setWinner] = useState("");
-  const [winningHand, setWinningHand] = useState("")
+  const [winningHand, setWinningHand] = useState("");
 
-  const [gameHistory, setGameHistory] = useState([])
+  const [gameHistory, setGameHistory] = useState([]);
 
   //settings
-  const dealerCardSize = 60
-  const checkIconSize = 28
-  const checkIconWeight = "bold"
-  const headerFontSize = "h2"
-  const strengthFontSize = "h4"
+  const dealerCardSize = 60;
+  const checkIconSize = 28;
+  const checkIconWeight = "bold";
+  const headerFontSize = "h2";
+  const strengthFontSize = "h4";
 
   const getStrengthOfHand = (hands) => {
     const codes = hands.map((card) => card.code.replace("0", "T"));
@@ -82,7 +79,7 @@ const StudPoker = () => {
     setWinner("");
     setpayout("");
     setPayoutAmt(0);
-    setWinningHand("")
+    setWinningHand("");
 
     try {
       const fetchDeck = await getNewDeck({
@@ -137,18 +134,18 @@ const StudPoker = () => {
   // This will determine the winner and calculate the payout
   const determineWinner = () => {
     const gameRecord = {
-      "deckId": "",
-      "winner": null,
-      "playerHand": null,
-      "dealerHand": null,
-      "playerAction": null,
-      "playerStrength": null,
-      "dealerStrength": null,
-      "winningPokerHandClass": null,
-      "winningMultiplier": null,
-      "payoutAmt": 0,
-      "betAmount": null,
-    }
+      deckId: "",
+      winner: null,
+      playerHand: null,
+      dealerHand: null,
+      playerAction: null,
+      playerStrength: null,
+      dealerStrength: null,
+      winningPokerHandClass: null,
+      winningMultiplier: null,
+      payoutAmt: 0,
+      betAmount: null,
+    };
 
     // storing Hands in gameRecord
     if (
@@ -168,36 +165,35 @@ const StudPoker = () => {
         dealerHand,
         playerStrength,
         dealerStrength,
-        betAmount
-      })
+        betAmount,
+      });
     } else {
-      const errorMsg = "Error when saving game history."
-      setError(errorMsg)
-      throw new Error(errorMsg)
+      const errorMsg = "Error when saving game history.";
+      setError(errorMsg);
+      throw new Error(errorMsg);
     }
 
     // player fold,
     if (playerAction === PLAYER_ACTION.FOLD) {
       setWinner(GAME_RESULT.WINNER_DEALER);
-      setPayoutAmt(-1 * betAmount)
-      gameRecord.winner = GAME_RESULT.WINNER_DEALER
-      gameRecord.playerAction = PLAYER_ACTION.FOLD
-      gameRecord.payoutAmt = -1 * betAmount
-      setGameHistory((prev) => [gameRecord, ...prev])
+      setPayoutAmt(-1 * betAmount);
+      gameRecord.winner = GAME_RESULT.WINNER_DEALER;
+      gameRecord.playerAction = PLAYER_ACTION.FOLD;
+      gameRecord.payoutAmt = -1 * betAmount;
+      setGameHistory((prev) => [gameRecord, ...prev]);
       return;
     }
 
     // Player bet, Dealer did not qualified, pays the bet
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
-      setPayoutAmt(betAmount)
-      setChips((prev) => prev + betAmount + betAmount)
+      setPayoutAmt(betAmount);
+      setChips((prev) => prev + betAmount + betAmount);
 
-
-      gameRecord.winner = GAME_RESULT.WINNER_PLAYER
-      gameRecord.playerAction = "Did not qualified"
-      gameRecord.payoutAmt = betAmount
-      setGameHistory((prev) => [gameRecord, ...prev])
+      gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
+      gameRecord.playerAction = "Did not qualified";
+      gameRecord.payoutAmt = betAmount;
+      setGameHistory((prev) => [gameRecord, ...prev]);
 
       return;
     }
@@ -211,9 +207,9 @@ const StudPoker = () => {
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
         setChips((prev) => prev + betAmount);
-        gameRecord.winner = GAME_RESULT.GAME_TIE
-        gameRecord.playerAction = GAME_RESULT.GAME_TIE
-        setGameHistory((prev) => [gameRecord, ...prev])
+        gameRecord.winner = GAME_RESULT.GAME_TIE;
+        gameRecord.playerAction = GAME_RESULT.GAME_TIE;
+        setGameHistory((prev) => [gameRecord, ...prev]);
         return;
       }
 
@@ -226,24 +222,25 @@ const StudPoker = () => {
 
       if (determinedWinner === GAME_RESULT.WINNER_PLAYER) {
         // Win both ante and bet
-        const { payoutMultiplier, pokerHand } = determinePlayerPayoutMultiplier(playerStrength)
-        const winning = betAmount * payoutMultiplier
-        setPayoutAmt((betAmount * 2) + winning)
-        setpayout(`Bet + Ante with ${payoutMultiplier}x`)
-        setChips((prev) => prev + (betAmount * 3) + winning);
-        gameRecord.winner = GAME_RESULT.WINNER_PLAYER
-        gameRecord.payoutAmt = (betAmount * 2) + winning
-        gameRecord.winningPokerHandClass = pokerHand
-        gameRecord.winningMultiplier = payoutMultiplier
+        const { payoutMultiplier, pokerHand } =
+          determinePlayerPayoutMultiplier(playerStrength);
+        const winning = betAmount * payoutMultiplier;
+        setPayoutAmt(betAmount * 2 + winning);
+        setpayout(`Bet + Ante with ${payoutMultiplier}x`);
+        setChips((prev) => prev + betAmount * 3 + winning);
+        gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
+        gameRecord.payoutAmt = betAmount * 2 + winning;
+        gameRecord.winningPokerHandClass = pokerHand;
+        gameRecord.winningMultiplier = payoutMultiplier;
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
-        setPayoutAmt(betAmount * -3)
+        setPayoutAmt(betAmount * -3);
         setChips((prev) => prev - (betAmount + betAmount));
-        gameRecord.winner = GAME_RESULT.WINNER_DEALER
-        gameRecord.payoutAmt = betAmount * -3
+        gameRecord.winner = GAME_RESULT.WINNER_DEALER;
+        gameRecord.payoutAmt = betAmount * -3;
       }
-      gameRecord.playerAction = PLAYER_ACTION.BET
-      setGameHistory((prev) => [gameRecord, ...prev])
+      gameRecord.playerAction = PLAYER_ACTION.BET;
+      setGameHistory((prev) => [gameRecord, ...prev]);
     } catch (e) {
       console.error("getWinner error:", e);
       return null;
@@ -266,13 +263,14 @@ const StudPoker = () => {
 
   useEffect(() => {
     if (gameHistory.length > 0) {
-      setChartData(prev => [...prev, [gameHistory.length, chips]]);
+      setChartData((prev) => [...prev, [gameHistory.length, chips]]);
     } else {
-      setChartData([["Games", "Chip count"], [0, chips]]);
-
+      setChartData([
+        ["Games", "Chip count"],
+        [0, chips],
+      ]);
     }
-
-  }, [gameHistory])
+  }, [gameHistory]);
 
   const startGame = () => {
     setGameState(GAME_STATE.LOADING);
@@ -293,14 +291,17 @@ const StudPoker = () => {
       <div className="d-flex flex-column flex-sm-row justify-content-between mb-2">
         <div>
           <div className="h2 mb-0">Stud Poker</div>
-          <div className="text-muted"> {deck ? "Deck id: " + deck.deck_id : <>&nbsp;</>}</div>
+          <div className="text-muted">
+            {" "}
+            {deck ? "Deck id: " + deck.deck_id : <>&nbsp;</>}
+          </div>
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
             <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
             {payoutAmt !== 0 && (
               <span
-                className={`badge bg-opacity-75 ${payoutAmt > 0 ? 'text-bg-success' : 'text-bg-danger'}`}
+                className={`badge bg-opacity-75 ${payoutAmt > 0 ? "text-bg-success" : "text-bg-danger"}`}
               >
                 {formatCurrency(payoutAmt)}
               </span>
@@ -316,7 +317,10 @@ const StudPoker = () => {
           <div>
             <div className="mb-3">
               <div className={headerFontSize}>Dealer's Hand</div>
-              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+              <div
+                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                style={{ height: "120px" }}
+              >
                 <div className="d-flex justify-content-start align-items-center gap-2">
                   <DisplayCards
                     cards={[1, 1, 1, 1, 1]}
@@ -326,7 +330,9 @@ const StudPoker = () => {
                   <Spinner />
                 </div>
               </div>
-              <div className={strengthFontSize}><span className="placeholder"></span></div>
+              <div className={strengthFontSize}>
+                <span className="placeholder"></span>
+              </div>
             </div>
           </div>
         )}
@@ -336,14 +342,19 @@ const StudPoker = () => {
             <div>
               <div className="mb-3">
                 <div className={headerFontSize}>Dealer's Hand</div>
-                <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+                <div
+                  className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                  style={{ height: "120px" }}
+                >
                   <DisplayCards
                     cards={[1, 1, 1, 1, ...dealerHand]}
                     size={dealerCardSize}
                     type="revealOne"
                   />
                 </div>
-                <div className={strengthFontSize}><span className="placeholder"></span></div>
+                <div className={strengthFontSize}>
+                  <span className="placeholder"></span>
+                </div>
               </div>
             </div>
           )}
@@ -353,20 +364,35 @@ const StudPoker = () => {
             <div className="mb-2">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_DEALER && (
-                  <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
+                  <CheckIcon
+                    size={checkIconSize}
+                    weight={checkIconWeight}
+                    className="text-success"
+                  />
                 )}
                 <div className={headerFontSize}>Dealer's Hand</div>
                 {isDealerQualified ? (
-                  <h6><span className="badge text-bg-success">Qualified</span></h6>
+                  <h6>
+                    <span className="badge text-bg-success">Qualified</span>
+                  </h6>
                 ) : (
-                  <h6><span className="badge text-bg-danger">Did not qualified</span></h6>
+                  <h6>
+                    <span className="badge text-bg-danger">
+                      Did not qualified
+                    </span>
+                  </h6>
                 )}
               </div>
-              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "120px" }}>
+              <div
+                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                style={{ height: "120px" }}
+              >
                 <DisplayCards cards={dealerHand} size={dealerCardSize} />
               </div>
               <div className={strengthFontSize}>
-                <span className="badge text-bg-light">{dealerStrength.descr}</span>
+                <span className="badge text-bg-light">
+                  {dealerStrength.descr}
+                </span>
               </div>
             </div>
           </div>
@@ -379,14 +405,19 @@ const StudPoker = () => {
             <div className="d-flex align-items-center gap-2">
               <div className={headerFontSize}>Player's Hand</div>
             </div>
-            <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
-              <DisplayCards className="bg-success"
+            <div
+              className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+              style={{ height: "180px" }}
+            >
+              <DisplayCards
+                className="bg-success"
                 cards={[1, 1, 1, 1, 1]}
                 type="revealNone"
               />
             </div>
-            <div className={strengthFontSize}><span className="placeholder"></span></div>
-
+            <div className={strengthFontSize}>
+              <span className="placeholder"></span>
+            </div>
           </div>
         )}
         {gameState === GAME_STATE.PLAYER_MOVE &&
@@ -394,86 +425,122 @@ const StudPoker = () => {
           playerStrength && (
             <div className="mb-3">
               <div className={headerFontSize}>Player's Hand</div>
-              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
+              <div
+                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                style={{ height: "180px" }}
+              >
                 <DisplayCards cards={playerHand} />
               </div>
               <div className={strengthFontSize}>
-                <span className="badge text-bg-light">{playerStrength.descr}</span>
+                <span className="badge text-bg-light">
+                  {playerStrength.descr}
+                </span>
               </div>
             </div>
           )}
 
         {(gameState === GAME_STATE.DETERMINE_WINNER ||
-          gameState === GAME_STATE.PLAYER_ACTED
-        ) &&
+          gameState === GAME_STATE.PLAYER_ACTED) &&
           playerAction &&
           playerHand &&
           playerStrength && (
             <div className="mb-3">
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_PLAYER && (
-                  <CheckIcon size={checkIconSize} weight={checkIconWeight} className="text-success" />
+                  <CheckIcon
+                    size={checkIconSize}
+                    weight={checkIconWeight}
+                    className="text-success"
+                  />
                 )}
                 <div className={headerFontSize}>Player's Hand</div>
               </div>
-              <div className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity" style={{ height: "180px" }}>
-                <DisplayCards cards={playerHand} type={playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"} />
+              <div
+                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                style={{ height: "180px" }}
+              >
+                <DisplayCards
+                  cards={playerHand}
+                  type={
+                    playerAction === PLAYER_ACTION.FOLD
+                      ? "revealNone"
+                      : "revealAll"
+                  }
+                />
               </div>
               <div className={strengthFontSize}>
-                <span className="badge text-bg-light">{playerStrength.descr}</span>
+                <span className="badge text-bg-light">
+                  {playerStrength.descr}
+                </span>
               </div>
             </div>
           )}
-
       </div>
       {/* SECTION: Action */}
       <div>
         <hr></hr>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
-            <div>
-              <div className="d-grid gap-2 col-sm-6">
-                <button
-                  type="button"
-                  className="btn btn-primary btn-lg"
-                  onClick={startGame}
-                  disabled={chips < betAmount}
-                >
-                  Bet Ante {formatCurrency(betAmount)}
-                </button>
-              </div>
-              <div className="col-sm-6 mt-3">
-                <input
-                  type="range"
-                  className="form-range"
-                  id="betSize"
-                  min="25"
-                  max="500"
-                  step="25"
-                  value={betAmount}
-                  onChange={(e) => setBetAmount(e.target.valueAsNumber)}>
-                </input>
-              </div>
+          <div>
+            <div className="d-grid gap-2 col-sm-6">
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                disabled={chips < betAmount}
+                onClick={betAmount * 3 < chips ? startGame : null}
+                data-bs-toggle="modal"
+                data-bs-target={betAmount * 3 < chips ? null : "#overbet"}
+              >
+                Bet Ante {formatCurrency(betAmount)}
+              </button>
             </div>
-          )}
+            <div className="col-sm-6 mt-3">
+              <input
+                type="range"
+                className="form-range"
+                id="betSize"
+                min="25"
+                max="500"
+                step="25"
+                value={betAmount}
+                onChange={(e) => setBetAmount(e.target.valueAsNumber)}
+              ></input>
+            </div>
+            <Modal
+              modalID="overbet"
+              modalTitle="Overbetting..."
+              modalInstruction={
+                <>
+                  <div>
+                    You need at least 2× your ante to place this bet.
+                  </div>
+                  Do you still want to proceed?
+                </>
+              }
+              closeBtnLabel="Cancel Bet"
+              okBtnLabel={formatCurrency(betAmount)}
+              okBtnFunc={startGame}
+            />
+          </div>
+        )}
         {(gameState === GAME_STATE.LOADING ||
           gameState === GAME_STATE.PLAYER_ACTED) && (
             <span>
               <button
                 type="button"
                 className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
+                onClick={bet}
                 disabled={true}
               >
-                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">Loading...</span>
+                Bet {formatCurrency(betAmount * 2)}
               </button>
               <button
                 type="button"
                 className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
+                onClick={fold}
                 disabled={true}
               >
-                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">fold</span>
+                fold
               </button>
             </span>
           )}
