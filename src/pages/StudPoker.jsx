@@ -481,48 +481,50 @@ const StudPoker = () => {
         <hr></hr>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
-          <div>
-            <div className="d-grid gap-2 col-sm-6">
-              <button
-                type="button"
-                className="btn btn-primary btn-lg"
-                disabled={chips < betAmount}
-                onClick={betAmount * 3 < chips ? startGame : undefined}
-                data-bs-toggle={betAmount * 3 < chips ? undefined : "modal"}
-                data-bs-target={betAmount * 3 < chips ? undefined : "#overbet"}
-              >
-                Bet Ante {formatCurrency(betAmount)}
-              </button>
+            <div>
+              <div className="d-grid gap-2 col-sm-6">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  disabled={chips < betAmount}
+                  onClick={betAmount * 3 <= chips ? startGame : undefined}
+                  data-bs-toggle={betAmount * 3 <= chips ? undefined : "modal"}
+                  data-bs-target={betAmount * 3 <= chips ? undefined : "#overbet"}
+                >
+                  Bet Ante {formatCurrency(betAmount)}
+                </button>
+              </div>
+              <div className="col-sm-6 mt-3">
+                <input
+                  type="range"
+                  className="form-range"
+                  id="betSize"
+                  min="25"
+                  max="500"
+                  step="25"
+                  value={betAmount}
+                  onChange={(e) => setBetAmount(e.target.valueAsNumber)}
+                ></input>
+              </div>
+              <Modal
+                modalID="overbet"
+                modalTitle="Bet May Limit Future Play"
+                modalInstruction={
+                  <>
+                    <div className="mb-2">
+                      After this bet, you'll have only {formatCurrency(chips - betAmount)}, but {formatCurrency(betAmount * 2)} is required for a later bet.
+                    </div>
+                    <div>
+                      Continue anyway?
+                    </div>
+                  </>
+                }
+                closeBtnLabel="Cancel Bet"
+                okBtnLabel={`Bet ${formatCurrency(betAmount)} anyway`}
+                okBtnFunc={startGame}
+              />
             </div>
-            <div className="col-sm-6 mt-3">
-              <input
-                type="range"
-                className="form-range"
-                id="betSize"
-                min="25"
-                max="500"
-                step="25"
-                value={betAmount}
-                onChange={(e) => setBetAmount(e.target.valueAsNumber)}
-              ></input>
-            </div>
-            <Modal
-              modalID="overbet"
-              modalTitle="Overbetting..."
-              modalInstruction={
-                <>
-                  <div>
-                    You need at least 2× your ante to place this bet.
-                  </div>
-                  Do you still want to proceed?
-                </>
-              }
-              closeBtnLabel="Cancel Bet"
-              okBtnLabel={formatCurrency(betAmount)}
-              okBtnFunc={startGame}
-            />
-          </div>
-        )}
+          )}
         {(gameState === GAME_STATE.LOADING ||
           gameState === GAME_STATE.PLAYER_ACTED) && (
             <span>
