@@ -534,7 +534,7 @@ const StudPoker = () => {
                 disabled={true}
               >
                 <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">Loading...</span>
+                <span role="status">Loading</span>
               </button>
               <button
                 type="button"
