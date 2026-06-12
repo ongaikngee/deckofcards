@@ -360,92 +360,50 @@ const StudPoker = () => {
                 </div>
               </div>
               <div className={strengthFontSize}>
-                <span className="badge text-bg-light">
-                  {gameState === GAME_STATE.DETERMINE_WINNER ?
-                    dealerStrength.descr
-                    : <>&nbsp;</>}
-                </span>
+                {gameState === GAME_STATE.DETERMINE_WINNER
+                  ? <span className="badge text-bg-light">{dealerStrength.descr}</span>
+                  : <>&nbsp;</>}
               </div>
             </div>
           </div>)}
       </div>
       {/* SECTION : Player Deck */}
       <div>
-        {gameState === GAME_STATE.LOADING && (
+        {gameState !== GAME_STATE.IDLE && (
           <div className="mb-3">
+            {/* Player title part */}
             <div className="d-flex align-items-center gap-2">
+              {winner === GAME_RESULT.WINNER_PLAYER && (
+                <CheckIcon
+                  size={checkIconSize}
+                  weight={checkIconWeight}
+                  className="text-success"
+                />
+              )}
               <div className={headerFontSize}>Player's Hand</div>
             </div>
+            {/* Player display part */}
             <div
               className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
               style={{ height: "180px" }}
             >
               <DisplayCards
                 className="bg-success"
-                cards={[1, 1, 1, 1, 1]}
-                type="revealNone"
+                cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] : playerHand}
+                type={gameState === GAME_STATE.LOADING ? "reavealNone" :
+                  playerAction === PLAYER_ACTION.FOLD ? "reavealNone" : "revealAll"
+                }
               />
             </div>
             <div className={strengthFontSize}>
-              <span className="placeholder"></span>
+
+              {gameState !== GAME_STATE.LOADING
+                ? <span className="badge text-bg-light">{playerStrength.descr}</span>
+                : <>&nbsp;</>}
+
             </div>
           </div>
         )}
-        {gameState === GAME_STATE.PLAYER_MOVE &&
-          playerHand &&
-          playerStrength && (
-            <div className="mb-3">
-              <div className={headerFontSize}>Player's Hand</div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "180px" }}
-              >
-                <DisplayCards cards={playerHand} />
-              </div>
-              <div className={strengthFontSize}>
-                <span className="badge text-bg-light">
-                  {playerStrength.descr}
-                </span>
-              </div>
-            </div>
-          )}
-
-        {(gameState === GAME_STATE.DETERMINE_WINNER ||
-          gameState === GAME_STATE.PLAYER_ACTED) &&
-          playerAction &&
-          playerHand &&
-          playerStrength && (
-            <div className="mb-3">
-              <div className="d-flex align-items-center gap-2">
-                {winner === GAME_RESULT.WINNER_PLAYER && (
-                  <CheckIcon
-                    size={checkIconSize}
-                    weight={checkIconWeight}
-                    className="text-success"
-                  />
-                )}
-                <div className={headerFontSize}>Player's Hand</div>
-              </div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "180px" }}
-              >
-                <DisplayCards
-                  cards={playerHand}
-                  type={
-                    playerAction === PLAYER_ACTION.FOLD
-                      ? "revealNone"
-                      : "revealAll"
-                  }
-                />
-              </div>
-              <div className={strengthFontSize}>
-                <span className="badge text-bg-light">
-                  {playerStrength.descr}
-                </span>
-              </div>
-            </div>
-          )}
       </div>
       {/* SECTION: Action */}
       <div>
@@ -516,10 +474,10 @@ const StudPoker = () => {
                   ? (
                     <div>Bet {formatCurrency(betAmount * 2)}</div>
                   ) : (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                    <div className="d-flex align-items-center justify-content-center">
+                      <span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>
                       <span role="status">Loading</span>
-                    </>
+                    </div>
                   )}
               </button>
               {/* Fold Button */}
@@ -530,10 +488,16 @@ const StudPoker = () => {
                 disabled={(gameState === GAME_STATE.LOADING ||
                   gameState === GAME_STATE.PLAYER_ACTED)}
               >
-                {gameState !== GAME_STATE.PLAYER_MOVE &&
-                  (<span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>)
-                }
-                <span role="status">Fold</span>
+                {/* <div className="d-flex align-items-center justify-content-center">
+                  <span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>
+                  <span role="status">Fold</span>
+                </div> */}
+                <div className="d-flex align-items-center justify-content-center">
+                  {gameState !== GAME_STATE.PLAYER_MOVE &&
+                    (<span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>)
+                  }
+                  <span role="status">Fold</span>
+                </div>
               </button>
             </div>
           )}
