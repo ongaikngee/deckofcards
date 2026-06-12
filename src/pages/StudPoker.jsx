@@ -30,7 +30,7 @@ const StudPoker = () => {
   const [betAmount, setBetAmount] = useState(50);
   const [chartData, setChartData] = useState([]);
 
-  const [payout, setpayout] = useState("");
+  const [payout, setPayout] = useState("");
   const [payoutAmt, setPayoutAmt] = useState(0);
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
@@ -77,7 +77,7 @@ const StudPoker = () => {
     setIsDealerQualified(undefined);
     setPlayerAction(null);
     setWinner("");
-    setpayout("");
+    setPayout("");
     setPayoutAmt(0);
     setWinningHand("");
 
@@ -226,7 +226,7 @@ const StudPoker = () => {
           determinePlayerPayoutMultiplier(playerStrength);
         const winning = betAmount * payoutMultiplier;
         setPayoutAmt(betAmount * 2 + winning);
-        setpayout(`Bet + Ante with ${payoutMultiplier}x`);
+        setPayout(`Bet + Ante with ${payoutMultiplier}x`);
         setChips((prev) => prev + betAmount * 3 + winning);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
         gameRecord.payoutAmt = betAmount * 2 + winning;
@@ -313,168 +313,98 @@ const StudPoker = () => {
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState === GAME_STATE.LOADING && (
-          <div>
-            <div className="mb-3">
-              <div className={headerFontSize}>Dealer's Hand</div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "120px" }}
-              >
-                <div className="d-flex justify-content-start align-items-center gap-2">
-                  <DisplayCards
-                    cards={[1, 1, 1, 1, 1]}
-                    size={dealerCardSize}
-                    type="revealNone"
-                  />
-                  <Spinner />
-                </div>
-              </div>
-              <div className={strengthFontSize}>
-                <span className="placeholder"></span>
-              </div>
-            </div>
-          </div>
-        )}
-        {(gameState === GAME_STATE.PLAYER_MOVE ||
-          gameState === GAME_STATE.PLAYER_ACTED) &&
-          dealerHand && (
+        {gameState !== GAME_STATE.IDLE &&
+          (
             <div>
               <div className="mb-3">
-                <div className={headerFontSize}>Dealer's Hand</div>
+                {/* Dealer title part */}
+                <div className="d-flex align-items-center gap-2">
+                  {winner === GAME_RESULT.WINNER_DEALER && (
+                    <CheckIcon
+                      size={checkIconSize}
+                      weight={checkIconWeight}
+                      className="text-success"
+                    />
+                  )}
+                  <div className={headerFontSize}>Dealer's Hand</div>
+                  {isDealerQualified ? (
+                    <h6>
+                      <span className="badge text-bg-success">Qualified</span>
+                    </h6>
+                  ) : isDealerQualified === false ? (
+                    <h6>
+                      <span className="badge text-bg-danger">
+                        Did not qualified
+                      </span>
+                    </h6>
+                  ) : (
+                    <>&nbsp;</>
+                  )}
+                </div>
+                {/* Dealer display part */}
                 <div
                   className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
                   style={{ height: "120px" }}
                 >
-                  <DisplayCards
-                    cards={[1, 1, 1, 1, ...dealerHand]}
-                    size={dealerCardSize}
-                    type="revealOne"
-                  />
+                  <div className="d-flex justify-content-start align-items-center gap-2">
+                    <DisplayCards
+                      size={dealerCardSize}
+                      cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] :
+                        gameState === GAME_STATE.DETERMINE_WINNER ? (dealerHand) :
+                          ([1, 1, 1, 1, ...dealerHand])
+                      }
+                      type={gameState === GAME_STATE.LOADING ? "reavealNone" :
+                        gameState === GAME_STATE.DETERMINE_WINNER ? "revealAll" : "revealOne"
+                      }
+                    />
+                    {gameState === GAME_STATE.LOADING && <Spinner />}
+                  </div>
                 </div>
                 <div className={strengthFontSize}>
-                  <span className="placeholder"></span>
+                  {gameState === GAME_STATE.DETERMINE_WINNER
+                    ? <span className="badge text-bg-light">{dealerStrength.descr}</span>
+                    : <>&nbsp;</>}
                 </div>
               </div>
-            </div>
-          )}
-
-        {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
-          <div>
-            <div className="mb-2">
-              <div className="d-flex align-items-center gap-2">
-                {winner === GAME_RESULT.WINNER_DEALER && (
-                  <CheckIcon
-                    size={checkIconSize}
-                    weight={checkIconWeight}
-                    className="text-success"
-                  />
-                )}
-                <div className={headerFontSize}>Dealer's Hand</div>
-                {isDealerQualified ? (
-                  <h6>
-                    <span className="badge text-bg-success">Qualified</span>
-                  </h6>
-                ) : (
-                  <h6>
-                    <span className="badge text-bg-danger">
-                      Did not qualified
-                    </span>
-                  </h6>
-                )}
-              </div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "120px" }}
-              >
-                <DisplayCards cards={dealerHand} size={dealerCardSize} />
-              </div>
-              <div className={strengthFontSize}>
-                <span className="badge text-bg-light">
-                  {dealerStrength.descr}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+            </div>)}
       </div>
       {/* SECTION : Player Deck */}
       <div>
-        {gameState === GAME_STATE.LOADING && (
+        {gameState !== GAME_STATE.IDLE && (
           <div className="mb-3">
+            {/* Player title part */}
             <div className="d-flex align-items-center gap-2">
+              {winner === GAME_RESULT.WINNER_PLAYER && (
+                <CheckIcon
+                  size={checkIconSize}
+                  weight={checkIconWeight}
+                  className="text-success"
+                />
+              )}
               <div className={headerFontSize}>Player's Hand</div>
             </div>
+            {/* Player display part */}
             <div
               className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
               style={{ height: "180px" }}
             >
               <DisplayCards
                 className="bg-success"
-                cards={[1, 1, 1, 1, 1]}
-                type="revealNone"
+                cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] : playerHand}
+                type={gameState === GAME_STATE.LOADING ? "reavealNone" :
+                  playerAction === PLAYER_ACTION.FOLD ? "reavealNone" : "revealAll"
+                }
               />
             </div>
             <div className={strengthFontSize}>
-              <span className="placeholder"></span>
+
+              {gameState !== GAME_STATE.LOADING
+                ? <span className="badge text-bg-light">{playerStrength.descr}</span>
+                : <>&nbsp;</>}
+
             </div>
           </div>
         )}
-        {gameState === GAME_STATE.PLAYER_MOVE &&
-          playerHand &&
-          playerStrength && (
-            <div className="mb-3">
-              <div className={headerFontSize}>Player's Hand</div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "180px" }}
-              >
-                <DisplayCards cards={playerHand} />
-              </div>
-              <div className={strengthFontSize}>
-                <span className="badge text-bg-light">
-                  {playerStrength.descr}
-                </span>
-              </div>
-            </div>
-          )}
-
-        {(gameState === GAME_STATE.DETERMINE_WINNER ||
-          gameState === GAME_STATE.PLAYER_ACTED) &&
-          playerAction &&
-          playerHand &&
-          playerStrength && (
-            <div className="mb-3">
-              <div className="d-flex align-items-center gap-2">
-                {winner === GAME_RESULT.WINNER_PLAYER && (
-                  <CheckIcon
-                    size={checkIconSize}
-                    weight={checkIconWeight}
-                    className="text-success"
-                  />
-                )}
-                <div className={headerFontSize}>Player's Hand</div>
-              </div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "180px" }}
-              >
-                <DisplayCards
-                  cards={playerHand}
-                  type={
-                    playerAction === PLAYER_ACTION.FOLD
-                      ? "revealNone"
-                      : "revealAll"
-                  }
-                />
-              </div>
-              <div className={strengthFontSize}>
-                <span className="badge text-bg-light">
-                  {playerStrength.descr}
-                </span>
-              </div>
-            </div>
-          )}
       </div>
       {/* SECTION: Action */}
       <div>
@@ -483,6 +413,7 @@ const StudPoker = () => {
           gameState === GAME_STATE.DETERMINE_WINNER) && (
             <div>
               <div className="d-grid gap-2 col-sm-6">
+                {/* Start Game Button */}
                 <button
                   type="button"
                   className="btn btn-primary btn-lg"
@@ -494,6 +425,7 @@ const StudPoker = () => {
                   Bet Ante {formatCurrency(betAmount)}
                 </button>
               </div>
+              {/* Betting Amount Range Selector */}
               <div className="col-sm-6 mt-3">
                 <input
                   type="range"
@@ -506,6 +438,7 @@ const StudPoker = () => {
                   onChange={(e) => setBetAmount(e.target.valueAsNumber)}
                 ></input>
               </div>
+              {/* Modal for overbetting */}
               <Modal
                 modalID="overbet"
                 modalTitle="Bet May Limit Future Play"
@@ -526,45 +459,49 @@ const StudPoker = () => {
             </div>
           )}
         {(gameState === GAME_STATE.LOADING ||
-          gameState === GAME_STATE.PLAYER_ACTED) && (
-            <span>
+          gameState === GAME_STATE.PLAYER_ACTED ||
+          gameState === GAME_STATE.PLAYER_MOVE) && (
+            <div>
+              {/* Bet Button */}
               <button
                 type="button"
                 className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
-                disabled={true}
+                onClick={bet}
+                disabled={(gameState === GAME_STATE.LOADING ||
+                  gameState === GAME_STATE.PLAYER_ACTED ||
+                  chips < betAmount * 2)}
               >
-                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">Loading</span>
+                {gameState === GAME_STATE.PLAYER_MOVE
+                  ? (
+                    <div>Bet {formatCurrency(betAmount * 2)}</div>
+                  ) : (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>
+                      <span role="status">Loading</span>
+                    </div>
+                  )}
               </button>
+              {/* Fold Button */}
               <button
                 type="button"
                 className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-                disabled={true}
+                onClick={fold}
+                disabled={(gameState === GAME_STATE.LOADING ||
+                  gameState === GAME_STATE.PLAYER_ACTED)}
               >
-                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">fold</span>
+                {/* <div className="d-flex align-items-center justify-content-center">
+                  <span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>
+                  <span role="status">Fold</span>
+                </div> */}
+                <div className="d-flex align-items-center justify-content-center">
+                  {gameState !== GAME_STATE.PLAYER_MOVE &&
+                    (<span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>)
+                  }
+                  <span role="status">Fold</span>
+                </div>
               </button>
-            </span>
+            </div>
           )}
-        {gameState === GAME_STATE.PLAYER_MOVE && (
-          <span>
-            <button
-              type="button"
-              className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3"
-              onClick={bet}
-              disabled={chips < betAmount * 2}
-            >
-              Bet {formatCurrency(betAmount * 2)}
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-              onClick={fold}
-            >
-              fold
-            </button>
-          </span>
-        )}
       </div>
       {/* SECTION: Game History */}
       {gameState === GAME_STATE.IDLE || (
