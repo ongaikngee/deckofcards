@@ -483,6 +483,7 @@ const StudPoker = () => {
           gameState === GAME_STATE.DETERMINE_WINNER) && (
             <div>
               <div className="d-grid gap-2 col-sm-6">
+                {/* Start Game Button */}
                 <button
                   type="button"
                   className="btn btn-primary btn-lg"
@@ -494,6 +495,7 @@ const StudPoker = () => {
                   Bet Ante {formatCurrency(betAmount)}
                 </button>
               </div>
+              {/* Betting Amount Range Selector */}
               <div className="col-sm-6 mt-3">
                 <input
                   type="range"
@@ -506,6 +508,7 @@ const StudPoker = () => {
                   onChange={(e) => setBetAmount(e.target.valueAsNumber)}
                 ></input>
               </div>
+              {/* Modal for overbetting */}
               <Modal
                 modalID="overbet"
                 modalTitle="Bet May Limit Future Play"
@@ -526,45 +529,43 @@ const StudPoker = () => {
             </div>
           )}
         {(gameState === GAME_STATE.LOADING ||
-          gameState === GAME_STATE.PLAYER_ACTED) && (
-            <span>
+          gameState === GAME_STATE.PLAYER_ACTED ||
+          gameState === GAME_STATE.PLAYER_MOVE) && (
+            <div>
+              {/* Bet Button */}
               <button
                 type="button"
                 className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
-                disabled={true}
+                onClick={bet}
+                disabled={(gameState === GAME_STATE.LOADING ||
+                  gameState === GAME_STATE.PLAYER_ACTED ||
+                  chips < betAmount * 2)}
               >
-                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">Loading</span>
+                {gameState === GAME_STATE.PLAYER_MOVE
+                  ? (
+                    <div>Bet {formatCurrency(betAmount * 2)}</div>
+                  ) : (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                      <span role="status">Loading</span>
+                    </>
+                  )}
               </button>
+              {/* Fold Button */}
               <button
                 type="button"
                 className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-                disabled={true}
+                onClick={fold}
+                disabled={(gameState === GAME_STATE.LOADING ||
+                  gameState === GAME_STATE.PLAYER_ACTED)}
               >
-                <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                <span role="status">fold</span>
+                {gameState !== GAME_STATE.PLAYER_MOVE &&
+                  (<span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>)
+                }
+                <span role="status">Fold</span>
               </button>
-            </span>
+            </div>
           )}
-        {gameState === GAME_STATE.PLAYER_MOVE && (
-          <span>
-            <button
-              type="button"
-              className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3"
-              onClick={bet}
-              disabled={chips < betAmount * 2}
-            >
-              Bet {formatCurrency(betAmount * 2)}
-            </button>
-            <button
-              type="button"
-              className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-              onClick={fold}
-            >
-              fold
-            </button>
-          </span>
-        )}
       </div>
       {/* SECTION: Game History */}
       {gameState === GAME_STATE.IDLE || (
