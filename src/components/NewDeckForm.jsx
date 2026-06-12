@@ -23,13 +23,16 @@ export const NewDeckForm = ({ addGame }) => {
         className="modal fade"
         id="newDeck"
         tabIndex="-1"
-        aria-labelledby="exampleModalLabel"
+        aria-labelledby="newDeckForm"
         aria-hidden="true"
+        onClick={(e) => {
+          e.currentTarget.blur()
+        }}
       >
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5" id="exampleModalLabel">
+              <h1 className="modal-title fs-5" id="newDeckForm">
                 New Game options
               </h1>
               <button
@@ -37,6 +40,9 @@ export const NewDeckForm = ({ addGame }) => {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                onClick={(e) => {
+                  e.currentTarget.blur()
+                }}
               ></button>
             </div>
             <div className="modal-body">
@@ -83,6 +89,9 @@ export const NewDeckForm = ({ addGame }) => {
                   type="button"
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
+                  onClick={(e) => {
+                    e.currentTarget.blur()
+                  }}
                 >
                   Close
                 </button>
