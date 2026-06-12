@@ -313,55 +313,10 @@ const StudPoker = () => {
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState === GAME_STATE.LOADING && (
+        {gameState !== GAME_STATE.IDLE && (
           <div>
             <div className="mb-3">
-              <div className={headerFontSize}>Dealer's Hand</div>
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "120px" }}
-              >
-                <div className="d-flex justify-content-start align-items-center gap-2">
-                  <DisplayCards
-                    cards={[1, 1, 1, 1, 1]}
-                    size={dealerCardSize}
-                    type="revealNone"
-                  />
-                  <Spinner />
-                </div>
-              </div>
-              <div className={strengthFontSize}>
-                <span className="placeholder"></span>
-              </div>
-            </div>
-          </div>
-        )}
-        {(gameState === GAME_STATE.PLAYER_MOVE ||
-          gameState === GAME_STATE.PLAYER_ACTED) &&
-          dealerHand && (
-            <div>
-              <div className="mb-3">
-                <div className={headerFontSize}>Dealer's Hand</div>
-                <div
-                  className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                  style={{ height: "120px" }}
-                >
-                  <DisplayCards
-                    cards={[1, 1, 1, 1, ...dealerHand]}
-                    size={dealerCardSize}
-                    type="revealOne"
-                  />
-                </div>
-                <div className={strengthFontSize}>
-                  <span className="placeholder"></span>
-                </div>
-              </div>
-            </div>
-          )}
-
-        {gameState === GAME_STATE.DETERMINE_WINNER && dealerHand && (
-          <div>
-            <div className="mb-2">
+              {/* Dealer title part */}
               <div className="d-flex align-items-center gap-2">
                 {winner === GAME_RESULT.WINNER_DEALER && (
                   <CheckIcon
@@ -375,28 +330,44 @@ const StudPoker = () => {
                   <h6>
                     <span className="badge text-bg-success">Qualified</span>
                   </h6>
-                ) : (
+                ) : isDealerQualified === false ? (
                   <h6>
                     <span className="badge text-bg-danger">
                       Did not qualified
                     </span>
                   </h6>
+                ) : (
+                  <>&nbsp;</>
                 )}
               </div>
+              {/* Dealer display part */}
               <div
                 className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
                 style={{ height: "120px" }}
               >
-                <DisplayCards cards={dealerHand} size={dealerCardSize} />
+                <div className="d-flex justify-content-start align-items-center gap-2">
+                  <DisplayCards
+                    size={dealerCardSize}
+                    cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] :
+                      gameState === GAME_STATE.DETERMINE_WINNER ? (dealerHand) :
+                        ([1, 1, 1, 1, ...dealerHand])
+                    }
+                    type={gameState === GAME_STATE.LOADING ? "reavealNone" :
+                      gameState === GAME_STATE.DETERMINE_WINNER ? "revealAll" : "revealOne"
+                    }
+                  />
+                  {gameState === GAME_STATE.LOADING && <Spinner />}
+                </div>
               </div>
               <div className={strengthFontSize}>
                 <span className="badge text-bg-light">
-                  {dealerStrength.descr}
+                  {gameState === GAME_STATE.DETERMINE_WINNER ?
+                    dealerStrength.descr
+                    : <>&nbsp;</>}
                 </span>
               </div>
             </div>
-          </div>
-        )}
+          </div>)}
       </div>
       {/* SECTION : Player Deck */}
       <div>
