@@ -30,7 +30,7 @@ const StudPoker = () => {
   const [betAmount, setBetAmount] = useState(50);
   const [chartData, setChartData] = useState([]);
 
-  const [payout, setpayout] = useState("");
+  const [payout, setPayout] = useState("");
   const [payoutAmt, setPayoutAmt] = useState(0);
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
@@ -77,7 +77,7 @@ const StudPoker = () => {
     setIsDealerQualified(undefined);
     setPlayerAction(null);
     setWinner("");
-    setpayout("");
+    setPayout("");
     setPayoutAmt(0);
     setWinningHand("");
 
@@ -226,7 +226,7 @@ const StudPoker = () => {
           determinePlayerPayoutMultiplier(playerStrength);
         const winning = betAmount * payoutMultiplier;
         setPayoutAmt(betAmount * 2 + winning);
-        setpayout(`Bet + Ante with ${payoutMultiplier}x`);
+        setPayout(`Bet + Ante with ${payoutMultiplier}x`);
         setChips((prev) => prev + betAmount * 3 + winning);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
         gameRecord.payoutAmt = betAmount * 2 + winning;
@@ -313,59 +313,60 @@ const StudPoker = () => {
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState !== GAME_STATE.IDLE && (
-          <div>
-            <div className="mb-3">
-              {/* Dealer title part */}
-              <div className="d-flex align-items-center gap-2">
-                {winner === GAME_RESULT.WINNER_DEALER && (
-                  <CheckIcon
-                    size={checkIconSize}
-                    weight={checkIconWeight}
-                    className="text-success"
-                  />
-                )}
-                <div className={headerFontSize}>Dealer's Hand</div>
-                {isDealerQualified ? (
-                  <h6>
-                    <span className="badge text-bg-success">Qualified</span>
-                  </h6>
-                ) : isDealerQualified === false ? (
-                  <h6>
-                    <span className="badge text-bg-danger">
-                      Did not qualified
-                    </span>
-                  </h6>
-                ) : (
-                  <>&nbsp;</>
-                )}
-              </div>
-              {/* Dealer display part */}
-              <div
-                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                style={{ height: "120px" }}
-              >
-                <div className="d-flex justify-content-start align-items-center gap-2">
-                  <DisplayCards
-                    size={dealerCardSize}
-                    cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] :
-                      gameState === GAME_STATE.DETERMINE_WINNER ? (dealerHand) :
-                        ([1, 1, 1, 1, ...dealerHand])
-                    }
-                    type={gameState === GAME_STATE.LOADING ? "reavealNone" :
-                      gameState === GAME_STATE.DETERMINE_WINNER ? "revealAll" : "revealOne"
-                    }
-                  />
-                  {gameState === GAME_STATE.LOADING && <Spinner />}
+        {gameState !== GAME_STATE.IDLE &&
+          (
+            <div>
+              <div className="mb-3">
+                {/* Dealer title part */}
+                <div className="d-flex align-items-center gap-2">
+                  {winner === GAME_RESULT.WINNER_DEALER && (
+                    <CheckIcon
+                      size={checkIconSize}
+                      weight={checkIconWeight}
+                      className="text-success"
+                    />
+                  )}
+                  <div className={headerFontSize}>Dealer's Hand</div>
+                  {isDealerQualified ? (
+                    <h6>
+                      <span className="badge text-bg-success">Qualified</span>
+                    </h6>
+                  ) : isDealerQualified === false ? (
+                    <h6>
+                      <span className="badge text-bg-danger">
+                        Did not qualified
+                      </span>
+                    </h6>
+                  ) : (
+                    <>&nbsp;</>
+                  )}
+                </div>
+                {/* Dealer display part */}
+                <div
+                  className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                  style={{ height: "120px" }}
+                >
+                  <div className="d-flex justify-content-start align-items-center gap-2">
+                    <DisplayCards
+                      size={dealerCardSize}
+                      cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] :
+                        gameState === GAME_STATE.DETERMINE_WINNER ? (dealerHand) :
+                          ([1, 1, 1, 1, ...dealerHand])
+                      }
+                      type={gameState === GAME_STATE.LOADING ? "reavealNone" :
+                        gameState === GAME_STATE.DETERMINE_WINNER ? "revealAll" : "revealOne"
+                      }
+                    />
+                    {gameState === GAME_STATE.LOADING && <Spinner />}
+                  </div>
+                </div>
+                <div className={strengthFontSize}>
+                  {gameState === GAME_STATE.DETERMINE_WINNER
+                    ? <span className="badge text-bg-light">{dealerStrength.descr}</span>
+                    : <>&nbsp;</>}
                 </div>
               </div>
-              <div className={strengthFontSize}>
-                {gameState === GAME_STATE.DETERMINE_WINNER
-                  ? <span className="badge text-bg-light">{dealerStrength.descr}</span>
-                  : <>&nbsp;</>}
-              </div>
-            </div>
-          </div>)}
+            </div>)}
       </div>
       {/* SECTION : Player Deck */}
       <div>
