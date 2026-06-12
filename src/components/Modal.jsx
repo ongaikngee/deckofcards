@@ -15,6 +15,9 @@ const Modal = ({
       tabIndex="-1"
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
+      onClick={(e) => {
+        e.currentTarget.blur()
+      }}
     >
       <div className="modal-dialog">
         <div className="modal-content">
@@ -27,6 +30,9 @@ const Modal = ({
               className="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
+              onClick={(e) => {
+                e.currentTarget.blur()
+              }}
             ></button>
           </div>
           <div className="modal-body">{modalInstruction}</div>
@@ -35,6 +41,9 @@ const Modal = ({
               type="button"
               className="btn btn-secondary"
               data-bs-dismiss="modal"
+              onClick={(e) => {
+                e.currentTarget.blur()
+              }}
             >
               {closeBtnLabel}
             </button>
