@@ -12,7 +12,7 @@ import Modal from "../components/Modal";
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { determinePlayerPayoutMultiplier } from "../utils/studPokerHelper";
-import { GAME_STATE, PLAYER_ACTION, GAME_RESULT } from "../constants/games";
+import { GAME_STATE, PLAYER_ACTION, GAME_RESULT, BETS_SETTINGS } from "../constants/games";
 
 // 3rd party libraries
 import { Hand } from "pokersolver";
@@ -42,8 +42,8 @@ const StudPoker = () => {
   const [gameHistory, setGameHistory] = useState([]);
 
   // Chips states
-  const [chips, setChips] = useState(1000);
-  const [betAmount, setBetAmount] = useState(50);
+  const [chips, setChips] = useState(BETS_SETTINGS.INITIAL_CHIPS);
+  const [betAmount, setBetAmount] = useState(BETS_SETTINGS.DEFAULT_BET);
   const [isOverbet, setIsOverbet] = useState(undefined)
 
   // Settings
@@ -445,9 +445,9 @@ const StudPoker = () => {
                   type="range"
                   className="form-range"
                   id="betSize"
-                  min="25"
-                  max="500"
-                  step="25"
+                  min={BETS_SETTINGS.BET_MIN}
+                  max={BETS_SETTINGS.BET_MAX}
+                  step={BETS_SETTINGS.BET_STEP}
                   value={betAmount}
                   onChange={(e) => setBetAmount(e.target.valueAsNumber)}
                 ></input>
