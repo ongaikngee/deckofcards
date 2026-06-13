@@ -255,16 +255,16 @@ const StudPoker = () => {
   };
 
   useEffect(() => {
-    if (gameState === GAME_STATE.LOADING) {
-      initGame();
-    }
-
-    if (gameState === GAME_STATE.PLAYER_ACTED) {
-      getDealerRemainingCards();
-    }
-
-    if (gameState === GAME_STATE.DETERMINE_WINNER) {
-      determineWinner();
+    switch (gameState) {
+      case GAME_STATE.LOADING:
+        initGame()
+        break
+      case GAME_STATE.PLAYER_ACTED:
+        getDealerRemainingCards()
+        break
+      case GAME_STATE.DETERMINE_WINNER:
+        determineWinner()
+        break
     }
   }, [gameState]);
 
@@ -435,7 +435,7 @@ const StudPoker = () => {
                 >
                   <div className="d-flex align-items-center justify-content-center gap-3">
                     Bet Ante {formatCurrency(betAmount)}
-                    {isOverbet && <WarningCircleIcon size={32} aria-hidden="true"/>}
+                    {isOverbet && <WarningCircleIcon size={32} aria-hidden="true" />}
                   </div>
                 </button>
               </div>
