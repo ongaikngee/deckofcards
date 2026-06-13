@@ -16,9 +16,11 @@ import { GAME_STATE, PLAYER_ACTION, GAME_RESULT } from "../constants/games";
 
 // 3rd party libraries
 import { Hand } from "pokersolver";
-import { CheckIcon } from "@phosphor-icons/react";
+import { CheckIcon, WarningCircleIcon } from "@phosphor-icons/react";
 
 const StudPoker = () => {
+
+  // Game cards state
   const [gameState, setGameState] = useState(GAME_STATE.IDLE);
   const [deck, setDeck] = useState(null);
   const [error, setError] = useState("");
@@ -26,10 +28,8 @@ const StudPoker = () => {
   const [dealerHand, setDealerHand] = useState([]);
   const [playerStrength, setPlayerStrength] = useState(null);
   const [dealerStrength, setDealerStrength] = useState(null);
-  const [chips, setChips] = useState(1000);
-  const [betAmount, setBetAmount] = useState(50);
-  const [chartData, setChartData] = useState([]);
 
+  // Payout states
   const [payout, setPayout] = useState("");
   const [payoutAmt, setPayoutAmt] = useState(0);
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
@@ -37,9 +37,16 @@ const StudPoker = () => {
   const [winner, setWinner] = useState("");
   const [winningHand, setWinningHand] = useState("");
 
+  // History states
+  const [chartData, setChartData] = useState([]);
   const [gameHistory, setGameHistory] = useState([]);
 
-  //settings
+  // Chips states
+  const [chips, setChips] = useState(1000);
+  const [betAmount, setBetAmount] = useState(50);
+  const [isOverbet, setIsOverbet] = useState(undefined)
+
+  // Settings
   const dealerCardSize = 60;
   const checkIconSize = 28;
   const checkIconWeight = "bold";
@@ -272,6 +279,10 @@ const StudPoker = () => {
     }
   }, [gameHistory]);
 
+  useEffect(() => {
+    setIsOverbet(betAmount * 3 > chips)
+  }, [betAmount])
+
   const startGame = () => {
     setGameState(GAME_STATE.LOADING);
   };
@@ -418,11 +429,14 @@ const StudPoker = () => {
                   type="button"
                   className={`btn btn-lg ${betAmount * 3 <= chips ? "btn-primary" : "btn-warning opacity-75"}`}
                   disabled={chips < betAmount}
-                  onClick={betAmount * 3 <= chips ? startGame : undefined}
-                  data-bs-toggle={betAmount * 3 <= chips ? undefined : "modal"}
-                  data-bs-target={betAmount * 3 <= chips ? undefined : "#overbet"}
+                  onClick={isOverbet ? undefined : startGame}
+                  data-bs-toggle={isOverbet ? "modal" : undefined}
+                  data-bs-target={isOverbet ? "#overbet" : undefined}
                 >
-                  Bet Ante {formatCurrency(betAmount)}
+                  <div className="d-flex align-items-center justify-content-center gap-3">
+                    Bet Ante {formatCurrency(betAmount)}
+                    {isOverbet && <WarningCircleIcon size={32} aria-hidden="true"/>}
+                  </div>
                 </button>
               </div>
               {/* Betting Amount Range Selector */}
@@ -489,10 +503,6 @@ const StudPoker = () => {
                 disabled={(gameState === GAME_STATE.LOADING ||
                   gameState === GAME_STATE.PLAYER_ACTED)}
               >
-                {/* <div className="d-flex align-items-center justify-content-center">
-                  <span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>
-                  <span role="status">Fold</span>
-                </div> */}
                 <div className="d-flex align-items-center justify-content-center">
                   {gameState !== GAME_STATE.PLAYER_MOVE &&
                     (<span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>)
