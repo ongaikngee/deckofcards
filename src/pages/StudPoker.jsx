@@ -319,6 +319,11 @@ const StudPoker = () => {
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
         </div>
       </div>
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+        </div>
+      )}
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
@@ -425,7 +430,8 @@ const StudPoker = () => {
                 {/* Start Game Button */}
                 <button
                   type="button"
-                  className={`btn btn-lg ${betAmount * 3 <= chips ? "btn-primary" : "btn-warning opacity-75"}`}
+                  // className={`btn btn-lg ${betAmount * 3 <= chips ? "btn-primary" : "btn-warning opacity-100"}`}
+                  className="btn btn-lg btn-primary"
                   disabled={chips < betAmount}
                   onClick={isOverbet ? undefined : startGame}
                   data-bs-toggle={isOverbet ? "modal" : undefined}
@@ -433,7 +439,7 @@ const StudPoker = () => {
                 >
                   <div className="d-flex align-items-center justify-content-center gap-3">
                     Bet Ante {formatCurrency(betAmount)}
-                    {isOverbet && <WarningCircleIcon size={32} aria-hidden="true" />}
+                    {isOverbet && <WarningCircleIcon size={32} aria-hidden="true" className="text-warning"/>}
                   </div>
                 </button>
               </div>
