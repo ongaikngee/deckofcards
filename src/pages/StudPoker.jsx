@@ -279,7 +279,7 @@ const StudPoker = () => {
 
   useEffect(() => {
     setIsOverbet(betAmount * 3 > chips)
-  }, [betAmount])
+  }, [betAmount, chips])
 
   const startGame = () => {
     setGameState(GAME_STATE.LOADING);
@@ -430,14 +430,14 @@ const StudPoker = () => {
                 {/* Start Game Button */}
                 <button
                   type="button"
-                  // className={`btn btn-lg ${betAmount * 3 <= chips ? "btn-primary" : "btn-warning opacity-100"}`}
                   className="btn btn-lg btn-primary"
                   disabled={chips < betAmount}
                   onClick={isOverbet ? undefined : startGame}
                   data-bs-toggle={isOverbet ? "modal" : undefined}
                   data-bs-target={isOverbet ? "#overbet" : undefined}
                 >
-                  <div className="d-flex align-items-center justify-content-center gap-3">
+                  <div className={`d-flex align-items-center justify-content-center gap-3 
+                    ${isOverbet && "text-warning"}`}>
                     Bet Ante {formatCurrency(betAmount)}
                     {isOverbet && <WarningCircleIcon size={32} aria-hidden="true" className="text-warning"/>}
                   </div>
