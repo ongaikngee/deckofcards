@@ -4,14 +4,20 @@ export const IMG_DECK_BACK = "https://deckofcardsapi.com/static/img/back.png";
 // Change this value to increase/decrease how much of each card remains visible.
 export const MIN_CARD_VISIBLE_SPACE = 19; // px — configurable: try 10, 15, 20
 
+export const BETS_SETTINGS = Object.freeze({
+	INITIAL_CHIPS: 1000,
+	DEFAULT_BET: 50,
+	BET_MIN: 25,
+	BET_MAX: 500,
+	BET_STEP: 25,
+})
+
 export const GAME_STATE = Object.freeze({
 	IDLE: "idle",
 	LOADING: "loading",
 	PLAYER_MOVE: "playerMove",
 	PLAYER_ACTED: "playerActed",
 	DETERMINE_WINNER: "determineWinner",
-	// PLAYER_BET: "playerBet",
-	// PLAYER_FOLDS: "playerFolds",
 });
 
 export const PLAYER_ACTION = Object.freeze({
