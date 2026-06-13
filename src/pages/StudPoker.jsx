@@ -367,7 +367,7 @@ const StudPoker = () => {
                         gameState === GAME_STATE.DETERMINE_WINNER ? (dealerHand) :
                           ([1, 1, 1, 1, ...dealerHand])
                       }
-                      type={gameState === GAME_STATE.LOADING ? "reavealNone" :
+                      type={gameState === GAME_STATE.LOADING ? "revealNone" :
                         gameState === GAME_STATE.DETERMINE_WINNER ? "revealAll" : "revealOne"
                       }
                     />
@@ -405,8 +405,8 @@ const StudPoker = () => {
               <DisplayCards
                 className="bg-success"
                 cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] : playerHand}
-                type={gameState === GAME_STATE.LOADING ? "reavealNone" :
-                  playerAction === PLAYER_ACTION.FOLD ? "reavealNone" : "revealAll"
+                type={gameState === GAME_STATE.LOADING ? "revealNone" :
+                  playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"
                 }
               />
             </div>
