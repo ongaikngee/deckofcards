@@ -416,7 +416,6 @@ const StudPoker = () => {
                 {/* Start Game Button */}
                 <button
                   type="button"
-                  // className="btn btn-lg {betAmount * 3 <= chips ? btn-primary : btn-warning}"
                   className={`btn btn-lg ${betAmount * 3 <= chips ? "btn-primary" : "btn-warning opacity-75"}`}
                   disabled={chips < betAmount}
                   onClick={betAmount * 3 <= chips ? startGame : undefined}
