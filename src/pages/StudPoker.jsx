@@ -35,7 +35,6 @@ const StudPoker = () => {
   const [isDealerQualified, setIsDealerQualified] = useState(undefined);
   const [playerAction, setPlayerAction] = useState("");
   const [winner, setWinner] = useState("");
-  const [winningHand, setWinningHand] = useState("");
 
   // History states
   const [chartData, setChartData] = useState([]);
@@ -86,7 +85,6 @@ const StudPoker = () => {
     setWinner("");
     setPayout("");
     setPayoutAmt(0);
-    setWinningHand("");
 
     try {
       const fetchDeck = await getNewDeck({
