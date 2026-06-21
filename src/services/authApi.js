@@ -1,4 +1,5 @@
-const BASE_URL = "http://127.0.0.1:8000"
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // export async function login(username, password) {
 //   try {
@@ -25,7 +26,7 @@ const BASE_URL = "http://127.0.0.1:8000"
 export const registerUser = async (username, password) => {
 
   try {
-    const response = await fetch(`${BASE_URL}/users/`, {
+    const response = await fetch(`${API_URL}/users/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
