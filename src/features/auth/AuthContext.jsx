@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { loginUser } from "../../services/authApi";
+import { loginUser, registerUser } from "../../services/authApi";
 
 const AuthContext = createContext();
 
@@ -21,12 +21,22 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  const register = async (id, password) => {
+    const response = await registerUser(id, password)
+    if (response) {
+      setUser("user");
+      return true
+    }
+    return false
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
         login,
         logout,
+        register,
         isAuthenticated: !!user,
       }}
     >

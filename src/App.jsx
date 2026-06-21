@@ -11,6 +11,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import User from "./pages/User";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import StudPoker from "./pages/StudPoker";
 
 import UserMain from "./features/users/UserMain";
@@ -33,6 +34,7 @@ function App() {
           />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/user" element={<User />}>
             <Route index element={<ProtectedRoute><UserMain /></ProtectedRoute>} />
