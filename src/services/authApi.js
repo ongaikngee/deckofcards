@@ -1,3 +1,5 @@
+const BASE_URL = "http://127.0.0.1:8000"
+
 // export async function login(username, password) {
 //   try {
 //     const response = await fetch("/api/auth/login", {
@@ -19,6 +21,29 @@
 //     throw error;
 //   }
 // }
+
+export const registerUser = async (username, password) => {
+
+  try {
+    const response = await fetch(`${BASE_URL}/users/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Registration failed");
+    }
+    const data = response.json()
+    return data
+
+  } catch (e) {
+    console.error("Error during registration:", e)
+    throw e
+  }
+}
 
 // export async function register(username, password) {
 //   try {
