@@ -77,6 +77,34 @@ export const registerUser = async (username, password) => {
   return data;
 };
 
+export const updatePasswordAPI = async (user_id, currentPassword, newPassword) => {
+  const response = await fetch(`${API_URL}/users/${user_id}/update-password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  });
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const errorMessage = data?.detail || data?.message || "Password update failed";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  return data;
+}
+
+
 
 // export async function loginUser(username, password) {
 //   // simulate API delay

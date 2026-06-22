@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { loginUser, registerUser } from "../../services/authApi";
+import { loginUser, registerUser, updatePasswordAPI } from "../../services/authApi";
 
 const AuthContext = createContext();
 
@@ -24,6 +24,11 @@ export function AuthProvider({ children }) {
     return response;
   };
 
+  const updatePassword = async (user_id, currentPW, newPW) => {
+    const response = await updatePasswordAPI(user_id, currentPW, newPW);
+    return response
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -31,6 +36,7 @@ export function AuthProvider({ children }) {
         login,
         logout,
         register,
+        updatePassword,
         isAuthenticated: !!user,
       }}
     >

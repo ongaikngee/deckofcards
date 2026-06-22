@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import UpdatePassword from "./UpdatePassword";
+import Chips from "./Chips";
 import { GearIcon } from "@phosphor-icons/react";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
+  const [showUpdatePassword, setShowUpdatePassword] = useState(false);
   const { logout } = useAuth();
 
   const navigate = useNavigate();
@@ -19,15 +22,25 @@ const Settings = () => {
       </h2>
       <div className="container m-3">
         <form>
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={() => formLogout()}
-          >
-            Log out
-          </button>
+          <div className="d-flex gap-3">
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => formLogout()}
+            >
+              Log out
+            </button>
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => setShowUpdatePassword(!showUpdatePassword)}
+            >
+              Update Password
+            </button>
+          </div>
         </form>
       </div>
+      {showUpdatePassword && <UpdatePassword />}
     </div>
   );
 };
