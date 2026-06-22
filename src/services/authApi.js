@@ -24,27 +24,31 @@ const API_URL = import.meta.env.VITE_API_URL;
 // }
 
 export const registerUser = async (username, password) => {
+  const response = await fetch(`${API_URL}/users/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  });
 
+  let data;
   try {
-    const response = await fetch(`${API_URL}/users/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Registration failed");
-    }
-    const data = response.json()
-    return data
-
-  } catch (e) {
-    console.error("Error during registration:", e)
-    throw e
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
   }
-}
+
+  if (!response.ok) {
+    const errorMessage = data?.detail || data?.message || "Registration failed";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  return data;
+};
 
 // export async function register(username, password) {
 //   try {

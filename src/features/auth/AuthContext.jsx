@@ -22,13 +22,10 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (id, password) => {
-    const response = await registerUser(id, password)
-    if (response) {
-      setUser("user");
-      return true
-    }
-    return false
-  }
+    const response = await registerUser(id, password);
+    setUser(response?.user ?? id);
+    return response;
+  };
 
   return (
     <AuthContext.Provider
