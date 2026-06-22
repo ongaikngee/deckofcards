@@ -6,16 +6,12 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  async function login(id, password) {
+  const login = async (id, password) => {
     const response = await loginUser(id, password);
 
-    if (response.success) {
-      setUser(response.user);
-      return true;
-    }
-
-    return false;
-  }
+    setUser(response?.user_id ?? id);
+    return response;
+  };
 
   function logout() {
     setUser(null);
@@ -23,7 +19,8 @@ export function AuthProvider({ children }) {
 
   const register = async (id, password) => {
     const response = await registerUser(id, password);
-    setUser(response?.user ?? id);
+
+    setUser(response?.user_id ?? id);
     return response;
   };
 

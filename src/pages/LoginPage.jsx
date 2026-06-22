@@ -11,18 +11,37 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const formLogin = async ({ username, password }) => {
-    try {
-      const response = await login(username, password);
+    if (username.trim() === "" || password.trim() === "" ) {
+			setError("All fields are required.");
+			return;
+		}
 
-      if (response) {
-        navigate("/");
-      } else {
-        setError("Invalid credentials");
-      }
+
+    try {
+      console.log("helloooo, logining")
+      const response = await login(username, password);
+      console.log('no prob', response)
+      navigate("/");
     } catch (e) {
-      console.error(e);
-      throw e;
+			console.error(e);
+			setError(e?.message || "An error occurred during login. Please try again.");
     }
+
+
+
+    // try {
+		// 	await register(username, password);
+		// 	setSuccess("User registered successfully!");
+		// 	setUsername("");
+		// 	setPassword("");
+		// 	setConfirmPassword("");
+		// } catch (e) {
+		// 	console.error(e);
+		// 	setError(e?.message || "An error occurred during registration. Please try again.");
+		// }
+
+
+
   };
 
   return (
@@ -60,34 +79,16 @@ const LoginPage = () => {
         >
           Log in
         </button>
-        <button type="button" className="btn" onClick={() => navigate(`/register`)}>Register</button>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => navigate(`/register`)}
+        >
+          Register
+        </button>
       </form>
-
-      {/* <form onSubmit={handleSubmit}>
-        <div>
-          <label>ID</label>
-          <input
-            type="text"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <button type="submit">Login</button>
-      </form>
-
-      {error && <p>{error}</p>} */}
-
-      <div className="my-2 text-danger">{error && <p>{error}</p>}</div>
+      {/* <div className="mt-2 alert alert-danger">{error && <p>{error}</p>}</div> */}
+      {error && <div className="mt-3 alert alert-danger">{error}</div>}
     </div>
   );
 };
