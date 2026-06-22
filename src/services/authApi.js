@@ -1,29 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-
-// export async function login(username, password) {
-//   try {
-//     const response = await fetch("/api/auth/login", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({ username, password }),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error("Login failed");
-//     }
-
-//     const data = await response.json();
-//     return data.token; // Assuming the token is returned in the response
-//   } catch (error) {
-//     console.error("Error during login:", error);
-//     throw error;
-//   }
-// }
-
-export const loginUser = async(username, password) => {
+export const loginUser = async (username, password) => {
   const response = await fetch(`${API_URL}/users/login`, {
     method: "POST",
     headers: {
@@ -77,13 +54,20 @@ export const registerUser = async (username, password) => {
   return data;
 };
 
-export const updatePasswordAPI = async (user_id, currentPassword, newPassword) => {
+export const updatePasswordAPI = async (
+  user_id,
+  currentPassword,
+  newPassword,
+) => {
   const response = await fetch(`${API_URL}/users/${user_id}/update-password`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
   });
 
   let data;
@@ -94,7 +78,8 @@ export const updatePasswordAPI = async (user_id, currentPassword, newPassword) =
   }
 
   if (!response.ok) {
-    const errorMessage = data?.detail || data?.message || "Password update failed";
+    const errorMessage =
+      data?.detail || data?.message || "Password update failed";
     const error = new Error(errorMessage);
     error.status = response.status;
     error.payload = data;
@@ -102,26 +87,31 @@ export const updatePasswordAPI = async (user_id, currentPassword, newPassword) =
   }
 
   return data;
-}
+};
 
+export const deleteUserAPI = async (user_id) => {
+  const response = await fetch(`${API_URL}/users/${user_id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
+  let data;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
+  }
 
-// export async function loginUser(username, password) {
-//   // simulate API delay
-//   await new Promise((resolve) => setTimeout(resolve, 500));
+  if (!response.ok) {
+    const errorMessage =
+      data?.detail || data?.message || "User deletion failed";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
 
-//   // fake validation
-//   if (username === "admin" && password === "password") {
-//     return {
-//       success: true,
-//       user: {
-//         id: 1,
-//         name: "John Doe",
-//       },
-//     };
-//   }
-
-//   return {
-//     success: false,
-//   };
-// }
+  return data;
+};
