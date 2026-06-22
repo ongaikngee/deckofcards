@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from "../features/auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
 
@@ -7,11 +8,14 @@ const RegisterPage = () => {
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [error, setError] = useState(null)
+	const [success, setSuccess] = useState(null)
 
 	const { register } = useAuth()
+	const navigate = useNavigate();
 
 	const formRegister = async () => {
 		setError(null)
+		setSuccess(null)
 
 		if (password !== confirmPassword) {
 			setError("Password is not matching...")
@@ -21,12 +25,13 @@ const RegisterPage = () => {
 		try {
 			const response = await register(username, password)
 			if (response) {
-				console.log("success")
+				setSuccess("User registered successfully!")
 			} else {
-				console.log('not successful')
+				setError("Failed to register user.")
 			}
 		} catch (e) {
 			console.error(e)
+			setError("An error occurred during registration. Please try again.")
 			throw new Error("Failed to register user.");
 		}
 
@@ -81,8 +86,10 @@ const RegisterPage = () => {
 				>
 					Register
 				</button>
+				<button type="button" className="btn mt-3" onClick={() => navigate(`/login`)}>Back to Login</button>
 			</form>
 			{error && <div className='mt-5 alert alert-danger'>{error}</div>}
+			{success && <div className='mt-5 alert alert-success'>{success}</div>}
 		</div>
 	)
 }

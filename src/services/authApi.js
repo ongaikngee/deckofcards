@@ -35,7 +35,7 @@ export const registerUser = async (username, password) => {
     });
 
     if (!response.ok) {
-      throw new Error("Registration failed");
+      throw new Error("Registration failed lah");
     }
     const data = response.json()
     return data
