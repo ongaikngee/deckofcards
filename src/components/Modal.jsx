@@ -7,6 +7,8 @@ const Modal = ({
   closeBtnLabel = "Close",
   okBtnLabel = "Ok",
   okBtnFunc = null,
+  okBtnClass = "btn-primary",
+  closeBtnClass = "btn-secondary",
 }) => {
   return (
     <div
@@ -39,7 +41,7 @@ const Modal = ({
           <div className="modal-footer">
             <button
               type="button"
-              className="btn btn-secondary"
+              className={`btn ${closeBtnClass}`}
               data-bs-dismiss="modal"
               onClick={(e) => {
                 e.currentTarget.blur()
@@ -49,7 +51,7 @@ const Modal = ({
             </button>
             <button
               type="button"
-              className="btn btn-primary"
+              className={`btn ${okBtnClass}`}
               data-bs-dismiss="modal"
               onClick={() => okBtnFunc?.()}
             >
