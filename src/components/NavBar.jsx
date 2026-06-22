@@ -47,7 +47,7 @@ function Navbar() {
               </>
             )}
             {user && (
-              <div className="d-flex flex-column flex-sm-row align-items-start align-items-md-cente gap-2">
+              <div className="d-flex flex-column flex-sm-row align-items-start align-items-md-center gap-2">
                 <li>
                   <Link className="nav-link" to="/" onClick={closeNavbar}>
                     Deck of Cards
