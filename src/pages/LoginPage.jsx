@@ -11,37 +11,31 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const formLogin = async ({ username, password }) => {
-    if (username.trim() === "" || password.trim() === "" ) {
-			setError("All fields are required.");
-			return;
-		}
-
-
-    try {
-      console.log("helloooo, logining")
-      const response = await login(username, password);
-      console.log('no prob', response)
-      navigate("/");
-    } catch (e) {
-			console.error(e);
-			setError(e?.message || "An error occurred during login. Please try again.");
+    if (username.trim() === "" || password.trim() === "") {
+      setError("All fields are required.");
+      return;
     }
 
-
+    try {
+      const response = await login(username, password);
+      navigate("/");
+    } catch (e) {
+      console.error(e);
+      setError(
+        e?.message || "An error occurred during login. Please try again.",
+      );
+    }
 
     // try {
-		// 	await register(username, password);
-		// 	setSuccess("User registered successfully!");
-		// 	setUsername("");
-		// 	setPassword("");
-		// 	setConfirmPassword("");
-		// } catch (e) {
-		// 	console.error(e);
-		// 	setError(e?.message || "An error occurred during registration. Please try again.");
-		// }
-
-
-
+    // 	await register(username, password);
+    // 	setSuccess("User registered successfully!");
+    // 	setUsername("");
+    // 	setPassword("");
+    // 	setConfirmPassword("");
+    // } catch (e) {
+    // 	console.error(e);
+    // 	setError(e?.message || "An error occurred during registration. Please try again.");
+    // }
   };
 
   return (

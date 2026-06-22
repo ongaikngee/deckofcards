@@ -3,8 +3,6 @@ import { useAuth } from "../features/auth/AuthContext";
 
 import Collapse from "bootstrap/js/dist/collapse"
 
-import { PersonArmsSpreadIcon } from "@phosphor-icons/react";
-
 function Navbar() {
   const { user } = useAuth();
 
@@ -49,7 +47,7 @@ function Navbar() {
               </>
             )}
             {user && (
-              <>
+              <div className="d-flex justify-content align-items-center">
                 <li>
                   <Link className="nav-link" to="/" onClick={closeNavbar}>
                     Deck of Cards
@@ -62,10 +60,10 @@ function Navbar() {
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/user" onClick={closeNavbar}>
-                    <PersonArmsSpreadIcon size={24} />
+                    <div className="border border-danger rounded-circle text-warning p-2">{user}</div>
                   </Link>
                 </li>
-              </>
+              </div>
             )}
           </ul>
         </div>
