@@ -59,7 +59,8 @@ const LoginPage = () => {
           onClick={() => formLogin({ username, password })}
         >
           Log in
-        </button><button type="button" className="btn" onClick={() => navigate(`/register`)}>Register</button>
+        </button>
+        <button type="button" className="btn" onClick={() => navigate(`/register`)}>Register</button>
       </form>
 
       {/* <form onSubmit={handleSubmit}>

@@ -17,22 +17,25 @@ const RegisterPage = () => {
 		setError(null)
 		setSuccess(null)
 
+		if (username.trim() === "" || password.trim() === "" || confirmPassword.trim() === "") {
+			setError("All fields are required.");
+			return;
+		}
+
 		if (password !== confirmPassword) {
 			setError("Password is not matching...")
 			return
 		}
 
 		try {
-			const response = await register(username, password)
-			if (response) {
-				setSuccess("User registered successfully!")
-			} else {
-				setError("Failed to register user.")
-			}
+			await register(username, password);
+			setSuccess("User registered successfully!");
+			setUsername("");
+			setPassword("");
+			setConfirmPassword("");
 		} catch (e) {
-			console.error(e)
-			setError("An error occurred during registration. Please try again.")
-			throw new Error("Failed to register user.");
+			console.error(e);
+			setError(e?.message || "An error occurred during registration. Please try again.");
 		}
 
 
@@ -86,7 +89,7 @@ const RegisterPage = () => {
 				>
 					Register
 				</button>
-				<button type="button" className="btn mt-3" onClick={() => navigate(`/login`)}>Back to Login</button>
+				<button type="button" className="btn" onClick={() => navigate(`/login`)}>Back to Login</button>
 			</form>
 			{error && <div className='mt-5 alert alert-danger'>{error}</div>}
 			{success && <div className='mt-5 alert alert-success'>{success}</div>}
