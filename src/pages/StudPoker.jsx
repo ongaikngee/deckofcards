@@ -12,7 +12,10 @@ import { useAuth } from "../features/auth/AuthContext";
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
-import { getChipsHistoryService } from "../services/chipService";
+import {
+  getChipsHistoryService,
+  updateChipsAmtService,
+} from "../services/chipService";
 import { determinePlayerPayoutMultiplier } from "../utils/studPokerHelper";
 import {
   GAME_STATE,
@@ -74,6 +77,21 @@ const StudPoker = () => {
     }
   };
 
+  const updateChipCount = async (reason, amount) => {
+    setError("");
+    try {
+      const response = await updateChipsAmtService({
+        user_id: user,
+        amt: amount,
+        reason: reason,
+      });
+      setTempChips((prev) => prev + amount);
+    } catch (e) {
+      const errorMessage = e?.detail || e?.message || "Top up failed";
+      setError("Top up failed");
+    }
+  };
+
   const getStrengthOfHand = (hands) => {
     const codes = hands.map((card) => card.code.replace("0", "T"));
     const hand = Hand.solve(codes);
@@ -130,6 +148,7 @@ const StudPoker = () => {
 
       // deduct chips for the bet
       setChips((prev) => prev - betAmount);
+      updateChipCount(CHIP_UPDATE_REASON.ANTE, -1 * betAmount);
     } catch (e) {
       console.error(e);
       throw e;
@@ -202,12 +221,14 @@ const StudPoker = () => {
 
     // player fold,
     if (playerAction === PLAYER_ACTION.FOLD) {
+      const lossAmt = -1 * betAmount;
       setWinner(GAME_RESULT.WINNER_DEALER);
-      setPayoutAmt(-1 * betAmount);
+      setPayoutAmt(lossAmt);
       gameRecord.winner = GAME_RESULT.WINNER_DEALER;
       gameRecord.playerAction = PLAYER_ACTION.FOLD;
-      gameRecord.payoutAmt = -1 * betAmount;
+      gameRecord.payoutAmt = lossAmt;
       setGameHistory((prev) => [gameRecord, ...prev]);
+      updateChipCount(CHIP_UPDATE_REASON.LOSS, -1 * betAmount);
       return;
     }
 
@@ -222,6 +243,7 @@ const StudPoker = () => {
       gameRecord.payoutAmt = betAmount;
       setGameHistory((prev) => [gameRecord, ...prev]);
 
+      updateChipCount(CHIP_UPDATE_REASON.PAYOUT, betAmount + betAmount);
       return;
     }
 
@@ -259,12 +281,14 @@ const StudPoker = () => {
         gameRecord.payoutAmt = betAmount * 2 + winning;
         gameRecord.winningPokerHandClass = pokerHand;
         gameRecord.winningMultiplier = payoutMultiplier;
+        updateChipCount(CHIP_UPDATE_REASON.PAYOUT, betAmount * 3 + winning);
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setPayoutAmt(betAmount * -3);
         setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER;
         gameRecord.payoutAmt = betAmount * -3;
+        updateChipCount(CHIP_UPDATE_REASON.LOSS, -1 * (betAmount + betAmount));
       }
       gameRecord.playerAction = PLAYER_ACTION.BET;
       setGameHistory((prev) => [gameRecord, ...prev]);
