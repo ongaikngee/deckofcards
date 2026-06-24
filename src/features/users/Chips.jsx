@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { PokerChipIcon } from "@phosphor-icons/react";
+// componenets
+import { useAuth } from "../auth/AuthContext";
 import {
   getChipsHistoryService,
   updateChipsAmtService,
 } from "../../services/chipService";
 
-import { useAuth } from "../auth/AuthContext";
-
 // helpers
 import { formatCurrency } from "../../utils/formatCurrency";
 
+// 3rd party libraries
+import { PokerChipIcon } from "@phosphor-icons/react";
+import dayjs from "dayjs";
+
 const Chips = () => {
-  const [chips, setChips] = useState(0)
+  const [chips, setChips] = useState(0);
   const [chipsHistory, setChipsHistory] = useState([]);
   const [error, setError] = useState("");
-  const [topUpAmt, setTopUpAmt] = useState(0);
+  const [topUpAmt, setTopUpAmt] = useState(1000);
 
   const { user } = useAuth();
 
@@ -22,8 +25,8 @@ const Chips = () => {
     setError("");
     try {
       const response = await getChipsHistoryService(user);
-      setChipsHistory(response);
-    
+      setChipsHistory(response.data);
+      setChips(response.total_amount);
     } catch (e) {
       setError(e);
       console.log(e);
@@ -33,7 +36,10 @@ const Chips = () => {
   const topUpChip = async () => {
     setError("");
     try {
-      const response = await updateChipsAmtService({user_id:user, amt:topUpAmt});
+      const response = await updateChipsAmtService({
+        user_id: user,
+        amt: topUpAmt,
+      });
       setChips((prev) => prev + topUpAmt);
     } catch (e) {
       setError(e);
@@ -59,7 +65,7 @@ const Chips = () => {
         <table className="table table-striped table-hover">
           <thead>
             <tr>
-              <th scope="col">id</th>
+              <th scope="col">Date</th>
               <th scope="col">Amount</th>
               <th scope="col">Reason</th>
             </tr>
@@ -67,7 +73,11 @@ const Chips = () => {
           <tbody>
             {chipsHistory.map((record) => (
               <tr key={record.id}>
-                <td>{record.id}</td>
+                <td>
+                  {record.created_at
+                    ? dayjs(record.created_at).fromNow()
+                    : "N/A"}
+                </td>
                 <td>{formatCurrency(record.amount)}</td>
                 <td>{record.reason}</td>
               </tr>
@@ -83,7 +93,7 @@ const Chips = () => {
           type="range"
           className="form-range"
           id="betSize"
-          min="0"
+          min="1000"
           max="10000"
           step="1000"
           value={topUpAmt}

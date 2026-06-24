@@ -5,7 +5,7 @@ export const getChipsHistoryService = async (user_id) => {
   try {
     const response = await fetch(`${BASE_URL}/${user_id}`);
     const data = await response.json();
-    return data.data;
+    return data;
   } catch (error) {
     console.error("Error fetching chips data:", error);
     throw error;
