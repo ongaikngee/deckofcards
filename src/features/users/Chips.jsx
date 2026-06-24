@@ -42,8 +42,8 @@ const Chips = () => {
       });
       setChips((prev) => prev + topUpAmt);
     } catch (e) {
-      setError(e);
-      console.log(e);
+      const errorMessage = e?.detail || e?.message || "Top up failed";
+      setError("Top up failed");
     }
   };
 
@@ -103,6 +103,7 @@ const Chips = () => {
       <button className="btn btn-primary" onClick={() => topUpChip()}>
         Top up {formatCurrency(topUpAmt)}
       </button>
+      {error && <div className="mt-5 alert alert-danger">{error}</div>}
     </div>
   );
 };
