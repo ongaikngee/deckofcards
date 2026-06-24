@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL;
 const BASE_URL = `${API_URL}/chips`;
 
-export const getChipHistoryService = async (user_id) => {
+export const getChipsHistoryService = async (user_id) => {
   try {
     const response = await fetch(`${BASE_URL}/${user_id}`);
     const data = await response.json();
@@ -12,7 +12,7 @@ export const getChipHistoryService = async (user_id) => {
   }
 };
 
-export const updateChipAmtService = async (user_id, amt, reason = "Topup") => {
+export const updateChipsAmtService = async ({user_id, amt, reason = "Topup"}) => {
   const response = await fetch(`${BASE_URL}/${user_id}`, {
     method: "POST",
     headers: {
@@ -36,30 +36,3 @@ export const updateChipAmtService = async (user_id, amt, reason = "Topup") => {
     throw error;
   }
 };
-
-// export const registerUser = async (username, password) => {
-//   const response = await fetch(`${API_URL}/users/`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({ username, password }),
-//   });
-
-//   let data;
-//   try {
-//     data = await response.json();
-//   } catch (jsonError) {
-//     data = null;
-//   }
-
-//   if (!response.ok) {
-//     const errorMessage = data?.detail || data?.message || "Registration failed";
-//     const error = new Error(errorMessage);
-//     error.status = response.status;
-//     error.payload = data;
-//     throw error;
-//   }
-
-//   return data;
-// };

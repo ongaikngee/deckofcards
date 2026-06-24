@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { PokerChipIcon } from "@phosphor-icons/react";
 import {
-  getChipHistoryService,
-  updateChipAmtService,
+  getChipsHistoryService,
+  updateChipsAmtService,
 } from "../../services/chipService";
 
 import { useAuth } from "../auth/AuthContext";
@@ -11,17 +11,19 @@ import { useAuth } from "../auth/AuthContext";
 import { formatCurrency } from "../../utils/formatCurrency";
 
 const Chips = () => {
-  const [chips, setChips] = useState([]);
+  const [chips, setChips] = useState(0)
+  const [chipsHistory, setChipsHistory] = useState([]);
   const [error, setError] = useState("");
   const [topUpAmt, setTopUpAmt] = useState(0);
 
   const { user } = useAuth();
 
-  const getChipHistory = async () => {
+  const getChipsHistory = async () => {
     setError("");
     try {
-      const response = await getChipHistoryService(user);
-      setChips(response);
+      const response = await getChipsHistoryService(user);
+      setChipsHistory(response);
+    
     } catch (e) {
       setError(e);
       console.log(e);
@@ -31,8 +33,8 @@ const Chips = () => {
   const topUpChip = async () => {
     setError("");
     try {
-      const response = await updateChipAmtService(user, topUpAmt);
-      setChips(response);
+      const response = await updateChipsAmtService({user_id:user, amt:topUpAmt});
+      setChips((prev) => prev + topUpAmt);
     } catch (e) {
       setError(e);
       console.log(e);
@@ -40,16 +42,20 @@ const Chips = () => {
   };
 
   useEffect(() => {
-    getChipHistory();
+    getChipsHistory();
+  }, [chips]);
+
+  useEffect(() => {
+    getChipsHistory();
   }, []);
 
   return (
     <div>
       <h2>
         <PokerChipIcon size={44} />
-        Chips
+        Chips {formatCurrency(chips)}
       </h2>
-      {chips && (
+      {chipsHistory && (
         <table className="table table-striped table-hover">
           <thead>
             <tr>
@@ -59,7 +65,7 @@ const Chips = () => {
             </tr>
           </thead>
           <tbody>
-            {chips.map((record) => (
+            {chipsHistory.map((record) => (
               <tr key={record.id}>
                 <td>{record.id}</td>
                 <td>{formatCurrency(record.amount)}</td>
@@ -78,7 +84,7 @@ const Chips = () => {
           className="form-range"
           id="betSize"
           min="0"
-          max="100000"
+          max="10000"
           step="1000"
           value={topUpAmt}
           onChange={(e) => setTopUpAmt(e.target.valueAsNumber)}
