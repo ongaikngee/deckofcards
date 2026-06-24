@@ -54,3 +54,11 @@ export const STUD_POKER_HAND = Object.freeze({
 	TWO_PAIRS: "Two Pair",
 	ONE_PAIR_OR_LESS: "One Pair or less",
 })
+
+export const CHIP_UPDATE_REASON = Object.freeze({
+	TOPUP = "Topup",
+    LOTTERY = "Lottery",
+    JACKPOT = "Jackpot",
+    PAYOUT = "Payout",
+    LOSS = "Loss",
+})
