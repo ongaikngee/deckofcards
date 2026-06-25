@@ -17,6 +17,8 @@ import StudPoker from "./pages/StudPoker";
 import UserMain from "./features/users/UserMain";
 import Settings from "./features/users/Settings";
 import Chips from "./features/users/Chips";
+import AdminRoute from "./features/auth/AdminRoute";
+import AdminPage from "./pages/AdminPage";
 
 import { CurrentGame } from "./features/games/CurrentGame";
 
@@ -46,6 +48,7 @@ function App() {
             element={<CurrentGame games={games} setGames={setGames} />}
           />
           <Route path="/studpoker" element={<ProtectedRoute><StudPoker /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
         </Routes>
       </div>
     </>

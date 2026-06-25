@@ -4,7 +4,7 @@ import { useAuth } from "../features/auth/AuthContext";
 import Collapse from "bootstrap/js/dist/collapse"
 
 function Navbar() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const closeNavbar = () => {
     const nav = document.getElementById("navbarNav");
@@ -58,6 +58,13 @@ function Navbar() {
                     Stud Poker
                   </Link>
                 </li>
+                {isAdmin && (
+                  <li>
+                    <Link className="nav-link" to="/admin" onClick={closeNavbar}>
+                      Admin
+                    </Link>
+                  </li>
+                )}
                 <li className="nav-item">
                   <Link className="nav-link" to="/user" onClick={closeNavbar}>
                     <div className="border border-danger rounded-circle text-warning p-2">{user}</div>
