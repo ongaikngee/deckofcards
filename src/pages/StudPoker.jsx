@@ -346,7 +346,7 @@ const StudPoker = () => {
     <div className="container my-4">
       <div className="d-flex flex-column flex-sm-row justify-content-between mb-2">
         <div>
-          <div className="h2 mb-0">Stud Poker</div>
+          <div className="h2 mb-0">Caribbean Stud Poker</div>
           <div className="text-muted">
             {" "}
             {deck ? "Deck id: " + deck.deck_id : <>&nbsp;</>}

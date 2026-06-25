@@ -55,6 +55,64 @@ export const STUD_POKER_HAND = Object.freeze({
   ONE_PAIR_OR_LESS: "One Pair or less",
 });
 
+// Detailed hand definitions used by the UI (descriptions, example card codes, and payout key)
+export const STUD_POKER_HANDS = [
+  {
+    payoutKey: "ROYAL_FLUSH",
+    name: STUD_POKER_HAND.ROYAL_FLUSH,
+    description: "A-K-Q-J-10 of the same suit",
+    cardCodes: ["AS", "KS", "QS", "JS", "0S"],
+  },
+  {
+    payoutKey: "STRAIGHT_FLUSH",
+    name: STUD_POKER_HAND.STRAIGHT_FLUSH,
+    description: "Five consecutive cards of the same suit",
+    cardCodes: ["9H", "8H", "7H", "6H", "5H"],
+  },
+  {
+    payoutKey: "FOUR_OF_A_KIND",
+    name: STUD_POKER_HAND.FOUR_OF_A_KIND,
+    description: "Four cards of the same rank",
+    cardCodes: ["KC", "KD", "KH", "KS", "2C"],
+  },
+  {
+    payoutKey: "FULL_HOUSE",
+    name: STUD_POKER_HAND.FULL_HOUSE,
+    description: "Three of a kind + a pair",
+    cardCodes: ["QD", "QH", "QC", "3S", "3D"],
+  },
+  {
+    payoutKey: "FLUSH",
+    name: STUD_POKER_HAND.FLUSH,
+    description: "Five cards of the same suit",
+    cardCodes: ["2C", "5C", "7C", "9C", "JC"],
+  },
+  {
+    payoutKey: "STRAIGHT",
+    name: STUD_POKER_HAND.STRAIGHT,
+    description: "Five consecutive cards of different suits",
+    cardCodes: ["6S", "5H", "4D", "3C", "2S"],
+  },
+  {
+    payoutKey: "THREE_OF_A_KIND",
+    name: STUD_POKER_HAND.THREE_OF_A_KIND,
+    description: "Three cards of the same rank",
+    cardCodes: ["JH", "JD", "JC", "4S", "8H"],
+  },
+  {
+    payoutKey: "TWO_PAIRS",
+    name: STUD_POKER_HAND.TWO_PAIRS,
+    description: "Two different pairs",
+    cardCodes: ["9S", "9D", "5H", "5C", "2D"],
+  },
+  {
+    payoutKey: "ONE_PAIR_OR_LESS",
+    name: STUD_POKER_HAND.ONE_PAIR_OR_LESS,
+    description: "Two cards of the same rank (Jacks or better)",
+    cardCodes: ["AH", "AD", "3C", "7S", "0D"],
+  },
+];
+
 export const CHIP_UPDATE_REASON = Object.freeze({
   TOPUP: "Topup",
   LOTTERY: "Lottery",
