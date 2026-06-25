@@ -29,7 +29,7 @@ const Chips = () => {
       setChips(response.total_amount);
     } catch (e) {
       setError(e);
-      console.log(e);
+      console.error(e);
     }
   };
 

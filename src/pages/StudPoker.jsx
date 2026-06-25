@@ -7,19 +7,29 @@ import IntroStudPoker from "../features/games/IntroStudPoker";
 import StudPokerHistory from "../features/games/StudPokerHistory";
 import StudPokerLineChart from "../features/games/StudPokerLineChart";
 import Modal from "../components/Modal";
+import { useAuth } from "../features/auth/AuthContext";
 
 // helpers
 import { formatCurrency } from "../utils/formatCurrency";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
+import {
+  getChipsHistoryService,
+  updateChipsAmtService,
+} from "../services/chipService";
 import { determinePlayerPayoutMultiplier } from "../utils/studPokerHelper";
-import { GAME_STATE, PLAYER_ACTION, GAME_RESULT, BETS_SETTINGS } from "../constants/games";
+import {
+  GAME_STATE,
+  PLAYER_ACTION,
+  GAME_RESULT,
+  BETS_SETTINGS,
+  CHIP_UPDATE_REASON,
+} from "../constants/games";
 
 // 3rd party libraries
 import { Hand } from "pokersolver";
 import { CheckIcon, WarningCircleIcon } from "@phosphor-icons/react";
 
 const StudPoker = () => {
-
   // Game cards state
   const [gameState, setGameState] = useState(GAME_STATE.IDLE);
   const [deck, setDeck] = useState(null);
@@ -28,6 +38,7 @@ const StudPoker = () => {
   const [dealerHand, setDealerHand] = useState([]);
   const [playerStrength, setPlayerStrength] = useState(null);
   const [dealerStrength, setDealerStrength] = useState(null);
+  const { user } = useAuth();
 
   // Payout states
   const [payout, setPayout] = useState("");
@@ -41,9 +52,9 @@ const StudPoker = () => {
   const [gameHistory, setGameHistory] = useState([]);
 
   // Chips states
-  const [chips, setChips] = useState(BETS_SETTINGS.INITIAL_CHIPS);
+  const [chips, setChips] = useState(0);
   const [betAmount, setBetAmount] = useState(BETS_SETTINGS.DEFAULT_BET);
-  const [isOverbet, setIsOverbet] = useState(undefined)
+  const [isOverbet, setIsOverbet] = useState(undefined);
 
   // Settings
   const dealerCardSize = 60;
@@ -51,6 +62,32 @@ const StudPoker = () => {
   const checkIconWeight = "bold";
   const headerFontSize = "h2";
   const strengthFontSize = "h4";
+
+  const getChipsHistory = async () => {
+    setError("");
+    try {
+      const response = await getChipsHistoryService(user);
+      setChips(response.total_amount);
+    } catch (e) {
+      setError(e);
+      console.error(e);
+    }
+  };
+
+  const updateChipCount = async (reason, amount) => {
+    setError("");
+    try {
+      const response = await updateChipsAmtService({
+        user_id: user,
+        amt: amount,
+        reason: reason,
+      });
+      setChips((prev) => prev + amount);
+    } catch (e) {
+      const errorMessage = e?.detail || e?.message || "Top up failed";
+      setError("Top up failed");
+    }
+  };
 
   const getStrengthOfHand = (hands) => {
     const codes = hands.map((card) => card.code.replace("0", "T"));
@@ -107,7 +144,8 @@ const StudPoker = () => {
       setDealerHand(fetchCards.cards);
 
       // deduct chips for the bet
-      setChips((prev) => prev - betAmount);
+      const chipToBeUpdated = -1 * betAmount
+      updateChipCount(CHIP_UPDATE_REASON.ANTE, chipToBeUpdated);
     } catch (e) {
       console.error(e);
       throw e;
@@ -180,11 +218,12 @@ const StudPoker = () => {
 
     // player fold,
     if (playerAction === PLAYER_ACTION.FOLD) {
+      const chipToBeUpdated = -1 * betAmount;
       setWinner(GAME_RESULT.WINNER_DEALER);
-      setPayoutAmt(-1 * betAmount);
+      setPayoutAmt(chipToBeUpdated);
       gameRecord.winner = GAME_RESULT.WINNER_DEALER;
       gameRecord.playerAction = PLAYER_ACTION.FOLD;
-      gameRecord.payoutAmt = -1 * betAmount;
+      gameRecord.payoutAmt = chipToBeUpdated;
       setGameHistory((prev) => [gameRecord, ...prev]);
       return;
     }
@@ -193,13 +232,13 @@ const StudPoker = () => {
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
       setPayoutAmt(betAmount);
-      setChips((prev) => prev + betAmount + betAmount);
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
       gameRecord.playerAction = "Did not qualified";
       gameRecord.payoutAmt = betAmount;
       setGameHistory((prev) => [gameRecord, ...prev]);
 
+      updateChipCount(CHIP_UPDATE_REASON.PAYOUT, betAmount + betAmount);
       return;
     }
 
@@ -211,10 +250,10 @@ const StudPoker = () => {
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
-        setChips((prev) => prev + betAmount);
         gameRecord.winner = GAME_RESULT.GAME_TIE;
         gameRecord.playerAction = GAME_RESULT.GAME_TIE;
         setGameHistory((prev) => [gameRecord, ...prev]);
+        updateChipCount(CHIP_UPDATE_REASON.PAYOUT, betAmount);
         return;
       }
 
@@ -229,20 +268,20 @@ const StudPoker = () => {
         // Win both ante and bet
         const { payoutMultiplier, pokerHand } =
           determinePlayerPayoutMultiplier(playerStrength);
-        const winning = betAmount * payoutMultiplier;
-        setPayoutAmt(betAmount * 2 + winning);
+        const anteBonus = betAmount * payoutMultiplier;
+        setPayoutAmt(betAmount * 2 + anteBonus);
         setPayout(`Bet + Ante with ${payoutMultiplier}x`);
-        setChips((prev) => prev + betAmount * 3 + winning);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
-        gameRecord.payoutAmt = betAmount * 2 + winning;
+        gameRecord.payoutAmt = betAmount * 2 + anteBonus;
         gameRecord.winningPokerHandClass = pokerHand;
         gameRecord.winningMultiplier = payoutMultiplier;
+        updateChipCount(CHIP_UPDATE_REASON.BET, betAmount * 3 + anteBonus);
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setPayoutAmt(betAmount * -3);
-        setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER;
         gameRecord.payoutAmt = betAmount * -3;
+        updateChipCount(CHIP_UPDATE_REASON.LOSS, -1 * (betAmount + betAmount));
       }
       gameRecord.playerAction = PLAYER_ACTION.BET;
       setGameHistory((prev) => [gameRecord, ...prev]);
@@ -255,14 +294,14 @@ const StudPoker = () => {
   useEffect(() => {
     switch (gameState) {
       case GAME_STATE.LOADING:
-        initGame()
-        break
+        initGame();
+        break;
       case GAME_STATE.PLAYER_ACTED:
-        getDealerRemainingCards()
-        break
+        getDealerRemainingCards();
+        break;
       case GAME_STATE.DETERMINE_WINNER:
-        determineWinner()
-        break
+        determineWinner();
+        break;
     }
   }, [gameState]);
 
@@ -278,8 +317,12 @@ const StudPoker = () => {
   }, [gameHistory]);
 
   useEffect(() => {
-    setIsOverbet(betAmount * 3 > chips)
-  }, [betAmount, chips])
+    setIsOverbet(betAmount * 3 > chips);
+  }, [betAmount, chips]);
+
+  useEffect(() => {
+    getChipsHistory();
+  }, []);
 
   const startGame = () => {
     setGameState(GAME_STATE.LOADING);
@@ -319,68 +362,75 @@ const StudPoker = () => {
           <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
         </div>
       </div>
-      {error && (
-        <div className="alert alert-danger">
-          {error}
-        </div>
-      )}
+      {error && <div className="alert alert-danger">{error}</div>}
       {/* SECTION: intro or Dealer Section */}
       <div>
         {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
-        {gameState !== GAME_STATE.IDLE &&
-          (
-            <div>
-              <div className="mb-3">
-                {/* Dealer title part */}
-                <div className="d-flex align-items-center gap-2">
-                  {winner === GAME_RESULT.WINNER_DEALER && (
-                    <CheckIcon
-                      size={checkIconSize}
-                      weight={checkIconWeight}
-                      className="text-success"
-                    />
-                  )}
-                  <div className={headerFontSize}>Dealer's Hand</div>
-                  {isDealerQualified ? (
-                    <h6>
-                      <span className="badge text-bg-success">Qualified</span>
-                    </h6>
-                  ) : isDealerQualified === false ? (
-                    <h6>
-                      <span className="badge text-bg-danger">
-                        Did not qualified
-                      </span>
-                    </h6>
-                  ) : (
-                    <>&nbsp;</>
-                  )}
-                </div>
-                {/* Dealer display part */}
-                <div
-                  className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
-                  style={{ height: "120px" }}
-                >
-                  <div className="d-flex justify-content-start align-items-center gap-2">
-                    <DisplayCards
-                      size={dealerCardSize}
-                      cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] :
-                        gameState === GAME_STATE.DETERMINE_WINNER ? (dealerHand) :
-                          ([1, 1, 1, 1, ...dealerHand])
-                      }
-                      type={gameState === GAME_STATE.LOADING ? "revealNone" :
-                        gameState === GAME_STATE.DETERMINE_WINNER ? "revealAll" : "revealOne"
-                      }
-                    />
-                    {gameState === GAME_STATE.LOADING && <Spinner />}
-                  </div>
-                </div>
-                <div className={strengthFontSize}>
-                  {gameState === GAME_STATE.DETERMINE_WINNER
-                    ? <span className="badge text-bg-light">{dealerStrength.descr}</span>
-                    : <>&nbsp;</>}
+        {gameState !== GAME_STATE.IDLE && (
+          <div>
+            <div className="mb-3">
+              {/* Dealer title part */}
+              <div className="d-flex align-items-center gap-2">
+                {winner === GAME_RESULT.WINNER_DEALER && (
+                  <CheckIcon
+                    size={checkIconSize}
+                    weight={checkIconWeight}
+                    className="text-success"
+                  />
+                )}
+                <div className={headerFontSize}>Dealer's Hand</div>
+                {isDealerQualified ? (
+                  <h6>
+                    <span className="badge text-bg-success">Qualified</span>
+                  </h6>
+                ) : isDealerQualified === false ? (
+                  <h6>
+                    <span className="badge text-bg-danger">
+                      Did not qualified
+                    </span>
+                  </h6>
+                ) : (
+                  <>&nbsp;</>
+                )}
+              </div>
+              {/* Dealer display part */}
+              <div
+                className="p-3 bg-success col-md-10 col-lg-8 bg-opacity-25 rounded-3 border border-success border-2 border-opacity"
+                style={{ height: "120px" }}
+              >
+                <div className="d-flex justify-content-start align-items-center gap-2">
+                  <DisplayCards
+                    size={dealerCardSize}
+                    cards={
+                      gameState === GAME_STATE.LOADING
+                        ? [1, 1, 1, 1, 1]
+                        : gameState === GAME_STATE.DETERMINE_WINNER
+                          ? dealerHand
+                          : [1, 1, 1, 1, ...dealerHand]
+                    }
+                    type={
+                      gameState === GAME_STATE.LOADING
+                        ? "revealNone"
+                        : gameState === GAME_STATE.DETERMINE_WINNER
+                          ? "revealAll"
+                          : "revealOne"
+                    }
+                  />
+                  {gameState === GAME_STATE.LOADING && <Spinner />}
                 </div>
               </div>
-            </div>)}
+              <div className={strengthFontSize}>
+                {gameState === GAME_STATE.DETERMINE_WINNER ? (
+                  <span className="badge text-bg-light">
+                    {dealerStrength.descr}
+                  </span>
+                ) : (
+                  <>&nbsp;</>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {/* SECTION : Player Deck */}
       <div>
@@ -404,18 +454,28 @@ const StudPoker = () => {
             >
               <DisplayCards
                 className="bg-success"
-                cards={gameState === GAME_STATE.LOADING ? [1, 1, 1, 1, 1] : playerHand}
-                type={gameState === GAME_STATE.LOADING ? "revealNone" :
-                  playerAction === PLAYER_ACTION.FOLD ? "revealNone" : "revealAll"
+                cards={
+                  gameState === GAME_STATE.LOADING
+                    ? [1, 1, 1, 1, 1]
+                    : playerHand
+                }
+                type={
+                  gameState === GAME_STATE.LOADING
+                    ? "revealNone"
+                    : playerAction === PLAYER_ACTION.FOLD
+                      ? "revealNone"
+                      : "revealAll"
                 }
               />
             </div>
             <div className={strengthFontSize}>
-
-              {gameState !== GAME_STATE.LOADING
-                ? <span className="badge text-bg-light">{playerStrength.descr}</span>
-                : <>&nbsp;</>}
-
+              {gameState !== GAME_STATE.LOADING ? (
+                <span className="badge text-bg-light">
+                  {playerStrength.descr}
+                </span>
+              ) : (
+                <>&nbsp;</>
+              )}
             </div>
           </div>
         )}
@@ -436,10 +496,18 @@ const StudPoker = () => {
                   data-bs-toggle={isOverbet ? "modal" : undefined}
                   data-bs-target={isOverbet ? "#overbet" : undefined}
                 >
-                  <div className={`d-flex align-items-center justify-content-center gap-3 
-                    ${isOverbet && "text-warning"}`}>
+                  <div
+                    className={`d-flex align-items-center justify-content-center gap-3 
+                    ${isOverbet && "text-warning"}`}
+                  >
                     Bet Ante {formatCurrency(betAmount)}
-                    {isOverbet && <WarningCircleIcon size={32} aria-hidden="true" className="text-warning"/>}
+                    {isOverbet && (
+                      <WarningCircleIcon
+                        size={32}
+                        aria-hidden="true"
+                        className="text-warning"
+                      />
+                    )}
                   </div>
                 </button>
               </div>
@@ -463,11 +531,11 @@ const StudPoker = () => {
                 modalInstruction={
                   <>
                     <div className="mb-2">
-                      After this bet, you'll have only {formatCurrency(chips - betAmount)}, but {formatCurrency(betAmount * 2)} is required for a later bet.
+                      After this bet, you'll have only{" "}
+                      {formatCurrency(chips - betAmount)}, but{" "}
+                      {formatCurrency(betAmount * 2)} is required for a later bet.
                     </div>
-                    <div>
-                      Continue anyway?
-                    </div>
+                    <div>Continue anyway?</div>
                   </>
                 }
                 closeBtnLabel="Cancel Bet"
@@ -485,32 +553,41 @@ const StudPoker = () => {
                 type="button"
                 className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
                 onClick={bet}
-                disabled={(gameState === GAME_STATE.LOADING ||
+                disabled={
+                  gameState === GAME_STATE.LOADING ||
                   gameState === GAME_STATE.PLAYER_ACTED ||
-                  chips < betAmount * 2)}
+                  chips < betAmount * 2
+                }
               >
-                {gameState === GAME_STATE.PLAYER_MOVE
-                  ? (
-                    <div>Bet {formatCurrency(betAmount * 2)}</div>
-                  ) : (
-                    <div className="d-flex align-items-center justify-content-center">
-                      <span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>
-                      <span role="status">Loading</span>
-                    </div>
-                  )}
+                {gameState === GAME_STATE.PLAYER_MOVE ? (
+                  <div>Bet {formatCurrency(betAmount * 2)}</div>
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center">
+                    <span
+                      className="spinner-grow spinner-grow-sm me-2"
+                      aria-hidden="true"
+                    ></span>
+                    <span role="status">Loading</span>
+                  </div>
+                )}
               </button>
               {/* Fold Button */}
               <button
                 type="button"
                 className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
                 onClick={fold}
-                disabled={(gameState === GAME_STATE.LOADING ||
-                  gameState === GAME_STATE.PLAYER_ACTED)}
+                disabled={
+                  gameState === GAME_STATE.LOADING ||
+                  gameState === GAME_STATE.PLAYER_ACTED
+                }
               >
                 <div className="d-flex align-items-center justify-content-center">
-                  {gameState !== GAME_STATE.PLAYER_MOVE &&
-                    (<span className="spinner-grow spinner-grow-sm me-2" aria-hidden="true"></span>)
-                  }
+                  {gameState !== GAME_STATE.PLAYER_MOVE && (
+                    <span
+                      className="spinner-grow spinner-grow-sm me-2"
+                      aria-hidden="true"
+                    ></span>
+                  )}
                   <span role="status">Fold</span>
                 </div>
               </button>
