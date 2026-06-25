@@ -5,22 +5,26 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState("user");
 
   const login = async (id, password) => {
     const response = await loginUser(id, password);
 
     setUser(response?.user_id ?? id);
+    setRole(response?.role ?? "user");
     return response;
   };
 
   function logout() {
     setUser(null);
+    setRole("user");
   }
 
   const register = async (id, password) => {
     const response = await registerUser(id, password);
 
     setUser(response?.user_id ?? id);
+    setRole(response?.role ?? "user");
     return response;
   };
 
@@ -38,12 +42,14 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        role,
         login,
         logout,
         register,
         updatePassword,
         deleteUser,
         isAuthenticated: !!user,
+        isAdmin: role === "admin",
       }}
     >
       {children}

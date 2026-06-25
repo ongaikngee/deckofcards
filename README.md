@@ -1,139 +1,263 @@
-# Deck of Cards Game
+# Deck of Cards Frontend
 
-A React + Vite application that integrates with the Deck of Cards API to create, manage, and play card game sessions.
+A modern, responsive React application for card game management and gameplay. Built with React 19 and Vite, this frontend provides authentication, user dashboards, and interactive card game experiences with real-time state management.
 
-Players can start a new game with a shuffled deck, draw cards from an active game, and view deck status and drawn cards in a responsive interface.
+## Overview
+
+The Deck of Cards Frontend is a full-featured single-page application (SPA) that enables users to create game sessions, manage card decks, track player statistics, and enjoy interactive card games. The application includes robust authentication, role-based access control, and an intuitive admin panel for system management.
 
 ## Table of Contents
 
 - [Features](#features)
-- [Demo](#demo)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
-- [Routes](#routes)
-- [Installation](#installation)
-- [Available Scripts](#available-scripts)
-- [API Integration](#api-integration)
-- [Future Enhancements](#future-enhancements)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Build & Deployment](#build--deployment)
+- [API Routes](#api-routes)
+- [Environment Configuration](#environment-configuration)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
 - [License](#license)
 
 ## Features
 
-- Create a new game session using the Deck of Cards API
-- Generate a freshly shuffled deck with optional jokers
-- Draw cards one at a time from an active deck
-- View remaining cards and deck metadata
-- Display drawn cards with responsive overlap styling
-- Protect routes with authentication context
-- User dashboard with profile, chips, and settings pages
-- Responsive layout using Bootstrap
-
-## Demo
-
-1. Visit the login page and authenticate.
-2. Create a new game from the Games page.
-3. The app requests a new shuffled deck from the Deck of Cards API.
-4. The new game is stored in local state and the user is navigated to the current game view.
-5. Draw cards and watch the remaining count update in real time.
-6. Return to Games to manage existing sessions.
+- **Authentication & Authorization**: Secure login/registration with JWT tokens and role-based access control
+- **Game Management**: Create, manage, and play card game sessions with real-time deck state tracking
+- **User Dashboards**: Personal user profile, chip balance tracking, and account settings
+- **Admin Panel**: Comprehensive admin dashboard for user management with sortable tables, promote/demote functionality, and soft-delete user accounts
+- **Responsive Design**: Fully responsive Bootstrap 5 layout optimized for desktop, tablet, and mobile
+- **Real-Time Updates**: Live card draw mechanics with immediate UI updates
+- **Protected Routes**: Route-level authentication enforcement with automatic redirection
+- **Icon Integration**: Phosphor icons for modern, accessible UI elements
 
 ## Technology Stack
 
-- React 19
-- Vite
-- React Router DOM
-- Bootstrap 5
-- Axios
-- Day.js
-- JavaScript (ES6+)
+| Category | Technologies |
+|----------|---------------|
+| **Frontend Framework** | React 19, JSX |
+| **Build Tool** | Vite 8 |
+| **Routing** | React Router DOM 6 |
+| **Styling** | Bootstrap 5, CSS3 |
+| **HTTP Client** | Axios |
+| **Date Handling** | Day.js |
+| **Icons** | Phosphor Icons |
+| **Linting** | ESLint |
+| **Package Manager** | npm |
 
 ## Project Structure
 
-```text
+```
 src/
-├── components/
-│   ├── NavBar.jsx
-│   ├── NewDeckForm.jsx
-│   └── UserNavBar.jsx
-├── constants/
-│   └── games.js
-├── features/
-│   ├── auth/
-│   │   ├── AuthContext.jsx
-│   │   └── ProtectedRoute.jsx
-│   ├── games/
-│   │   └── CurrentGame.jsx
-│   └── users/
-│       ├── Chips.jsx
-│       ├── Settings.jsx
-│       └── UserMain.jsx
-├── pages/
+├── components/              # Reusable UI components
+│   ├── DisplayCards.jsx    # Card display with overlap styling
+│   ├── Modal.jsx           # Reusable modal component
+│   ├── NavBar.jsx          # Main navigation bar
+│   ├── NewDeckForm.jsx     # Game creation form
+│   ├── Spinner.jsx         # Loading indicator
+│   └── UserNavBar.jsx      # User-specific navigation
+├── constants/              # Application constants
+│   └── games.js            # Game-related constants
+├── features/               # Feature-based modules
+│   ├── auth/               # Authentication & authorization
+│   │   ├── AdminRoute.jsx  # Admin-only route protection
+│   │   ├── AuthContext.jsx # Global auth state management
+│   │   └── ProtectedRoute.jsx # User-level route protection
+│   ├── games/              # Game-specific features
+│   │   ├── CurrentGame.jsx
+│   │   ├── IntroStudPoker.jsx
+│   │   ├── StudPokerHistory.jsx
+│   │   └── StudPokerLineChart.jsx
+│   └── users/              # User-specific features
+│       ├── Chips.jsx       # Chip balance management
+│       ├── Settings.jsx    # User settings page
+│       ├── UpdatePassword.jsx
+│       └── UserMain.jsx    # User dashboard
+├── pages/                  # Page components
 │   ├── About.jsx
+│   ├── AdminPage.jsx       # Admin dashboard with user management
 │   ├── Contact.jsx
 │   ├── Games.jsx
 │   ├── LoginPage.jsx
+│   ├── RegisterPage.jsx
+│   ├── StudPoker.jsx
 │   └── User.jsx
-├── services/
-│   ├── authApi.js
-│   └── deckService.js
-├── App.jsx
-├── index.css
-├── main.jsx
-└── App.css
+├── services/               # API client functions
+│   ├── adminApi.js         # Admin operations
+│   ├── authApi.js          # Authentication endpoints
+│   ├── chipService.js      # Chip management
+│   └── deckService.js      # Deck & game operations
+├── utils/                  # Utility functions
+│   ├── formatCurrency.js   # Currency formatting
+│   └── studPokerHelper.js  # Poker game helpers
+├── App.jsx                 # Main application component
+├── main.jsx                # Application entry point
+├── App.css                 # Global application styles
+└── index.css               # Base styles
 ```
 
-## Routes
+## Getting Started
 
-- `/` — Home / Games page (protected)
-- `/login` — Login page
-- `/about` — About page
-- `/contact` — Contact page
-- `/user` — User dashboard (protected)
-- `/user/chips` — User chips page (protected)
-- `/user/settings` — User settings page (protected)
-- `/game/:deckId` — Current game view for drawing cards
+### Prerequisites
 
-## Installation
+- **Node.js** 18.0 or higher
+- **npm** 9.0 or higher
+- Access to the backend API (running on `http://localhost:8000` by default)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/deckofcard.git
+   cd deckofcard
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_API_URL=http://localhost:8000
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+   The application will be available at `http://localhost:5173`
+
+## Development
+
+### Running the Development Server
 
 ```bash
-git clone https://github.com/<your-username>/<repository-name>.git
-cd <repository-name>
-npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+This starts Vite's development server with hot module replacement (HMR) for instant code updates.
 
-## Available Scripts
+### Available npm Scripts
 
-- `npm run dev` — Start local development server
-- `npm run build` — Build production bundle
-- `npm run preview` — Preview the production build locally
-- `npm run lint` — Run ESLint checks
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server on `http://localhost:5173` |
+| `npm run build` | Build optimized production bundle |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint to check code quality |
 
-## API Integration
+### Code Quality
 
-This project uses the public Deck of Cards API.
+- **ESLint**: Enforces consistent code style and catches potential errors
+- Run linter: `npm run lint`
+- Auto-fix issues: `npm run lint -- --fix`
 
-### Create a New Deck
+## Build & Deployment
 
-```http
-GET https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1
+### Production Build
+
+```bash
+npm run build
 ```
 
-### Draw Cards
+This creates an optimized, minified production bundle in the `dist/` directory.
 
-```http
-GET https://deckofcardsapi.com/api/deck/{deck_id}/draw/?count=1
+### Preview Production Build
+
+```bash
+npm run preview
 ```
 
-## Future Enhancements
+Serves the production build locally for testing before deployment.
 
-- Persist game sessions in local storage or backend
-- Add multiplayer support and score tracking
-- Implement game history and session recovery
-- Add card discard / hand management
-- Add dark mode and theme support
+### Deployment Options
+
+- **Vercel**: Zero-config deployment with automatic builds
+- **Netlify**: Connect GitHub repo for CI/CD
+- **GitHub Pages**: Static hosting for SPA
+- **Traditional Hosting**: Upload `dist/` folder to any static web server
+
+## API Routes
+
+The application communicates with the backend API at `http://localhost:8000`.
+
+### Authentication Routes
+- `POST /auth/register` — Register new user account
+- `POST /auth/login` — Authenticate user and receive JWT token
+- `POST /auth/logout` — Invalidate session token
+
+### User Routes
+- `GET /users/` — Retrieve all active users
+- `GET /users/{user_id}` — Get specific user details
+- `GET /users/chip-counts` — Get all users with chip balances and role information
+- `PUT /users/{user_id}` — Update user profile
+- `DELETE /users/{user_id}` — Soft delete user account
+
+### Admin Routes
+- `POST /users/{user_id}/make-admin` — Promote user to admin role
+- `GET /admin/users` — List all users (admin only)
+
+### Game Routes
+- `GET /games/` — List active games
+- `POST /games/` — Create new game session
+- `GET /games/{game_id}` — Get game details
+
+## Environment Configuration
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+# Backend API URL
+VITE_API_URL=http://localhost:8000
+
+# Optional: Environment identifier
+VITE_ENV=development
+```
+
+**Note**: Environment variables must be prefixed with `VITE_` to be accessible in the browser.
+
+## Architecture
+
+### Authentication Flow
+
+1. User registers/logs in through `LoginPage.jsx`
+2. Credentials sent to backend API
+3. JWT token received and stored in browser
+4. `AuthContext.jsx` manages global authentication state
+5. Protected routes validated via `ProtectedRoute.jsx` and `AdminRoute.jsx`
+6. Automatic redirect to login if token invalid
+
+### State Management
+
+- **Global Auth State**: `AuthContext.jsx` using React Context API
+- **Local Component State**: `useState` hook for component-level state
+- **API State**: Loading, error, and data states managed in each service
+
+### Component Hierarchy
+
+- `App.jsx` — Main application wrapper with routing
+- Route-level components (`pages/`) — Top-level page views
+- Feature components (`features/`) — Feature-specific logic
+- Reusable components (`components/`) — Shared UI elements
+
+## Contributing
+
+### Code Style
+
+- Follow ESLint configuration for consistency
+- Use semantic component naming
+- Comment complex logic
+- Keep components focused and single-responsibility
+
+### Submitting Changes
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -m 'Add feature description'`
+3. Push to branch: `git push origin feature/your-feature`
+4. Open a Pull Request with detailed description
 
 ## License
 
