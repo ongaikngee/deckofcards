@@ -25,3 +25,55 @@ export const getUsersChipCounts = async () => {
 
   return data;
 };
+
+export const makeAdmin = async (user_id) => {
+  const response = await fetch(`${API_URL}/users/${user_id}/make-admin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const errorMessage = data?.detail || data?.message || "Failed to promote user";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  return data;
+};
+
+export const deleteUser = async (user_id) => {
+  const response = await fetch(`${API_URL}/users/${user_id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const errorMessage = data?.detail || data?.message || "User deletion failed";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  return data;
+};
