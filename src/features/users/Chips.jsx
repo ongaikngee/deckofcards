@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 // componenets
 import { useAuth } from "../auth/AuthContext";
+import Spinner from "../../components/Spinner";
 import {
   getChipsHistoryService,
   updateChipsAmtService,
@@ -18,11 +19,13 @@ const Chips = () => {
   const [chipsHistory, setChipsHistory] = useState([]);
   const [error, setError] = useState("");
   const [topUpAmt, setTopUpAmt] = useState(1000);
+  const [loading, setLoading] = useState(false)
 
   const { user } = useAuth();
 
   const getChipsHistory = async () => {
     setError("");
+    setLoading(true)
     try {
       const response = await getChipsHistoryService(user);
       setChipsHistory(response.data);
@@ -30,6 +33,8 @@ const Chips = () => {
     } catch (e) {
       setError(e);
       console.error(e);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -59,7 +64,7 @@ const Chips = () => {
     <div>
       <h2>
         <PokerChipIcon size={44} />
-        Chips {formatCurrency(chips)}
+        Chips {loading? <Spinner/> : formatCurrency(chips)}
       </h2>
       {chipsHistory && (
         <table className="table table-striped table-hover">
