@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   getUsersChipCounts,
   makeAdmin,
@@ -56,18 +56,13 @@ const AdminPage = () => {
     }
   };
 
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
   return (
     <div className="container py-4">
       <h2>Admin Page</h2>
-      <div className="my-3">
-        <button
-          className="btn btn-primary"
-          onClick={loadUsers}
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "Show Users and Chip Counts"}
-        </button>
-      </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
