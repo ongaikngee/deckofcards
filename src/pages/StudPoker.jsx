@@ -52,12 +52,11 @@ const StudPoker = () => {
   const [gameHistory, setGameHistory] = useState([]);
 
   // Chips states
-  const [chips, setChips] = useState(BETS_SETTINGS.INITIAL_CHIPS);
+  const [chips, setChips] = useState(0);
   const [betAmount, setBetAmount] = useState(BETS_SETTINGS.DEFAULT_BET);
   const [isOverbet, setIsOverbet] = useState(undefined);
 
   // tempState
-  const [tempChips, setTempChips] = useState(0);
 
   // Settings
   const dealerCardSize = 60;
@@ -70,7 +69,7 @@ const StudPoker = () => {
     setError("");
     try {
       const response = await getChipsHistoryService(user);
-      setTempChips(response.total_amount);
+      setChips(response.total_amount);
     } catch (e) {
       setError(e);
       console.error(e);
@@ -85,7 +84,7 @@ const StudPoker = () => {
         amt: amount,
         reason: reason,
       });
-      setTempChips((prev) => prev + amount);
+      setChips((prev) => prev + amount);
     } catch (e) {
       const errorMessage = e?.detail || e?.message || "Top up failed";
       setError("Top up failed");
@@ -148,7 +147,7 @@ const StudPoker = () => {
 
       // deduct chips for the bet
       const chipToBeUpdated = -1 * betAmount
-      setChips((prev) => prev + chipToBeUpdated);
+      // setChips((prev) => prev + chipToBeUpdated);
       updateChipCount(CHIP_UPDATE_REASON.ANTE, chipToBeUpdated);
     } catch (e) {
       console.error(e);
@@ -236,7 +235,7 @@ const StudPoker = () => {
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
       setPayoutAmt(betAmount);
-      setChips((prev) => prev + betAmount + betAmount);
+      // setChips((prev) => prev + betAmount + betAmount);
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
       gameRecord.playerAction = "Did not qualified";
@@ -255,7 +254,7 @@ const StudPoker = () => {
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
-        setChips((prev) => prev + betAmount);
+        // setChips((prev) => prev + betAmount);
         gameRecord.winner = GAME_RESULT.GAME_TIE;
         gameRecord.playerAction = GAME_RESULT.GAME_TIE;
         setGameHistory((prev) => [gameRecord, ...prev]);
@@ -277,7 +276,7 @@ const StudPoker = () => {
         const anteBonus = betAmount * payoutMultiplier;
         setPayoutAmt(betAmount * 2 + anteBonus);
         setPayout(`Bet + Ante with ${payoutMultiplier}x`);
-        setChips((prev) => prev + betAmount * 3 + anteBonus);
+        // setChips((prev) => prev + betAmount * 3 + anteBonus);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
         gameRecord.payoutAmt = betAmount * 2 + anteBonus;
         gameRecord.winningPokerHandClass = pokerHand;
@@ -286,7 +285,7 @@ const StudPoker = () => {
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setPayoutAmt(betAmount * -3);
-        setChips((prev) => prev - (betAmount + betAmount));
+        // setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER;
         gameRecord.payoutAmt = betAmount * -3;
         updateChipCount(CHIP_UPDATE_REASON.LOSS, -1 * (betAmount + betAmount));
@@ -359,7 +358,6 @@ const StudPoker = () => {
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
             <div className="h5 mb-0">Chips: {formatCurrency(chips)}</div>
-            <div className="h5 mb-0">Chips: {formatCurrency(tempChips)}</div>
             {payoutAmt !== 0 && (
               <span
                 className={`badge bg-opacity-75 ${payoutAmt > 0 ? "text-bg-success" : "text-bg-danger"}`}
