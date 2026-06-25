@@ -1,10 +1,15 @@
-import React from 'react'
+import React from "react";
 
-const Spinner = () => {
+const Spinner = ({
+  size = "",
+  colour = "",
+  type = "spinner-grow",
+}) => {
   return (
-    <div className="spinner-grow" role="status">
+    <div className={`${type} ${colour} ${size}`} role="status">
       <span className="visually-hidden">Loading...</span>
-    </div>)
-}
+    </div>
+  );
+};
 
-export default Spinner
+export default Spinner;
