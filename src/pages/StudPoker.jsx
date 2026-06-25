@@ -56,8 +56,6 @@ const StudPoker = () => {
   const [betAmount, setBetAmount] = useState(BETS_SETTINGS.DEFAULT_BET);
   const [isOverbet, setIsOverbet] = useState(undefined);
 
-  // tempState
-
   // Settings
   const dealerCardSize = 60;
   const checkIconSize = 28;
@@ -147,7 +145,6 @@ const StudPoker = () => {
 
       // deduct chips for the bet
       const chipToBeUpdated = -1 * betAmount
-      // setChips((prev) => prev + chipToBeUpdated);
       updateChipCount(CHIP_UPDATE_REASON.ANTE, chipToBeUpdated);
     } catch (e) {
       console.error(e);
@@ -235,7 +232,6 @@ const StudPoker = () => {
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
       setPayoutAmt(betAmount);
-      // setChips((prev) => prev + betAmount + betAmount);
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
       gameRecord.playerAction = "Did not qualified";
@@ -254,7 +250,6 @@ const StudPoker = () => {
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
-        // setChips((prev) => prev + betAmount);
         gameRecord.winner = GAME_RESULT.GAME_TIE;
         gameRecord.playerAction = GAME_RESULT.GAME_TIE;
         setGameHistory((prev) => [gameRecord, ...prev]);
@@ -276,7 +271,6 @@ const StudPoker = () => {
         const anteBonus = betAmount * payoutMultiplier;
         setPayoutAmt(betAmount * 2 + anteBonus);
         setPayout(`Bet + Ante with ${payoutMultiplier}x`);
-        // setChips((prev) => prev + betAmount * 3 + anteBonus);
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
         gameRecord.payoutAmt = betAmount * 2 + anteBonus;
         gameRecord.winningPokerHandClass = pokerHand;
@@ -285,7 +279,6 @@ const StudPoker = () => {
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setPayoutAmt(betAmount * -3);
-        // setChips((prev) => prev - (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER;
         gameRecord.payoutAmt = betAmount * -3;
         updateChipCount(CHIP_UPDATE_REASON.LOSS, -1 * (betAmount + betAmount));
