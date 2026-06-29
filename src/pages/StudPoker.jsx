@@ -70,6 +70,10 @@ const StudPoker = () => {
     try {
       const response = await getChipsHistoryService(user);
       setChips(response.total_amount);
+      setChartData([
+        ["Games", "Chip count"],
+        [0, response.total_amount],
+      ]);
     } catch (e) {
       setError(e);
       console.error(e);
@@ -148,7 +152,7 @@ const StudPoker = () => {
 
       // deduct chips for the bet
       const chipToBeUpdated = -1 * betAmount;
-      setChips(prev => prev + chipToBeUpdated)
+      setChips((prev) => prev + chipToBeUpdated);
       updateChipCount(CHIP_UPDATE_REASON.ANTE, chipToBeUpdated);
     } catch (e) {
       console.error(e);
@@ -236,7 +240,7 @@ const StudPoker = () => {
     if (!isDealerQualified) {
       setWinner(GAME_RESULT.WINNER_PLAYER);
       setPayoutAmt(betAmount);
-      setChips((prev) => prev + betAmount + betAmount)
+      setChips((prev) => prev + betAmount + betAmount);
 
       gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
       gameRecord.playerAction = "Did not qualified";
@@ -248,14 +252,14 @@ const StudPoker = () => {
 
     // Comparing hands
     try {
-      setLoading(true)
+      setLoading(true);
       // Using PokerSolver's winners() to determine winner
       const winner = Hand.winners([dealerStrength, playerStrength]);
 
       // When both strength have equal values
       if (winner.length > 1) {
         setWinner(GAME_RESULT.GAME_TIE);
-        setChips((prev) => prev + betAmount)
+        setChips((prev) => prev + betAmount);
         gameRecord.winner = GAME_RESULT.GAME_TIE;
         gameRecord.playerAction = GAME_RESULT.GAME_TIE;
         setGameHistory((prev) => [gameRecord, ...prev]);
@@ -277,7 +281,7 @@ const StudPoker = () => {
         const anteBonus = betAmount * payoutMultiplier;
         setPayoutAmt(betAmount * 2 + anteBonus);
         setPayout(`Bet + Ante with ${payoutMultiplier}x`);
-        setChips((prev) => prev + betAmount * 3 + anteBonus)
+        setChips((prev) => prev + betAmount * 3 + anteBonus);
 
         gameRecord.winner = GAME_RESULT.WINNER_PLAYER;
         gameRecord.payoutAmt = betAmount * 2 + anteBonus;
@@ -287,7 +291,7 @@ const StudPoker = () => {
       } else if (determinedWinner === GAME_RESULT.WINNER_DEALER) {
         // Lose both ante and bet
         setPayoutAmt(betAmount * -3);
-        setChips((prev) => prev + (-1 * (betAmount + betAmount)))
+        setChips((prev) => prev + -1 * (betAmount + betAmount));
         gameRecord.winner = GAME_RESULT.WINNER_DEALER;
         gameRecord.payoutAmt = betAmount * -3;
         updateChipCount(CHIP_UPDATE_REASON.LOSS, -1 * (betAmount + betAmount));
@@ -298,7 +302,7 @@ const StudPoker = () => {
       console.error("getWinner error:", e);
       return null;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -319,11 +323,6 @@ const StudPoker = () => {
   useEffect(() => {
     if (gameHistory.length > 0) {
       setChartData((prev) => [...prev, [gameHistory.length, chips]]);
-    } else {
-      setChartData([
-        ["Games", "Chip count"],
-        [0, chips],
-      ]);
     }
   }, [gameHistory]);
 
@@ -362,7 +361,12 @@ const StudPoker = () => {
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
             <div className="h5 mb-0">
-              Chips: {loading ? <Spinner size="spinner-grow-sm" /> : formatCurrency(chips)}
+              Chips:{" "}
+              {loading ? (
+                <Spinner size="spinner-grow-sm" />
+              ) : (
+                formatCurrency(chips)
+              )}
             </div>
             {payoutAmt !== 0 && (
               <span
@@ -498,114 +502,114 @@ const StudPoker = () => {
         <hr></hr>
         {(gameState === GAME_STATE.IDLE ||
           gameState === GAME_STATE.DETERMINE_WINNER) && (
-            <div>
-              <div className="d-grid gap-2 col-sm-6">
-                {/* Start Game Button */}
-                <button
-                  type="button"
-                  className="btn btn-lg btn-primary"
-                  disabled={chips < betAmount}
-                  onClick={isOverbet ? undefined : startGame}
-                  data-bs-toggle={isOverbet ? "modal" : undefined}
-                  data-bs-target={isOverbet ? "#overbet" : undefined}
-                >
-                  <div
-                    className={`d-flex align-items-center justify-content-center gap-3 
+          <div>
+            <div className="d-grid gap-2 col-sm-6">
+              {/* Start Game Button */}
+              <button
+                type="button"
+                className="btn btn-lg btn-primary"
+                disabled={chips < betAmount}
+                onClick={isOverbet ? undefined : startGame}
+                data-bs-toggle={isOverbet ? "modal" : undefined}
+                data-bs-target={isOverbet ? "#overbet" : undefined}
+              >
+                <div
+                  className={`d-flex align-items-center justify-content-center gap-3 
                     ${isOverbet && "text-warning"}`}
-                  >
-                    Bet Ante {formatCurrency(betAmount)}
-                    {isOverbet && (
-                      <WarningCircleIcon
-                        size={32}
-                        aria-hidden="true"
-                        className="text-warning"
-                      />
-                    )}
-                  </div>
-                </button>
-              </div>
-              {/* Betting Amount Range Selector */}
-              <div className="col-sm-6 mt-3">
-                <input
-                  type="range"
-                  className="form-range"
-                  id="betSize"
-                  min={BETS_SETTINGS.BET_MIN}
-                  max={BETS_SETTINGS.BET_MAX}
-                  step={BETS_SETTINGS.BET_STEP}
-                  value={betAmount}
-                  onChange={(e) => setBetAmount(e.target.valueAsNumber)}
-                ></input>
-              </div>
-              {/* Modal for overbetting */}
-              <Modal
-                modalID="overbet"
-                modalTitle="Bet May Limit Future Play"
-                modalInstruction={
-                  <>
-                    <div className="mb-2">
-                      After this bet, you'll have only{" "}
-                      {formatCurrency(chips - betAmount)}, but{" "}
-                      {formatCurrency(betAmount * 2)} is required for a later bet.
-                    </div>
-                    <div>Continue anyway?</div>
-                  </>
-                }
-                closeBtnLabel="Cancel Bet"
-                okBtnLabel={`Bet ${formatCurrency(betAmount)} anyway`}
-                okBtnFunc={startGame}
-              />
-            </div>
-          )}
-        {(gameState === GAME_STATE.LOADING ||
-          gameState === GAME_STATE.PLAYER_ACTED ||
-          gameState === GAME_STATE.PLAYER_MOVE) && (
-            <div>
-              {/* Bet Button */}
-              <button
-                type="button"
-                className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
-                onClick={bet}
-                disabled={
-                  gameState === GAME_STATE.LOADING ||
-                  gameState === GAME_STATE.PLAYER_ACTED ||
-                  chips < betAmount * 2
-                }
-              >
-                {gameState === GAME_STATE.PLAYER_MOVE ? (
-                  <div>Bet {formatCurrency(betAmount * 2)}</div>
-                ) : (
-                  <div className="d-flex align-items-center justify-content-center">
-                    <span
-                      className="spinner-grow spinner-grow-sm me-2"
+                >
+                  Bet Ante {formatCurrency(betAmount)}
+                  {isOverbet && (
+                    <WarningCircleIcon
+                      size={32}
                       aria-hidden="true"
-                    ></span>
-                    <span role="status">Loading</span>
-                  </div>
-                )}
-              </button>
-              {/* Fold Button */}
-              <button
-                type="button"
-                className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
-                onClick={fold}
-                disabled={
-                  gameState === GAME_STATE.LOADING ||
-                  gameState === GAME_STATE.PLAYER_ACTED
-                }
-              >
-                <div className="d-flex align-items-center justify-content-center">
-                  {gameState !== GAME_STATE.PLAYER_MOVE && (
-                    <span
-                      className="spinner-grow spinner-grow-sm me-2"
-                      aria-hidden="true"
-                    ></span>
+                      className="text-warning"
+                    />
                   )}
-                  <span role="status">Fold</span>
                 </div>
               </button>
             </div>
-          )}
+            {/* Betting Amount Range Selector */}
+            <div className="col-sm-6 mt-3">
+              <input
+                type="range"
+                className="form-range"
+                id="betSize"
+                min={BETS_SETTINGS.BET_MIN}
+                max={BETS_SETTINGS.BET_MAX}
+                step={BETS_SETTINGS.BET_STEP}
+                value={betAmount}
+                onChange={(e) => setBetAmount(e.target.valueAsNumber)}
+              ></input>
+            </div>
+            {/* Modal for overbetting */}
+            <Modal
+              modalID="overbet"
+              modalTitle="Bet May Limit Future Play"
+              modalInstruction={
+                <>
+                  <div className="mb-2">
+                    After this bet, you'll have only{" "}
+                    {formatCurrency(chips - betAmount)}, but{" "}
+                    {formatCurrency(betAmount * 2)} is required for a later bet.
+                  </div>
+                  <div>Continue anyway?</div>
+                </>
+              }
+              closeBtnLabel="Cancel Bet"
+              okBtnLabel={`Bet ${formatCurrency(betAmount)} anyway`}
+              okBtnFunc={startGame}
+            />
+          </div>
+        )}
+        {(gameState === GAME_STATE.LOADING ||
+          gameState === GAME_STATE.PLAYER_ACTED ||
+          gameState === GAME_STATE.PLAYER_MOVE) && (
+          <div>
+            {/* Bet Button */}
+            <button
+              type="button"
+              className="btn btn-success btn-lg col-5 col-md-3 cursor-pointer me-3 "
+              onClick={bet}
+              disabled={
+                gameState === GAME_STATE.LOADING ||
+                gameState === GAME_STATE.PLAYER_ACTED ||
+                chips < betAmount * 2
+              }
+            >
+              {gameState === GAME_STATE.PLAYER_MOVE ? (
+                <div>Bet {formatCurrency(betAmount * 2)}</div>
+              ) : (
+                <div className="d-flex align-items-center justify-content-center">
+                  <span
+                    className="spinner-grow spinner-grow-sm me-2"
+                    aria-hidden="true"
+                  ></span>
+                  <span role="status">Loading</span>
+                </div>
+              )}
+            </button>
+            {/* Fold Button */}
+            <button
+              type="button"
+              className="btn btn-danger btn-lg col-5 col-md-3 cursor-pointer"
+              onClick={fold}
+              disabled={
+                gameState === GAME_STATE.LOADING ||
+                gameState === GAME_STATE.PLAYER_ACTED
+              }
+            >
+              <div className="d-flex align-items-center justify-content-center">
+                {gameState !== GAME_STATE.PLAYER_MOVE && (
+                  <span
+                    className="spinner-grow spinner-grow-sm me-2"
+                    aria-hidden="true"
+                  ></span>
+                )}
+                <span role="status">Fold</span>
+              </div>
+            </button>
+          </div>
+        )}
       </div>
       {/* SECTION: Game History */}
       {gameState === GAME_STATE.IDLE || (
