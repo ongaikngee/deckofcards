@@ -1,8 +1,8 @@
 import React from "react";
 
 const Spinner = ({
-  size = "",
-  colour = "",
+  size = "", //spinner-border-sm, spinner-border-lg, ...
+  colour = "", //text-primary, text-secondary, ...
   type = "spinner-grow",
 }) => {
   return (

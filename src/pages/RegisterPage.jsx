@@ -8,6 +8,7 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const RegisterPage = () => {
     }
 
     try {
+      setLoading(true)
       await register(username, password);
       setSuccess("User registered successfully!");
       setUsername("");
@@ -42,6 +44,8 @@ const RegisterPage = () => {
         e?.message ||
           "An error occurred during registration. Please try again.",
       );
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -89,9 +93,15 @@ const RegisterPage = () => {
         <button
           type="button"
           className="btn btn-primary"
+          style={{ minWidth: "120px" }}
+          disabled={loading}
           onClick={() => formRegister({ username, password })}
         >
-          Register
+          {loading ? (
+            "Registering"
+          ) : (
+            "Register"
+          )}
         </button>
         <button
           type="button"
