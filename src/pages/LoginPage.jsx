@@ -69,7 +69,6 @@ const LoginPage = () => {
           onClick={() => formLogin({ username, password })}
         >
           {loading ? (
-            // <Spinner colour="text-warning" />
             "Logging"
           ) : (
             "Log in"
