@@ -3,11 +3,12 @@ import { CHIP_UPDATE_REASON } from "../constants/games";
 const API_URL = import.meta.env.VITE_API_URL;
 const BASE_URL = `${API_URL}/chips`;
 
-export const getChipsHistoryService = async (user_id, showTopup = true) => {
+export const getChipsHistoryService = async (user_id, showTopup = true, limit = 20) => {
   try {
 
     const params = new URLSearchParams({
       showTopup: String(showTopup),
+      limit: String(limit)
     });
 
     const response = await fetch(`${BASE_URL}/${user_id}?${params.toString()}`);
