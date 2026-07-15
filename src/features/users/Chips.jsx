@@ -28,7 +28,7 @@ const Chips = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await getChipsHistoryService(user);
+      const response = await getChipsHistoryService(user, showTopup);
       setChipsHistory(response.data);
       setChips(response.total_amount);
     } catch (e) {
@@ -55,15 +55,12 @@ const Chips = () => {
     }
   };
 
-  const filteredHistory = showTopup
-    ? chipsHistory.filter((record) => record.reason === "Topup")
-    : chipsHistory;
 
   useEffect(() => {
     if (user) {
       getChipsHistory();
     }
-  }, [user]);
+  }, [user, showTopup]);
 
   return (
     <div>
@@ -71,6 +68,7 @@ const Chips = () => {
         <PokerChipIcon size={44} />
         Chips {loading ? <Spinner /> : formatCurrency(chips)}
       </h2>
+      <div>{JSON.stringify(showTopup)}</div>
       <div className="d-flex justify-content-end gap-2">
         <button
           className="btn btn-primary"
@@ -80,7 +78,7 @@ const Chips = () => {
         </button>
       </div>
       <div>
-        {filteredHistory.length > 0 ? (
+        {chipsHistory.length > 0 ? (
           <table className="table table-striped table-hover">
             <thead>
               <tr>
@@ -90,7 +88,7 @@ const Chips = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredHistory.map((record) => (
+              {chipsHistory.map((record) => (
                 <tr key={record.id}>
                   <td>
                     {record.created_at

@@ -3,9 +3,14 @@ import { CHIP_UPDATE_REASON } from "../constants/games";
 const API_URL = import.meta.env.VITE_API_URL;
 const BASE_URL = `${API_URL}/chips`;
 
-export const getChipsHistoryService = async (user_id) => {
+export const getChipsHistoryService = async (user_id, showTopup = true) => {
   try {
-    const response = await fetch(`${BASE_URL}/${user_id}`);
+
+    const params = new URLSearchParams({
+      showTopup: String(showTopup),
+    });
+
+    const response = await fetch(`${BASE_URL}/${user_id}?${params.toString()}`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -35,7 +40,8 @@ export const updateChipsAmtService = async ({
   }
 
   if (!response.ok) {
-    const errorMessage = data?.detail[0].msg || data?.message || "Top up failed";
+    const errorMessage =
+      data?.detail[0].msg || data?.message || "Top up failed";
     const error = new Error(errorMessage);
     error.status = response.status;
     error.payload = data;
