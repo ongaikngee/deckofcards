@@ -25,6 +25,8 @@ const Chips = () => {
 
   const { user } = useAuth();
 
+  const HistoryLimits = [5, 10, 15, 20, 25, 30];
+
   const getChipsHistory = async () => {
     setError("");
     setLoading(true);
@@ -77,20 +79,32 @@ const Chips = () => {
           {showTopup ? "Show All History" : "Show Topups Only"}
         </button>
         <div className="d-flex align-items-center gap-2">
-          <label htmlFor="historyLimit" className="form-label mb-1">
-            History Limit
-          </label>
-          <input
-            id="historyLimit"
-            type="number"
-            className="form-control form-control-sm"
-            style={{ width: "70px" }}
-            value={limit}
-            onChange={(e) => setLimit(e.target.valueAsNumber)}
-            min={5}
-            max={50}
-            step={5}
-          />
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary btn-sm dropdown-toggle btn-info"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              Results per page{" "}
+            </button>
+            <ul
+              className="dropdown-menu dropdown-menu-end"
+              style={{ minWidth: "4rem" }}
+            >
+              {HistoryLimits.map((limit) => (
+                <li key={limit}>
+                  <button
+                    className="dropdown-item text-center"
+                    type="button"
+                    onClick={() => setLimit(limit)}
+                  >
+                    {limit}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
       <div>
