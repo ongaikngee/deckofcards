@@ -67,7 +67,7 @@ function Navbar() {
                 )}
                 <li className="nav-item">
                   <Link className="nav-link" to="/user" onClick={closeNavbar}>
-                    <div className="border border-danger rounded-circle text-warning p-2">{user}</div>
+                    <div className="border border-danger rounded-circle text-warning p-2">{user.id}</div>
                   </Link>
                 </li>
               </div>

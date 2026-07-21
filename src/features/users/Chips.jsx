@@ -31,7 +31,7 @@ const Chips = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await getChipsHistoryService(user, showTopup, limit);
+      const response = await getChipsHistoryService(user.id, showTopup, limit);
       setChipsHistory(response.data);
       setChips(response.total_amount);
     } catch (e) {
@@ -47,7 +47,7 @@ const Chips = () => {
     setLoading(true);
     try {
       await updateChipsAmtService({
-        user_id: user,
+        user_id: user.id,
         amt: topUpAmt,
       });
       await getChipsHistory();
@@ -79,9 +79,9 @@ const Chips = () => {
           {showTopup ? "Show All History" : "Show Topups Only"}
         </button>
         <div className="d-flex align-items-center gap-2">
-          <div class="dropdown">
+          <div className="dropdown">
             <button
-              class="btn btn-secondary btn-sm dropdown-toggle btn-info"
+              className="btn btn-secondary btn-sm dropdown-toggle btn-info"
               type="button"
               data-bs-toggle="dropdown"
               aria-expanded="false"

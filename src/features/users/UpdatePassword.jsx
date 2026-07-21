@@ -31,7 +31,7 @@ const UpdatePassword = () => {
     }
 
     try {
-      await updatePassword(user, currentPassword, newPassword);
+      await updatePassword(user.id, currentPassword, newPassword);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");

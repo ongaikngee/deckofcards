@@ -17,7 +17,7 @@ const Settings = () => {
   };
 
   const deleteUserForm = async () => {
-    await deleteUser(user);
+    await deleteUser(user.id);
     formLogout();
   };
 

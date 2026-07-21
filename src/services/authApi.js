@@ -1,5 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
+const token = localStorage.getItem("token");
+
 export const loginUser = async (username, password) => {
   const response = await fetch(`${API_URL}/users/login`, {
     method: "POST",
@@ -63,6 +65,7 @@ export const updatePasswordAPI = async (
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       current_password: currentPassword,
@@ -94,6 +97,7 @@ export const deleteUserAPI = async (user_id) => {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
 

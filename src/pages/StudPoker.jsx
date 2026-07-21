@@ -68,7 +68,7 @@ const StudPoker = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await getChipsHistoryService(user);
+      const response = await getChipsHistoryService(user.id);
       setChips(response.total_amount);
       setChartData([
         ["Games", "Chip count"],
@@ -86,7 +86,7 @@ const StudPoker = () => {
     setError("");
     try {
       const response = await updateChipsAmtService({
-        user_id: user,
+        user_id: user.id,
         amt: amount,
         reason: reason,
       });
