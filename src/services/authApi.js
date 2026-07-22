@@ -119,3 +119,30 @@ export const deleteUserAPI = async (user_id) => {
 
   return data;
 };
+
+export const getCurrentUser = async () => {
+  const response = await fetch(`${API_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  let data;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const errorMessage =
+      data?.detail || data?.message || "Failed to fetch current user";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  return data;
+}
