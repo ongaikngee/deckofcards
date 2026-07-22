@@ -2,13 +2,13 @@ import { CHIP_UPDATE_REASON } from "../constants/games";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BASE_URL = `${API_URL}/chips`;
-const token = localStorage.getItem("token");
 
 export const getChipsHistoryService = async (
   user_id,
   showTopup = true,
   limit = 20,
 ) => {
+  const token = localStorage.getItem("token");
   try {
     const params = new URLSearchParams({
       showTopup: String(showTopup),
@@ -38,6 +38,7 @@ export const updateChipsAmtService = async ({
   amt,
   reason = CHIP_UPDATE_REASON.TOPUP,
 }) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${BASE_URL}/${user_id}`, {
     method: "POST",
     headers: {

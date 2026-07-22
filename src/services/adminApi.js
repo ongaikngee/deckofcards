@@ -1,8 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-const token = localStorage.getItem("token");
-
 export const getUsersChipCounts = async () => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/users/chip-counts`, {
     method: "GET",
     headers: {
@@ -31,6 +30,7 @@ export const getUsersChipCounts = async () => {
 };
 
 export const makeAdmin = async (user_id) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/users/${user_id}/make-admin`, {
     method: "POST",
     headers: {
@@ -59,6 +59,7 @@ export const makeAdmin = async (user_id) => {
 };
 
 export const deleteUser = async (user_id) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/users/${user_id}`, {
     method: "DELETE",
     headers: {
