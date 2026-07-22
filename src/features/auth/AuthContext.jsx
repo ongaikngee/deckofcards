@@ -1,9 +1,10 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import {
   loginUser,
   registerUser,
   updatePasswordAPI,
   deleteUserAPI,
+  getCurrentUser,
 } from "../../services/authApi";
 
 const AuthContext = createContext();
@@ -11,6 +12,31 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState("user");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    async function restoreUser() {
+      try {
+        const user = await getCurrentUser();
+
+        setUser(user);
+        setRole(user.role);
+      } catch {
+        localStorage.removeItem("token");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    restoreUser();
+  }, []);
 
   const login = async (id, password) => {
     const response = await loginUser(id, password);
@@ -29,7 +55,6 @@ export function AuthProvider({ children }) {
 
   const register = async (id, password) => {
     const response = await registerUser(id, password);
-
     localStorage.setItem("token", response.access_token);
 
     setUser(response.user);
@@ -52,6 +77,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         role,
+        loading,
         login,
         logout,
         register,

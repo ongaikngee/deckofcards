@@ -1,7 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-const token = localStorage.getItem("token");
-
 export const loginUser = async (username, password) => {
   const response = await fetch(`${API_URL}/users/login`, {
     method: "POST",
@@ -61,6 +59,7 @@ export const updatePasswordAPI = async (
   currentPassword,
   newPassword,
 ) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/users/${user_id}/update-password`, {
     method: "PUT",
     headers: {
@@ -93,6 +92,7 @@ export const updatePasswordAPI = async (
 };
 
 export const deleteUserAPI = async (user_id) => {
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_URL}/users/${user_id}`, {
     method: "DELETE",
     headers: {
@@ -119,3 +119,31 @@ export const deleteUserAPI = async (user_id) => {
 
   return data;
 };
+
+export const getCurrentUser = async () => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  let data;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    const errorMessage =
+      data?.detail || data?.message || "Failed to fetch current user";
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.payload = data;
+    throw error;
+  }
+
+  return data;
+}
