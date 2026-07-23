@@ -27,6 +27,22 @@ export const loginUser = async (username, password) => {
   return data;
 };
 
+export const logoutUser = async () => {
+
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refresh_token");
+  await fetch(`${API_URL}/users/logout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      refresh_token: refreshToken,
+    }),
+  });
+};
+
 export const registerUser = async (username, password) => {
   const response = await fetch(`${API_URL}/users/`, {
     method: "POST",
@@ -146,4 +162,24 @@ export const getCurrentUser = async () => {
   }
 
   return data;
-}
+};
+
+export const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem("refresh_token");
+
+  const response = await fetch(`${API_URL}/users/refresh`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to refresh");
+  }
+
+  return response.json();
+};

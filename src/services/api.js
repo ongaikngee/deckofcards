@@ -1,0 +1,4 @@
+apiFetch(
+    url,
+    options
+)

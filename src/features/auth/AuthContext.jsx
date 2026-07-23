@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import {
   loginUser,
+  logoutUser,
   registerUser,
   updatePasswordAPI,
   deleteUserAPI,
@@ -41,14 +42,17 @@ export function AuthProvider({ children }) {
   const login = async (id, password) => {
     const response = await loginUser(id, password);
     localStorage.setItem("token", response.access_token);
+    localStorage.setItem("refresh_token", response.refresh_token);
 
     setUser(response.user);
     setRole(response.user.role);
     return response;
   };
 
-  function logout() {
+  const logout = async() => {
+    await logoutUser()
     localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
     setUser(null);
     setRole("user");
   }
@@ -56,6 +60,7 @@ export function AuthProvider({ children }) {
   const register = async (id, password) => {
     const response = await registerUser(id, password);
     localStorage.setItem("token", response.access_token);
+    localStorage.setItem("refresh_token", response.refresh_token);
 
     setUser(response.user);
     setRole(response.user.role);
