@@ -1,11 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = `/users`;
+import { apiFetch } from "./api";
 
 export const loginUser = async (username, password) => {
-  const response = await fetch(`${API_URL}/users/login`, {
+  const response = await apiFetch(`${BASE_URL}/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ username, password }),
   });
 
@@ -27,12 +25,20 @@ export const loginUser = async (username, password) => {
   return data;
 };
 
-export const registerUser = async (username, password) => {
-  const response = await fetch(`${API_URL}/users/`, {
+export const logoutUser = async () => {
+  const refreshToken = localStorage.getItem("refresh_token");
+
+  await apiFetch(`${BASE_URL}/logout`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    body: JSON.stringify({
+      refresh_token: refreshToken,
+    }),
+  });
+};
+
+export const registerUser = async (username, password) => {
+  const response = await apiFetch(`${BASE_URL}/`, {
+    method: "POST",
     body: JSON.stringify({ username, password }),
   });
 
@@ -59,19 +65,13 @@ export const updatePasswordAPI = async (
   currentPassword,
   newPassword,
 ) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_URL}/users/${user_id}/update-password`, {
+  const response = await apiFetch(`${BASE_URL}/${user_id}/update-password`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify({
       current_password: currentPassword,
       new_password: newPassword,
     }),
   });
-
   let data;
   try {
     data = await response.json();
@@ -92,13 +92,8 @@ export const updatePasswordAPI = async (
 };
 
 export const deleteUserAPI = async (user_id) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_URL}/users/${user_id}`, {
+  const response = await apiFetch(`${BASE_URL}/${user_id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
   });
 
   let data;
@@ -121,14 +116,7 @@ export const deleteUserAPI = async (user_id) => {
 };
 
 export const getCurrentUser = async () => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${API_URL}/users/me`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiFetch(`${BASE_URL}/me`);
   let data;
   try {
     data = await response.json();
@@ -146,4 +134,21 @@ export const getCurrentUser = async () => {
   }
 
   return data;
-}
+};
+
+export const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem("refresh_token");
+
+  const response = await apiFetch(`${BASE_URL}/refresh/`, {
+    method: "POST",
+    body: JSON.stringify({
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to refresh");
+  }
+
+  return response.json();
+};

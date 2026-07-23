@@ -1,7 +1,8 @@
 import { CHIP_UPDATE_REASON } from "../constants/games";
+import { apiFetch } from "./api";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const BASE_URL = `${API_URL}/chips`;
+const BASE_URL = `/chips`;
 
 export const getChipsHistoryService = async (
   user_id,
@@ -15,16 +16,10 @@ export const getChipsHistoryService = async (
       limit: String(limit),
     });
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${BASE_URL}/${user_id}?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
     );
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -38,15 +33,13 @@ export const updateChipsAmtService = async ({
   amt,
   reason = CHIP_UPDATE_REASON.TOPUP,
 }) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${BASE_URL}/${user_id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const response = await apiFetch(
+    `${BASE_URL}/${user_id}`,
+    {
+      method: "POST",
+      body: JSON.stringify({ amount: amt, reason: reason }),
     },
-    body: JSON.stringify({ amount: amt, reason: reason }),
-  });
+  );
 
   let data;
   try {

@@ -7,7 +7,6 @@ export default function ProtectedRoute({ children }) {
     return <div>Loading...</div>;
   }
   if (!isAuthenticated) {
-    console.log("can you see if i am authenticated?");
     return <Navigate to="/login" replace />;
   }
 
