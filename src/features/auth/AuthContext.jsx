@@ -15,6 +15,22 @@ export function AuthProvider({ children }) {
   const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(true);
 
+  const clearSession = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+
+    setUser(null);
+    setRole("user");
+  };
+
+  const setSession = (response) => {
+    localStorage.setItem("token", response.access_token);
+    localStorage.setItem("refresh_token", response.refresh_token);
+
+    setUser(response.user);
+    setRole(response.user.role);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -29,8 +45,9 @@ export function AuthProvider({ children }) {
 
         setUser(user);
         setRole(user.role);
-      } catch {
-        localStorage.removeItem("token");
+      } catch (error) {
+        console.error("Failed to restore user:", error);
+        clearSession();
       } finally {
         setLoading(false);
       }
@@ -41,29 +58,23 @@ export function AuthProvider({ children }) {
 
   const login = async (id, password) => {
     const response = await loginUser(id, password);
-    localStorage.setItem("token", response.access_token);
-    localStorage.setItem("refresh_token", response.refresh_token);
-
-    setUser(response.user);
-    setRole(response.user.role);
+    setSession(response);
     return response;
   };
 
-  const logout = async() => {
-    await logoutUser()
-    localStorage.removeItem("token");
-    localStorage.removeItem("refresh_token");
-    setUser(null);
-    setRole("user");
-  }
+  const logout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      clearSession();
+    }
+  };
 
   const register = async (id, password) => {
     const response = await registerUser(id, password);
-    localStorage.setItem("token", response.access_token);
-    localStorage.setItem("refresh_token", response.refresh_token);
-
-    setUser(response.user);
-    setRole(response.user.role);
+    setSession(response);
     return response;
   };
 
