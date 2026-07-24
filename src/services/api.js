@@ -16,6 +16,18 @@ export const apiFetch = async (endpoint, options = {}) => {
     return response;
   }
 
+  let errorData = {};
+
+  try {
+    errorData = await response.clone().json();
+  } catch {
+    // Response wasn't JSON; leave errorData as an empty object.
+  }
+
+  if (errorData.detail?.error !== "token_expired") {
+    return response;
+  }
+
   const refreshToken = localStorage.getItem("refresh_token");
 
   const refreshResponse = await fetch(`${API_URL}/users/refresh`, {
@@ -39,8 +51,13 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   const tokens = await refreshResponse.json();
 
+  console.log("New Access Token:", tokens.access_token);
+  console.log("Old Access Token:", token);
+
   localStorage.setItem("token", tokens.access_token);
   localStorage.setItem("refresh_token", tokens.refresh_token);
+
+  console.log("Retry Authorization:", `Bearer ${tokens.access_token}`);
 
   response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
