@@ -1,9 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const apiFetch = async (endpoint, options = {}) => {
-  console.log("Calling.....");
-  console.log('endpoint', endpoint)
-  console.log('options', options)
   let token = localStorage.getItem("token");
 
   let response = await fetch(`${API_URL}${endpoint}`, {
