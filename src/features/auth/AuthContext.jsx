@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
         setRole(user.role);
       } catch {
         localStorage.removeItem("token");
+        localStorage.removeItem("refresh_token");
       } finally {
         setLoading(false);
       }
@@ -49,14 +50,18 @@ export function AuthProvider({ children }) {
     return response;
   };
 
-  const logout = async() => {
-    await logoutUser()
-    localStorage.removeItem("token");
-    localStorage.removeItem("refresh_token");
-    setUser(null);
-    setRole("user");
-  }
-
+  const logout = async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    } finally {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refresh_token");
+      setUser(null);
+      setRole("user");
+    }
+  };
   const register = async (id, password) => {
     const response = await registerUser(id, password);
     localStorage.setItem("token", response.access_token);
