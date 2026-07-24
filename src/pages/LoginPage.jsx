@@ -12,7 +12,14 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    formLogin({ username, password });
+  };
+
   const formLogin = async ({ username, password }) => {
+    setError("");
+
     if (username.trim() === "" || password.trim() === "") {
       setError("All fields are required.");
       return;
@@ -20,7 +27,7 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      const response = await login(username, password);
+      await login(username, password);
       navigate("/");
     } catch (e) {
       console.error(e);
@@ -35,7 +42,7 @@ const LoginPage = () => {
   return (
     <div className="container py-4">
       <h2>Login</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="inputUserName" className="form-label">
             Username:
@@ -49,7 +56,7 @@ const LoginPage = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="inputPassword" className="forn-label">
+          <label htmlFor="inputPassword" className="form-label">
             Password:
           </label>
           <input
@@ -62,17 +69,12 @@ const LoginPage = () => {
         </div>
 
         <button
-          type="button"
+          type="submit"
           className="btn btn-primary"
           style={{ minWidth: "100px" }}
           disabled={loading}
-          onClick={() => formLogin({ username, password })}
         >
-          {loading ? (
-            "Logging"
-          ) : (
-            "Log in"
-          )}
+          {loading ? "Logging" : "Log in"}
         </button>
         <button
           type="button"
