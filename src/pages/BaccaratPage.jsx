@@ -50,7 +50,7 @@ const BaccaratPage = () => {
           </div>
         </div>
       </div>
-      {gameState === GAME_STATE.INTRO && <IntroBaccarat />}
+      {gameState === GAME_STATE.INTRO && <IntroBaccarat setGameState={setGameState}/>}
     </div>
   );
 };
