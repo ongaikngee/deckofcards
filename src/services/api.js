@@ -1,4 +1,5 @@
 import { JWT_TOKEN } from "../constants/auth";
+import { AUTH_ERROR } from "../constants/errors";
 const API_URL = import.meta.env.VITE_API_URL;
 
 let refreshPromise = null;
@@ -27,7 +28,7 @@ export const apiFetch = async (endpoint, options = {}) => {
     // Response wasn't JSON; leave errorData as an empty object.
   }
 
-  if (errorData.detail?.error !== "token_expired") {
+  if (errorData.detail?.error !== AUTH_ERROR.TOKEN_EXPIRED) {
     return response;
   }
 
