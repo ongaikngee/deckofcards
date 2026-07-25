@@ -1,11 +1,13 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 
 // componenets
 import { useAuth } from "../features/auth/AuthContext";
-import IntroBaccarat from "../features/games/IntroBaccarat";
+import IntroBaccarat from "../features/games/BaccaratIntro";
+import BaccaratPlayerMove from "../features/games/BaccaratPlayerMove";
+import BaccaratCardsPanel from "../features/games/BaccaratCardsPanel";
 
 // helpers
-import { GAME_STATE } from "../constants/games";
+import { GAME_STATE, BETS_SETTINGS } from "../constants/games";
 import { getChipsHistoryService } from "../services/chipService";
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -18,6 +20,8 @@ const BaccaratPage = () => {
 
   // Chips states
   const [chips, setChips] = useState(0);
+  const [betAmount, setBetAmount] = useState(BETS_SETTINGS.BET_MIN);
+  const [betType, setBetType] = useState(null);
 
   const getChipsHistory = async () => {
     setError("");
@@ -47,10 +51,21 @@ const BaccaratPage = () => {
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
             <div className="h5 mb-0">Chips:{formatCurrency(chips)}</div>
+            {/* <div className="text-muted">Bet: {formatCurrency(betAmount)}</div> */}
           </div>
+          <div className="text-muted">Bet Amount: {formatCurrency(betAmount)}</div>
+          <div className="text-muted">Bet Type: {betType}</div>
         </div>
       </div>
-      {gameState === GAME_STATE.INTRO && <IntroBaccarat setGameState={setGameState}/>}
+      {/* intro */}
+      {gameState === GAME_STATE.INTRO && <IntroBaccarat setGameState={setGameState} />}
+      {/* Game cards panel */}
+      {gameState !== GAME_STATE.INTRO && <BaccaratCardsPanel gameState={gameState} />}
+      {gameState !== GAME_STATE.INTRO && <BaccaratPlayerMove gameState={gameState}
+        BetAmount={betAmount}
+        setGameState={setGameState}
+        setBetAmount={setBetAmount}
+        setBetType={setBetType} />}
     </div>
   );
 };

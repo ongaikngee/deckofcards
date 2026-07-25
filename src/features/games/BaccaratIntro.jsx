@@ -31,7 +31,13 @@ const IntroBaccarat = ({ setGameState }) => {
           offers a higher payout but occurs much less frequently.
         </div>
         <div>
-          <button type='button' className='btn btn-primary my-4' onClick={() => setGameState(GAME_STATE.PLAYER_MOVE)}>Begin game</button>
+          <button
+            type='button'
+            className='btn btn-primary my-4'
+            onClick={() => setGameState(GAME_STATE.PLAYER_MOVE)}
+          >
+            Begin game
+          </button>
         </div>
       </div>
     </div>
