@@ -13,6 +13,11 @@ const RegisterPage = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    formRegister();
+  };
+
   const formRegister = async () => {
     setError(null);
     setSuccess(null);
@@ -38,6 +43,7 @@ const RegisterPage = () => {
       setUsername("");
       setPassword("");
       setConfirmPassword("");
+      navigate("/");
     } catch (e) {
       console.error(e);
       setError(
@@ -52,7 +58,7 @@ const RegisterPage = () => {
   return (
     <div className="container py-4">
       <h2>Register</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="inputUserName" className="form-label">
             Username:
@@ -91,11 +97,10 @@ const RegisterPage = () => {
           />
         </div>
         <button
-          type="button"
+          type="submit"
           className="btn btn-primary"
           style={{ minWidth: "120px" }}
           disabled={loading}
-          onClick={() => formRegister({ username, password })}
         >
           {loading ? (
             "Registering"
