@@ -1,8 +1,11 @@
+import { JWT_TOKEN } from "../constants/auth";
+import { AUTH_ERROR } from "../constants/errors";
 const API_URL = import.meta.env.VITE_API_URL;
+
 let refreshPromise = null;
 
 export const apiFetch = async (endpoint, options = {}) => {
-  let token = localStorage.getItem("token");
+  const token = localStorage.getItem(JWT_TOKEN.ACCESS_TOKEN);
 
   let response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -25,13 +28,13 @@ export const apiFetch = async (endpoint, options = {}) => {
     // Response wasn't JSON; leave errorData as an empty object.
   }
 
-  if (errorData.detail?.error !== "token_expired") {
+  if (errorData.detail?.error !== AUTH_ERROR.TOKEN_EXPIRED) {
     return response;
   }
 
   if (!refreshPromise) {
     refreshPromise = (async () => {
-      const refreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = localStorage.getItem(JWT_TOKEN.REFRESH_TOKEN);
 
       const refreshResponse = await fetch(`${API_URL}/users/refresh`, {
         method: "POST",
@@ -44,8 +47,8 @@ export const apiFetch = async (endpoint, options = {}) => {
       });
 
       if (!refreshResponse.ok) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refresh_token");
+        localStorage.removeItem(JWT_TOKEN.ACCESS_TOKEN);
+        localStorage.removeItem(JWT_TOKEN.REFRESH_TOKEN);
 
         window.location.href = "/login";
 
@@ -54,8 +57,8 @@ export const apiFetch = async (endpoint, options = {}) => {
 
       const tokens = await refreshResponse.json();
 
-      localStorage.setItem("token", tokens.access_token);
-      localStorage.setItem("refresh_token", tokens.refresh_token);
+      localStorage.setItem(JWT_TOKEN.ACCESS_TOKEN, tokens.access_token);
+      localStorage.setItem(JWT_TOKEN.REFRESH_TOKEN, tokens.refresh_token);
 
       return tokens;
     })().finally(() => {
@@ -63,7 +66,7 @@ export const apiFetch = async (endpoint, options = {}) => {
     });
   }
   await refreshPromise;
-  const newToken = localStorage.getItem("token");
+  const newToken = localStorage.getItem(JWT_TOKEN.ACCESS_TOKEN);
 
   response = await fetch(`${API_URL}${endpoint}`, {
     ...options,

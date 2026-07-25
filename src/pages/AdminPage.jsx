@@ -12,6 +12,7 @@ import {
   ShieldStar,
   TrashSimple,
 } from "@phosphor-icons/react";
+import { USER_ROLE } from "../constants/auth";
 
 const AdminPage = () => {
   const [users, setUsers] = useState([]);
@@ -136,7 +137,7 @@ const AdminPage = () => {
                   <tr key={user.user_id}>
                     <td>
                       <span className="d-flex align-items-center gap-2">
-                        {user.role === "admin" ? (
+                        {user.role === USER_ROLE.ADMIN ? (
                           <ShieldStar
                             size={18}
                             weight="fill"
@@ -152,7 +153,7 @@ const AdminPage = () => {
                         <span>
                           {user.username}{" "}
                           <span
-                            className={`badge ${user.role === "admin" ? "bg-success" : "bg-secondary"}`}
+                            className={`badge ${user.role === USER_ROLE.ADMIN ? "bg-success" : "bg-secondary"}`}
                           >
                             {user.role}
                           </span>
@@ -169,9 +170,9 @@ const AdminPage = () => {
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-secondary me-2"
-                        disabled={user.role === "admin"}
+                        disabled={user.role === USER_ROLE.ADMIN}
                         title={
-                          user.role === "admin"
+                          user.role === USER_ROLE.ADMIN
                             ? "Already an admin"
                             : "Promote to admin"
                         }

@@ -7,32 +7,33 @@ import {
   deleteUserAPI,
   getCurrentUser,
 } from "../../services/authApi";
+import { JWT_TOKEN, USER_ROLE } from "../../constants/auth";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState(USER_ROLE.USER);
   const [loading, setLoading] = useState(true);
 
   const clearSession = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("refresh_token");
+    localStorage.removeItem(JWT_TOKEN.ACCESS_TOKEN);
+    localStorage.removeItem(JWT_TOKEN.REFRESH_TOKEN);
 
     setUser(null);
-    setRole("user");
+    setRole(USER_ROLE.USER);
   };
 
   const setSession = (response) => {
-    localStorage.setItem("token", response.access_token);
-    localStorage.setItem("refresh_token", response.refresh_token);
+    localStorage.setItem(JWT_TOKEN.ACCESS_TOKEN, response.access_token);
+    localStorage.setItem(JWT_TOKEN.REFRESH_TOKEN, response.refresh_token);
 
     setUser(response.user);
     setRole(response.user.role);
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(JWT_TOKEN.ACCESS_TOKEN);
 
     if (!token) {
       setLoading(false);
@@ -100,7 +101,7 @@ export function AuthProvider({ children }) {
         updatePassword,
         deleteUser,
         isAuthenticated: !!user,
-        isAdmin: role === "admin",
+        isAdmin: role === USER_ROLE.ADMIN,
       }}
     >
       {children}

@@ -1,5 +1,7 @@
 import { CHIP_UPDATE_REASON } from "../constants/games";
 import { apiFetch } from "./api";
+import { JWT_TOKEN } from "../constants/auth";
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 const BASE_URL = `/chips`;
@@ -9,7 +11,7 @@ export const getChipsHistoryService = async (
   showTopup = true,
   limit = 20,
 ) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(JWT_TOKEN.ACCESS_TOKEN);
   try {
     const params = new URLSearchParams({
       showTopup: String(showTopup),
