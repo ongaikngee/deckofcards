@@ -1,5 +1,7 @@
-const BASE_URL = `/users`;
 import { apiFetch } from "./api";
+import { JWT_TOKEN } from "../constants/auth";
+const BASE_URL = `/users`;
+
 
 export const loginUser = async (username, password) => {
   const response = await apiFetch(`${BASE_URL}/login`, {
@@ -26,7 +28,7 @@ export const loginUser = async (username, password) => {
 };
 
 export const logoutUser = async () => {
-  const refreshToken = localStorage.getItem("refresh_token");
+  const refreshToken = localStorage.getItem(JWT_TOKEN.REFRESH_TOKEN);
 
   await apiFetch(`${BASE_URL}/logout`, {
     method: "POST",
@@ -137,7 +139,7 @@ export const getCurrentUser = async () => {
 };
 
 export const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("refresh_token");
+  const refreshToken = localStorage.getItem(JWT_TOKEN.REFRESH_TOKEN);
 
   const response = await apiFetch(`${BASE_URL}/refresh/`, {
     method: "POST",
