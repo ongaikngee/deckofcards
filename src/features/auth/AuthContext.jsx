@@ -7,13 +7,13 @@ import {
   deleteUserAPI,
   getCurrentUser,
 } from "../../services/authApi";
-import { JWT_TOKEN } from "../../constants/auth";
+import { JWT_TOKEN, USER_ROLE } from "../../constants/auth";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState(USER_ROLE.USER);
   const [loading, setLoading] = useState(true);
 
   const clearSession = () => {
@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(JWT_TOKEN.REFRESH_TOKEN);
 
     setUser(null);
-    setRole("user");
+    setRole(USER_ROLE.USER);
   };
 
   const setSession = (response) => {
@@ -101,7 +101,7 @@ export function AuthProvider({ children }) {
         updatePassword,
         deleteUser,
         isAuthenticated: !!user,
-        isAdmin: role === "admin",
+        isAdmin: role === USER_ROLE.ADMIN,
       }}
     >
       {children}
