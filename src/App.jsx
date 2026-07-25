@@ -11,6 +11,7 @@ import User from "./pages/User";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import StudPoker from "./pages/StudPoker";
+import BaccaratPage from "./pages/BaccaratPage";
 
 import ProtectedRoute from "./features/auth/ProtectedRoute";
 import AdminRoute from "./features/auth/AdminRoute";
@@ -42,6 +43,7 @@ function App() {
           </Route>
           <Route path="/game/:deckId" element={<ProtectedRoute><CurrentGame games={games} setGames={setGames} /></ProtectedRoute>} />
           <Route path="/studpoker" element={<ProtectedRoute><StudPoker /></ProtectedRoute>} />
+          <Route path="/baccarat" element={<ProtectedRoute><BaccaratPage /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
         </Routes>
       </div>

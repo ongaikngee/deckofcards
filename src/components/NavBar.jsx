@@ -58,6 +58,11 @@ function Navbar() {
                     Stud Poker
                   </Link>
                 </li>
+                <li>
+                  <Link className="nav-link" to="/baccarat" onClick={closeNavbar}>
+                    Baccarat
+                  </Link>
+                </li>
                 {isAdmin && (
                   <li>
                     <Link className="nav-link" to="/admin" onClick={closeNavbar}>

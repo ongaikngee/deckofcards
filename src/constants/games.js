@@ -13,6 +13,7 @@ export const BETS_SETTINGS = Object.freeze({
 });
 
 export const GAME_STATE = Object.freeze({
+  INTRO: "intro",
   IDLE: "idle",
   LOADING: "loading",
   PLAYER_MOVE: "playerMove",
