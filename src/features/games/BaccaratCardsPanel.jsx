@@ -1,4 +1,5 @@
 import React from "react";
+import { CheckIcon } from "@phosphor-icons/react";
 import DisplayCards from "../../components/DisplayCards";
 
 const BaccaratCardsPanel = ({
@@ -8,6 +9,7 @@ const BaccaratCardsPanel = ({
   dealMessage,
   dealLoading,
   baccaratError,
+  baccaratWinner,
 }) => {
   return (
     <div>
@@ -17,7 +19,12 @@ const BaccaratCardsPanel = ({
       <div className="bg-success p-4 rounded mb-4">
         <div className="row g-3">
           <div className="col-12 col-md-6">
-            <h4 className="text-white">Player's Hand</h4>
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <h4 className="text-white mb-0">Player's Hand</h4>
+              {(baccaratWinner === "player" || baccaratWinner === "tie") && (
+                <CheckIcon size={24} weight="bold" className="text-white" />
+              )}
+            </div>
             <div
               className="p-2 rounded bg-success bg-opacity-25 border border-white"
               style={{ minHeight: "200px" }}
@@ -30,7 +37,12 @@ const BaccaratCardsPanel = ({
             </div>
           </div>
           <div className="col-12 col-md-6">
-            <h4 className="text-white">Banker's Hand</h4>
+            <div className="d-flex align-items-center gap-2 mb-2">
+              <h4 className="text-white mb-0">Banker's Hand</h4>
+              {(baccaratWinner === "banker" || baccaratWinner === "tie") && (
+                <CheckIcon size={24} weight="bold" className="text-white" />
+              )}
+            </div>
             <div
               className="p-2 rounded bg-success bg-opacity-25 border border-white"
               style={{ minHeight: "200px" }}

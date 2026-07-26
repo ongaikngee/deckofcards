@@ -26,6 +26,7 @@ const BaccaratPage = () => {
   const [dealMessage, setDealMessage] = useState("");
   const [dealLoading, setDealLoading] = useState(false);
   const [baccaratError, setBaccaratError] = useState("");
+  const [baccaratWinner, setBaccaratWinner] = useState(null);
   const revealTimers = useRef([]);
 
   // Chips states
@@ -51,58 +52,66 @@ const BaccaratPage = () => {
     getChipsHistory();
   }, []);
 
+  const cardPoint = (card) => {
+    switch (card?.value) {
+      case "ACE":
+        return 1;
+      case "2":
+        return 2;
+      case "3":
+        return 3;
+      case "4":
+        return 4;
+      case "5":
+        return 5;
+      case "6":
+        return 6;
+      case "7":
+        return 7;
+      case "8":
+        return 8;
+      case "9":
+        return 9;
+      case "10":
+      case "JACK":
+      case "QUEEN":
+      case "KING":
+      default:
+        return 0;
+    }
+  };
+
+  const baccaratTotal = (cards) =>
+    cards.reduce((sum, card) => sum + cardPoint(card), 0) % 10;
+
+  const playerNeedsThird = (playerTotal) => playerTotal <= 5;
+
+  const bankerNeedsThird = (bankerTotal, playerThirdCard) => {
+    if (!playerThirdCard) {
+      return bankerTotal <= 5;
+    }
+
+    const thirdValue = cardPoint(playerThirdCard);
+    if (bankerTotal <= 2) return true;
+    if (bankerTotal === 3) return thirdValue !== 8;
+    if (bankerTotal === 4) return thirdValue >= 2 && thirdValue <= 7;
+    if (bankerTotal === 5) return thirdValue >= 4 && thirdValue <= 7;
+    if (bankerTotal === 6) return thirdValue === 6 || thirdValue === 7;
+    return false;
+  };
+
+  const determineBaccaratWinner = (playerCards, bankerCards) => {
+    const playerTotal = baccaratTotal(playerCards);
+    const bankerTotal = baccaratTotal(bankerCards);
+    if (playerTotal > bankerTotal) return "player";
+    if (playerTotal < bankerTotal) return "banker";
+    return "tie";
+  };
+
   useEffect(() => {
     const clearRevealTimers = () => {
       revealTimers.current.forEach(clearTimeout);
       revealTimers.current = [];
-    };
-
-    const cardPoint = (card) => {
-      switch (card?.value) {
-        case "ACE":
-          return 1;
-        case "2":
-          return 2;
-        case "3":
-          return 3;
-        case "4":
-          return 4;
-        case "5":
-          return 5;
-        case "6":
-          return 6;
-        case "7":
-          return 7;
-        case "8":
-          return 8;
-        case "9":
-          return 9;
-        case "10":
-        case "JACK":
-        case "QUEEN":
-        case "KING":
-        default:
-          return 0;
-      }
-    };
-
-    const baccaratTotal = (cards) =>
-      cards.reduce((sum, card) => sum + cardPoint(card), 0) % 10;
-
-    const playerNeedsThird = (playerTotal) => playerTotal <= 5;
-
-    const bankerNeedsThird = (bankerTotal, playerThirdCard) => {
-      if (!playerThirdCard) {
-        return bankerTotal <= 5;
-      }
-
-      const thirdValue = cardPoint(playerThirdCard);
-      if (bankerTotal <= 2) return true;
-      if (bankerTotal === 3) return thirdValue !== 8;
-      if (bankerTotal === 4) return thirdValue >= 2 && thirdValue <= 7;
-      if (bankerTotal === 5) return thirdValue >= 4 && thirdValue <= 7;
-      if (bankerTotal === 6) return thirdValue === 6 || thirdValue === 7;
-      return false;
     };
 
     const revealSequence = (sequence = [], afterReveal) => {
@@ -137,6 +146,7 @@ const BaccaratPage = () => {
 
     const dealBaccaratRound = async () => {
       clearRevealTimers();
+      setBaccaratWinner(null);
       setBaccaratError("");
       setPlayerCards([]);
       setBankerCards([]);
@@ -162,18 +172,20 @@ const BaccaratPage = () => {
           { target: "banker", card: openingDraw.cards[3], displayIndex: 2 },
         ];
 
+        const playerStartingCards = [openingDraw.cards[0], openingDraw.cards[2]];
+        const bankerStartingCards = [openingDraw.cards[1], openingDraw.cards[3]];
+
         revealSequence(initialSequence, async () => {
-          const playerTotal = baccaratTotal([
-            openingDraw.cards[0],
-            openingDraw.cards[2],
-          ]);
-          const bankerTotal = baccaratTotal([
-            openingDraw.cards[1],
-            openingDraw.cards[3],
-          ]);
+          const playerTotal = baccaratTotal(playerStartingCards);
+          const bankerTotal = baccaratTotal(bankerStartingCards);
           const natural = playerTotal >= 8 || bankerTotal >= 8;
 
           if (natural) {
+            const winner = determineBaccaratWinner(
+              playerStartingCards,
+              bankerStartingCards,
+            );
+            setBaccaratWinner(winner);
             setDealMessage("Natural hand — no third card.");
             setBetType(undefined);
             setDealLoading(false);
@@ -182,6 +194,8 @@ const BaccaratPage = () => {
 
           let playerThirdCard = null;
           const extraSequence = [];
+          const finalPlayerCards = [...playerStartingCards];
+          const finalBankerCards = [...bankerStartingCards];
 
           if (playerNeedsThird(playerTotal)) {
             setDealMessage("Player draws a third card...");
@@ -190,6 +204,7 @@ const BaccaratPage = () => {
               throw new Error("Failed to draw player third card.");
             }
             playerThirdCard = drawResult.cards[0];
+            finalPlayerCards.push(playerThirdCard);
             extraSequence.push({
               target: "player",
               card: playerThirdCard,
@@ -203,6 +218,7 @@ const BaccaratPage = () => {
             if (!drawResult.success || drawResult.cards.length < 1) {
               throw new Error("Failed to draw banker third card.");
             }
+            finalBankerCards.push(drawResult.cards[0]);
             extraSequence.push({
               target: "banker",
               card: drawResult.cards[0],
@@ -211,6 +227,11 @@ const BaccaratPage = () => {
           }
 
           if (extraSequence.length === 0) {
+            const winner = determineBaccaratWinner(
+              finalPlayerCards,
+              finalBankerCards,
+            );
+            setBaccaratWinner(winner);
             setDealMessage("No third card needed.");
             setBetType(undefined);
             setDealLoading(false);
@@ -218,7 +239,18 @@ const BaccaratPage = () => {
           }
 
           revealSequence(extraSequence, () => {
-            setDealMessage("Baccarat hand complete.");
+            const winner = determineBaccaratWinner(
+              finalPlayerCards,
+              finalBankerCards,
+            );
+            setBaccaratWinner(winner);
+            setDealMessage(`Baccarat hand complete. ${
+              winner === "player"
+                ? "Player wins!"
+                : winner === "banker"
+                ? "Banker wins!"
+                : "Tie."
+            }`);
             setBetType(undefined);
             setDealLoading(false);
           });
@@ -273,6 +305,7 @@ const BaccaratPage = () => {
           dealMessage={dealMessage}
           dealLoading={dealLoading}
           baccaratError={baccaratError}
+          baccaratWinner={baccaratWinner}
         />
       )}
       {gameState !== GAME_STATE.INTRO && (
