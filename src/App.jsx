@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import StudPoker from "./pages/StudPoker";
 import BaccaratPage from "./pages/BaccaratPage";
+import AdminTutUseRef from "./features/adminPanel/AdminTutUseRef";
 
 import ProtectedRoute from "./features/auth/ProtectedRoute";
 import AdminRoute from "./features/auth/AdminRoute";
@@ -31,7 +32,7 @@ function App() {
       <Navbar />
       <div className="container">
         <Routes>
-          <Route path="/" element={<ProtectedRoute><Games games={games} setGames={setGames} /></ProtectedRoute>}/>
+          <Route path="/" element={<ProtectedRoute><Games games={games} setGames={setGames} /></ProtectedRoute>} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -44,7 +45,9 @@ function App() {
           <Route path="/game/:deckId" element={<ProtectedRoute><CurrentGame games={games} setGames={setGames} /></ProtectedRoute>} />
           <Route path="/studpoker" element={<ProtectedRoute><StudPoker /></ProtectedRoute>} />
           <Route path="/baccarat" element={<ProtectedRoute><BaccaratPage /></ProtectedRoute>} />
-          <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} >
+            <Route path="/admin/useRefSample" element={<AdminRoute><AdminTutUseRef /></AdminRoute>} />
+          </Route>
         </Routes>
       </div>
     </>
