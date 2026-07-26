@@ -6,7 +6,8 @@ import IntroBaccarat from "../features/games/BaccaratIntro";
 import BaccaratPlayerMove from "../features/games/BaccaratPlayerMove";
 import BaccaratCardsPanel from "../features/games/BaccaratCardsPanel";
 import StudPokerHistory from "../features/games/StudPokerHistory";
-import StudPokerLineChart from "../features/games/StudPokerLineChart";
+import BigRoad from '../features/games/BigRoad';
+import StudPokerLineChart from '../features/games/StudPokerLineChart';
 
 // helpers
 import { GAME_STATE, BETS_SETTINGS, CHIP_UPDATE_REASON, GAME_RESULT } from "../constants/games";
@@ -446,6 +447,7 @@ const BaccaratPage = () => {
       {gameState !== GAME_STATE.INTRO && gameHistory.length > 0 && (
         <>
           <hr />
+          <BigRoad history={gameHistory} />
           <StudPokerLineChart chartData={chartData} />
           <StudPokerHistory SPGames={gameHistory} playerLabel="Player" opponentLabel="Banker" />
         </>
