@@ -376,7 +376,9 @@ const StudPoker = () => {
               </span>
             )}
           </div>
-          <div className="h5">Bet Amount: {formatCurrency(betAmount)}</div>
+          {gameState !== GAME_STATE.IDLE && (
+            <div className="text-muted">Bet Amount: {formatCurrency(betAmount)}</div>
+          )}
         </div>
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
