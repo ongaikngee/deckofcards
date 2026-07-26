@@ -7,9 +7,9 @@ import BaccaratPlayerMove from "../features/games/BaccaratPlayerMove";
 import BaccaratCardsPanel from "../features/games/BaccaratCardsPanel";
 
 // helpers
-import { GAME_STATE, BETS_SETTINGS } from "../constants/games";
+import { GAME_STATE, BETS_SETTINGS, CHIP_UPDATE_REASON } from "../constants/games";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
-import { getChipsHistoryService } from "../services/chipService";
+import { getChipsHistoryService, updateChipsAmtService } from "../services/chipService";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const BaccaratPage = () => {
@@ -46,6 +46,58 @@ const BaccaratPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateChipCount = async (reason, amount) => {
+    setError("");
+    try {
+      await updateChipsAmtService({
+        user_id: user.id,
+        amt: amount,
+        reason,
+      });
+    } catch (e) {
+      const errorMessage = e?.detail || e?.message || "Chip update failed";
+      setError(errorMessage);
+      console.error(e);
+    }
+  };
+
+  const settleBaccaratPayout = async (
+    winner,
+    finalPlayerCards,
+    finalBankerCards,
+  ) => {
+    setBaccaratWinner(winner);
+
+    if (winner === "tie") {
+      setDealMessage("Tie. Your wager is returned.");
+      setChips((prev) => prev + betAmount);
+      await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, betAmount);
+      return;
+    }
+
+    if (winner !== betType) {
+      setDealMessage(
+        `Round complete. ${winner === "player" ? "Player" : "Banker"} wins.`,
+      );
+      return;
+    }
+
+    const bankerTotal = baccaratTotal(finalBankerCards);
+    const isBankerTiger6 = winner === "banker" && bankerTotal === 6;
+    const payoutMultiplier = isBankerTiger6 ? 1.5 : 2;
+    const payoutAmount = betAmount * payoutMultiplier;
+
+    setDealMessage(
+      `Round complete. ${
+        winner === "player" ? "Player" : "Banker"
+      } wins. ${
+        isBankerTiger6 ? "Banker tiger 6 pays half the bet." : "Payout 1:1."
+      }`,
+    );
+    setChips((prev) => prev + payoutAmount);
+    await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
   };
 
   useEffect(() => {
@@ -165,6 +217,10 @@ const BaccaratPage = () => {
           throw new Error("Failed to draw the initial baccarat cards.");
         }
 
+        const betDeduction = -betAmount;
+        setChips((prev) => prev + betDeduction);
+        await updateChipCount(CHIP_UPDATE_REASON.ANTE, betDeduction);
+
         const initialSequence = [
           { target: "player", card: openingDraw.cards[0], displayIndex: 1 },
           { target: "banker", card: openingDraw.cards[1], displayIndex: 1 },
@@ -185,8 +241,11 @@ const BaccaratPage = () => {
               playerStartingCards,
               bankerStartingCards,
             );
-            setBaccaratWinner(winner);
-            setDealMessage("Natural hand — no third card.");
+            await settleBaccaratPayout(
+              winner,
+              playerStartingCards,
+              bankerStartingCards,
+            );
             setBetType(undefined);
             setDealLoading(false);
             return;
@@ -231,26 +290,26 @@ const BaccaratPage = () => {
               finalPlayerCards,
               finalBankerCards,
             );
-            setBaccaratWinner(winner);
-            setDealMessage("No third card needed.");
+            await settleBaccaratPayout(
+              winner,
+              finalPlayerCards,
+              finalBankerCards,
+            );
             setBetType(undefined);
             setDealLoading(false);
             return;
           }
 
-          revealSequence(extraSequence, () => {
+          revealSequence(extraSequence, async () => {
             const winner = determineBaccaratWinner(
               finalPlayerCards,
               finalBankerCards,
             );
-            setBaccaratWinner(winner);
-            setDealMessage(`Baccarat hand complete. ${
-              winner === "player"
-                ? "Player wins!"
-                : winner === "banker"
-                ? "Banker wins!"
-                : "Tie."
-            }`);
+            await settleBaccaratPayout(
+              winner,
+              finalPlayerCards,
+              finalBankerCards,
+            );
             setBetType(undefined);
             setDealLoading(false);
           });
