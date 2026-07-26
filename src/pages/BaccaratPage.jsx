@@ -112,19 +112,24 @@ const BaccaratPage = () => {
       }
 
       sequence.forEach((entry, index) => {
-        const timer = setTimeout(() => {
-          setDealMessage(`Dealing ${entry.target} card ${entry.displayIndex}`);
+        const timer = setTimeout(
+          () => {
+            setDealMessage(
+              `Dealing ${entry.target} card ${entry.displayIndex}`,
+            );
 
-          if (entry.target === "player") {
-            setPlayerCards((prev) => [...prev, entry.card]);
-          } else {
-            setBankerCards((prev) => [...prev, entry.card]);
-          }
+            if (entry.target === "player") {
+              setPlayerCards((prev) => [...prev, entry.card]);
+            } else {
+              setBankerCards((prev) => [...prev, entry.card]);
+            }
 
-          if (index === sequence.length - 1) {
-            afterReveal?.();
-          }
-        }, (index + 1) * 1000);
+            if (index === sequence.length - 1) {
+              afterReveal?.();
+            }
+          },
+          (index + 1) * 1000,
+        );
 
         revealTimers.current.push(timer);
       });
@@ -139,7 +144,10 @@ const BaccaratPage = () => {
       setDealLoading(true);
 
       try {
-        const newDeck = await getNewDeck({ noOfDecks: 1, jokersEnabled: false });
+        const newDeck = await getNewDeck({
+          noOfDecks: 1,
+          jokersEnabled: false,
+        });
         setDeckId(newDeck.deck_id);
 
         const openingDraw = await drawCardFromDeck(newDeck.deck_id, 4);
@@ -155,13 +163,19 @@ const BaccaratPage = () => {
         ];
 
         revealSequence(initialSequence, async () => {
-          const playerTotal = baccaratTotal([openingDraw.cards[0], openingDraw.cards[2]]);
-          const bankerTotal = baccaratTotal([openingDraw.cards[1], openingDraw.cards[3]]);
+          const playerTotal = baccaratTotal([
+            openingDraw.cards[0],
+            openingDraw.cards[2],
+          ]);
+          const bankerTotal = baccaratTotal([
+            openingDraw.cards[1],
+            openingDraw.cards[3],
+          ]);
           const natural = playerTotal >= 8 || bankerTotal >= 8;
 
           if (natural) {
             setDealMessage("Natural hand — no third card.");
-            setBetType(undefined)
+            setBetType(undefined);
             setDealLoading(false);
             return;
           }
@@ -176,7 +190,11 @@ const BaccaratPage = () => {
               throw new Error("Failed to draw player third card.");
             }
             playerThirdCard = drawResult.cards[0];
-            extraSequence.push({ target: "player", card: playerThirdCard, displayIndex: 3 });
+            extraSequence.push({
+              target: "player",
+              card: playerThirdCard,
+              displayIndex: 3,
+            });
           }
 
           if (bankerNeedsThird(bankerTotal, playerThirdCard)) {
@@ -185,19 +203,23 @@ const BaccaratPage = () => {
             if (!drawResult.success || drawResult.cards.length < 1) {
               throw new Error("Failed to draw banker third card.");
             }
-            extraSequence.push({ target: "banker", card: drawResult.cards[0], displayIndex: playerThirdCard ? 3 : 3 });
+            extraSequence.push({
+              target: "banker",
+              card: drawResult.cards[0],
+              displayIndex: playerThirdCard ? 3 : 3,
+            });
           }
 
           if (extraSequence.length === 0) {
             setDealMessage("No third card needed.");
-            setBetType(undefined)
+            setBetType(undefined);
             setDealLoading(false);
             return;
           }
 
           revealSequence(extraSequence, () => {
             setDealMessage("Baccarat hand complete.");
-            setBetType(undefined)
+            setBetType(undefined);
             setDealLoading(false);
           });
         });
@@ -227,14 +249,21 @@ const BaccaratPage = () => {
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
             <div className="h5 mb-0">Chips:{formatCurrency(chips)}</div>
-            {/* <div className="text-muted">Bet: {formatCurrency(betAmount)}</div> */}
           </div>
-          <div className="text-muted">Bet Amount: {formatCurrency(betAmount)}</div>
-          <div className="text-muted">Bet Type: {betType}</div>
+          {gameState !== GAME_STATE.INTRO && (
+            <div>
+              <div className="text-muted">
+                Bet Amount: {formatCurrency(betAmount)}
+              </div>
+              <div className="text-muted">Bet Type: {betType}</div>
+            </div>
+          )}
         </div>
       </div>
       {/* intro */}
-      {gameState === GAME_STATE.INTRO && <IntroBaccarat setGameState={setGameState} />}
+      {gameState === GAME_STATE.INTRO && (
+        <IntroBaccarat setGameState={setGameState} />
+      )}
       {/* Game cards panel */}
       {gameState !== GAME_STATE.INTRO && (
         <BaccaratCardsPanel
