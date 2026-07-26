@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { GAME_STATE, BETS_SETTINGS } from '../../constants/games'
+import React, { useState } from "react";
+import { GAME_STATE, BETS_SETTINGS } from "../../constants/games";
 
 const BaccaratPlayerMove = ({
   gameState,
@@ -52,6 +52,7 @@ const BaccaratPlayerMove = ({
           max={BETS_SETTINGS.BET_MAX}
           step={BETS_SETTINGS.BET_STEP}
           value={betAmount}
+          disabled={isDealing}
           onChange={(e) => setBetAmount(e.target.valueAsNumber)}
         />
       </div>
@@ -62,4 +63,4 @@ const BaccaratPlayerMove = ({
   );
 };
 
-export default BaccaratPlayerMove
+export default BaccaratPlayerMove;
