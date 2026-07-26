@@ -30,7 +30,29 @@ The Deck of Cards Frontend is a full-featured single-page application (SPA) that
 - **Real-Time Updates**: Live card draw mechanics with immediate UI updates
 - **Protected Routes**: Route-level authentication enforcement with automatic redirection
 - **Icon Integration**: Phosphor icons for modern, accessible UI elements
+## Baccarat Rules
 
+This application includes a Baccarat game with automated dealing and real-time reveal animation. The Baccarat rules used by the app are:
+
+- Each round begins with two cards dealt to both the Player and the Banker.
+- Card values:
+  - Ace = 1
+  - 2–9 = face value
+  - 10, Jack, Queen, King = 0
+- The hand total is the rightmost digit of the card sum. For example, 15 becomes 5 and 18 becomes 8.
+- A natural win occurs when either the Player or Banker has a total of 8 or 9 after the first two cards. If a natural occurs, no third card is drawn.
+- Player third-card rule:
+  - Player draws a third card when the Player total is 0–5.
+  - Player stands when the total is 6 or 7.
+- Banker third-card rule (applies only after Player’s third card is drawn):
+  - Banker total 0–2: Banker always draws.
+  - Banker total 3: Banker draws unless Player’s third card is 8.
+  - Banker total 4: Banker draws if Player’s third card is 2–7.
+  - Banker total 5: Banker draws if Player’s third card is 4–7.
+  - Banker total 6: Banker draws if Player’s third card is 6 or 7.
+  - Banker total 7: Banker stands.
+- If Player does not draw a third card, Banker draws only when Banker total is 0–5.
+- The hand closest to 9 wins. Player bets pay 1:1, Banker bets pay 1:1 (usually minus commission), and Tie bets pay a higher payout.
 ## Technology Stack
 
 | Category | Technologies |

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link, Outlet } from "react-router-dom";
 import {
   getUsersChipCounts,
   makeAdmin,
@@ -223,6 +224,14 @@ const AdminPage = () => {
         closeBtnClass="btn-secondary"
         okBtnFunc={confirmDelete}
       />
+      <div className="divider" />
+      <div className="container mt-5">
+        <div className="display-6">Admin Helper</div>
+        <Link to="/admin/useRefSample">
+          useRef Sample
+        </Link>
+      </div>
+      <Outlet />
     </div>
   );
 };
