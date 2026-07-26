@@ -11,7 +11,6 @@ const BaccaratCardsPanel = ({
 }) => {
   return (
     <div className="bg-success bg-opacity-25 p-4 mb-4">
-      <div className="mb-3">{`Game State: ${gameState}`}</div>
       {dealMessage && (
         <div className="alert alert-info py-2">{dealMessage}</div>
       )}

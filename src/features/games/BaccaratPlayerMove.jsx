@@ -17,7 +17,6 @@ const BaccaratPlayerMove = ({
 
   return (
     <div className="my-4">
-      <div className="mb-4">Game state: {gameState}</div>
       <h3>Place Your Bet</h3>
       <p>Select where you want to place your bet:</p>
       <button

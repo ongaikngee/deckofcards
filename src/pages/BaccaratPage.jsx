@@ -161,6 +161,7 @@ const BaccaratPage = () => {
 
           if (natural) {
             setDealMessage("Natural hand — no third card.");
+            setBetType(undefined)
             setDealLoading(false);
             return;
           }
@@ -189,12 +190,14 @@ const BaccaratPage = () => {
 
           if (extraSequence.length === 0) {
             setDealMessage("No third card needed.");
+            setBetType(undefined)
             setDealLoading(false);
             return;
           }
 
           revealSequence(extraSequence, () => {
             setDealMessage("Baccarat hand complete.");
+            setBetType(undefined)
             setDealLoading(false);
           });
         });
