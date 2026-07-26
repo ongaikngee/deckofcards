@@ -9,7 +9,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { CheckIcon } from "@phosphor-icons/react";
 
 
-export const StudPokerHistory = ({ SPGames }) => {
+export const StudPokerHistory = ({ SPGames, playerLabel = "Player", opponentLabel = "Dealer" }) => {
 
 	if (!SPGames || SPGames.length === 0) {
 		return (
@@ -21,18 +21,18 @@ export const StudPokerHistory = ({ SPGames }) => {
 	}
 	return (
 		<div>
-			<h2>Games's History</h2>
+			<h2>Games' History</h2>
 			<table className="table">
 				<thead>
 					<tr>
-						<th scope="col" className='w-50 h5'>Player's hand</th>
-						<th scope="col" className='w-50 h5'>Dealer's hand</th>
+						<th scope="col" className='w-50 h5'>{playerLabel}'s hand</th>
+						<th scope="col" className='w-50 h5'>{opponentLabel}'s hand</th>
 					</tr>
 				</thead>
 				<tbody>
 					{SPGames.map((game, index) => (
 						<tr key={index}
-							className={`container ${game.winner === GAME_RESULT.WINNER_PLAYER ? "table-primary" : "table-danger"}`}
+							className={`container ${typeof game.bettorWon === 'boolean' ? (game.bettorWon ? "table-primary" : "table-danger") : (game.winner === GAME_RESULT.WINNER_PLAYER ? "table-primary" : "table-danger")}`}
 						>
 							<td>
 								<div>
@@ -42,7 +42,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 										{game.winner === GAME_RESULT.WINNER_PLAYER && (
 											<CheckIcon size={20} weight="bold" className="text-success" />
 										)}
-										<div>{game.playerStrength.descr}</div>
+										<div>{game.playerStrength?.descr}</div>
 										{game.playerAction === PLAYER_ACTION.FOLD &&
 											<span className="badge text-bg-danger">Fold</span>}
 									</div>
@@ -69,7 +69,7 @@ export const StudPokerHistory = ({ SPGames }) => {
 										{game.winner === GAME_RESULT.WINNER_DEALER && (
 											<CheckIcon size={20} weight="bold" className="text-success" />
 										)}
-										<div>{game.dealerStrength.descr}</div>
+										<div>{game.dealerStrength?.descr}</div>
 										{game.playerAction === "Did not qualified" &&
 											<span className="badge text-bg-danger">Did not qualified</span>}
 									</div>

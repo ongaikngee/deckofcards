@@ -1,5 +1,6 @@
 import React from "react";
 import { CheckIcon } from "@phosphor-icons/react";
+import { GAME_RESULT } from "../../constants/games";
 import DisplayCards from "../../components/DisplayCards";
 
 const BaccaratCardsPanel = ({
@@ -21,7 +22,7 @@ const BaccaratCardsPanel = ({
           <div className="col-12 col-md-6">
             <div className="d-flex align-items-center gap-2 mb-2">
               <h4 className="text-white mb-0">Player's Hand</h4>
-              {(baccaratWinner === "player" || baccaratWinner === "tie") && (
+                {(baccaratWinner === GAME_RESULT.WINNER_PLAYER || baccaratWinner === GAME_RESULT.GAME_TIE) && (
                 <CheckIcon size={24} weight="bold" className="text-white" />
               )}
             </div>
@@ -39,7 +40,7 @@ const BaccaratCardsPanel = ({
           <div className="col-12 col-md-6">
             <div className="d-flex align-items-center gap-2 mb-2">
               <h4 className="text-white mb-0">Banker's Hand</h4>
-              {(baccaratWinner === "banker" || baccaratWinner === "tie") && (
+                {(baccaratWinner === GAME_RESULT.WINNER_DEALER || baccaratWinner === GAME_RESULT.GAME_TIE) && (
                 <CheckIcon size={24} weight="bold" className="text-white" />
               )}
             </div>

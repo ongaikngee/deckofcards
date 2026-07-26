@@ -5,9 +5,11 @@ import { useAuth } from "../features/auth/AuthContext";
 import IntroBaccarat from "../features/games/BaccaratIntro";
 import BaccaratPlayerMove from "../features/games/BaccaratPlayerMove";
 import BaccaratCardsPanel from "../features/games/BaccaratCardsPanel";
+import StudPokerHistory from "../features/games/StudPokerHistory";
+import StudPokerLineChart from "../features/games/StudPokerLineChart";
 
 // helpers
-import { GAME_STATE, BETS_SETTINGS, CHIP_UPDATE_REASON } from "../constants/games";
+import { GAME_STATE, BETS_SETTINGS, CHIP_UPDATE_REASON, GAME_RESULT } from "../constants/games";
 import { getNewDeck, drawCardFromDeck } from "../services/deckService";
 import { getChipsHistoryService, updateChipsAmtService } from "../services/chipService";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -33,13 +35,19 @@ const BaccaratPage = () => {
   const [chips, setChips] = useState(0);
   const [betAmount, setBetAmount] = useState(BETS_SETTINGS.BET_MIN);
   const [betType, setBetType] = useState(null);
+  const [chartData, setChartData] = useState([]);
+  const [gameHistory, setGameHistory] = useState([]);
 
   const getChipsHistory = async () => {
     setError("");
     setLoading(true);
-    try {
-      const response = await getChipsHistoryService(user.id);
-      setChips(response.total_amount);
+      try {
+        const response = await getChipsHistoryService(user.id);
+        setChips(response.total_amount);
+        setChartData([
+          ["Games", "Chip count"],
+          [0, response.total_amount],
+        ]);
     } catch (e) {
       setError(e);
       console.error(e);
@@ -63,6 +71,14 @@ const BaccaratPage = () => {
     }
   };
 
+  const addGameHistory = (record, newChipCount) => {
+    setGameHistory((prev) => [record, ...prev]);
+    setChartData((prev) => [
+      ...prev,
+      [prev.length - 1, newChipCount],
+    ]);
+  };
+
   const settleBaccaratPayout = async (
     winner,
     finalPlayerCards,
@@ -70,34 +86,84 @@ const BaccaratPage = () => {
   ) => {
     setBaccaratWinner(winner);
 
-    if (winner === "tie") {
-      setDealMessage("Tie. Your wager is returned.");
-      setChips((prev) => prev + betAmount);
-      await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, betAmount);
-      return;
-    }
-
-    if (winner !== betType) {
-      setDealMessage(
-        `Round complete. ${winner === "player" ? "Player" : "Banker"} wins.`,
-      );
-      return;
-    }
-
+    const playerTotal = baccaratTotal(finalPlayerCards);
     const bankerTotal = baccaratTotal(finalBankerCards);
-    const isBankerTiger6 = winner === "banker" && bankerTotal === 6;
+    const record = {
+      winner,
+      playerHand: finalPlayerCards,
+      dealerHand: finalBankerCards,
+      playerStrength: { descr: `Total: ${playerTotal}` },
+      dealerStrength: { descr: `Total: ${bankerTotal}` },
+      playerAction: betType === "tie" ? "Tie Bet" : `${betType} Bet`,
+      winningPokerHandClass:
+        winner === GAME_RESULT.WINNER_DEALER && bankerTotal === 6
+          ? "Banker Tiger 6"
+          : null,
+      winningMultiplier: null,
+      payoutAmt: 0,
+      betAmount,
+    };
+
+    if (winner === GAME_RESULT.GAME_TIE) {
+      if (betType === "tie") {
+        const payoutAmount = betAmount * 8;
+        const newChipCount = chips + payoutAmount;
+        setDealMessage("Tie bet wins 8:1.");
+        setChips(newChipCount);
+        await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
+        record.winningMultiplier = 8;
+        record.payoutAmt = payoutAmount;
+        record.bettorWon = true;
+        addGameHistory(record, newChipCount);
+        return;
+      }
+
+      const returnAmount = betAmount;
+      const newChipCount = chips + returnAmount;
+      setDealMessage("Tie. Your wager is returned.");
+      setChips(newChipCount);
+      await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, returnAmount);
+      record.payoutAmt = returnAmount;
+      record.bettorWon = false;
+      addGameHistory(record, newChipCount);
+      return;
+    }
+
+    const betWins =
+      (winner === GAME_RESULT.WINNER_PLAYER && betType === "player") ||
+      (winner === GAME_RESULT.WINNER_DEALER && betType === "banker");
+
+    if (!betWins) {
+      const newChipCount = chips;
+      setDealMessage(
+        `Round complete. ${
+          winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
+        } wins.`,
+      );
+      record.payoutAmt = 0;
+      record.bettorWon = false;
+      addGameHistory(record, newChipCount);
+      return;
+    }
+
+    const isBankerTiger6 = winner === GAME_RESULT.WINNER_DEALER && bankerTotal === 6;
     const payoutMultiplier = isBankerTiger6 ? 1.5 : 2;
     const payoutAmount = betAmount * payoutMultiplier;
+    const newChipCount = chips + payoutAmount;
 
     setDealMessage(
       `Round complete. ${
-        winner === "player" ? "Player" : "Banker"
+        winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
       } wins. ${
         isBankerTiger6 ? "Banker tiger 6 pays half the bet." : "Payout 1:1."
       }`,
     );
-    setChips((prev) => prev + payoutAmount);
+    setChips(newChipCount);
     await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
+    record.winningMultiplier = isBankerTiger6 ? 1.5 : 1;
+    record.payoutAmt = payoutAmount;
+    record.bettorWon = true;
+    addGameHistory(record, newChipCount);
   };
 
   useEffect(() => {
@@ -155,9 +221,9 @@ const BaccaratPage = () => {
   const determineBaccaratWinner = (playerCards, bankerCards) => {
     const playerTotal = baccaratTotal(playerCards);
     const bankerTotal = baccaratTotal(bankerCards);
-    if (playerTotal > bankerTotal) return "player";
-    if (playerTotal < bankerTotal) return "banker";
-    return "tie";
+    if (playerTotal > bankerTotal) return GAME_RESULT.WINNER_PLAYER;
+    if (playerTotal < bankerTotal) return GAME_RESULT.WINNER_DEALER;
+    return GAME_RESULT.GAME_TIE;
   };
 
   useEffect(() => {
@@ -376,6 +442,13 @@ const BaccaratPage = () => {
           setBetType={setBetType}
           isDealing={dealLoading}
         />
+      )}
+      {gameState !== GAME_STATE.INTRO && gameHistory.length > 0 && (
+        <>
+          <hr />
+          <StudPokerLineChart chartData={chartData} />
+          <StudPokerHistory SPGames={gameHistory} playerLabel="Player" opponentLabel="Banker" />
+        </>
       )}
     </div>
   );
