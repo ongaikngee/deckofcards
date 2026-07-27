@@ -75,10 +75,14 @@ const BaccaratPage = () => {
 
   const addGameHistory = (record, newChipCount) => {
     setGameHistory((prev) => [record, ...prev]);
-    setChartData((prev) => [
-      ...prev,
-      [prev.length - 1, newChipCount],
-    ]);
+    setChartData((prev) => {
+      if (!Array.isArray(prev) || prev.length === 0) {
+        return [["Games", "Chip count"], [0, newChipCount]];
+      }
+
+      const nextIndex = prev.length > 1 ? prev.length - 1 : prev.length;
+      return [...prev, [nextIndex, newChipCount]];
+    });
   };
 
   const settleBaccaratPayout = async (
@@ -108,7 +112,7 @@ const BaccaratPage = () => {
 
     if (winner === GAME_RESULT.GAME_TIE) {
       if (betType === "tie") {
-        const payoutAmount = betAmount * 8;
+        const payoutAmount = betAmount * 9;
         const newChipCount = chips + payoutAmount;
         setDealMessage("Tie bet wins 8:1.");
         setChips(newChipCount);
@@ -143,6 +147,7 @@ const BaccaratPage = () => {
       );
       record.payoutAmt = 0;
       record.bettorWon = false;
+      await updateChipCount(CHIP_UPDATE_REASON.LOSS, 0);
       addGameHistory(record, newChipCount);
       return;
     }
@@ -284,7 +289,7 @@ const BaccaratPage = () => {
 
         const betDeduction = -betAmount;
         setChips((prev) => prev + betDeduction);
-        await updateChipCount(CHIP_UPDATE_REASON.ANTE, betDeduction);
+        await updateChipCount(CHIP_UPDATE_REASON.BET, betDeduction);
 
         const initialSequence = [
           { target: "player", card: openingDraw.cards[0], displayIndex: 1 },
@@ -449,6 +454,7 @@ const BaccaratPage = () => {
       {gameState !== GAME_STATE.INTRO && gameHistory.length > 0 && (
         <>
           <hr />
+          <div className="display-6">{chartData}</div>
           <BigRoad history={gameHistory} />
           <StudPokerLineChart chartData={chartData} />
           <StudPokerHistory SPGames={gameHistory} playerLabel="Player" opponentLabel="Banker" />
