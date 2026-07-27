@@ -46,7 +46,7 @@ const BaccaratPlayerMove = ({
 					<div className="col-4">
 
 						<button
-							className="btn btn-secondary w-100"
+							className="btn btn-danger w-100"
 							type="button"
 							disabled={isDealing}
 							onClick={() => handleBet("banker")}

@@ -402,7 +402,6 @@ const BaccaratPage = () => {
       <div className="d-flex flex-column flex-sm-row justify-content-between mb-2">
         <div>
           <div className="h2 mb-0">Baccarat</div>
-          <div className="text-muted">GameState: {gameState}</div>
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
