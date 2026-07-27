@@ -46,11 +46,9 @@ function StudPokerLineChart({ chartData }) {
     chart.draw(data, options);
   }, [loaded, chartData]);
 
-  if (!chartData || chartData.length < 3) {
-		return (
-			<></>
-		)
-	}
+  if (!chartData || chartData.length < 2) {
+    return null;
+  }
 
   return <div ref={chartRef} style={{ width: '100%', height: 400 }} />;
 }

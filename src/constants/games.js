@@ -122,4 +122,5 @@ export const CHIP_UPDATE_REASON = Object.freeze({
   LOSS: "Loss",
   BET: "Bet",
   ANTE: "Ante",
+  TIE: "Tie"
 });

@@ -8,6 +8,7 @@ import BaccaratCardsPanel from "../features/games/BaccaratCardsPanel";
 import StudPokerHistory from "../features/games/StudPokerHistory";
 import BigRoad from '../features/games/BigRoad';
 import StudPokerLineChart from '../features/games/StudPokerLineChart';
+import Spinner from "../components/Spinner";
 
 // helpers
 import { GAME_STATE, BETS_SETTINGS, CHIP_UPDATE_REASON, GAME_RESULT } from "../constants/games";
@@ -42,18 +43,34 @@ const BaccaratPage = () => {
   const getChipsHistory = async () => {
     setError("");
     setLoading(true);
-      try {
-        const response = await getChipsHistoryService(user.id);
-        setChips(response.total_amount);
-        setChartData([
-          ["Games", "Chip count"],
-          [0, response.total_amount],
-        ]);
+    try {
+      const response = await getChipsHistoryService(user.id);
+      setChips(response.total_amount);
+      setChartData([
+        ["Games", "Chip count"],
+        [0, response.total_amount],
+      ]);
     } catch (e) {
       setError(e);
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshChart = async () => {
+    try {
+      const resp = await getChipsHistoryService(user.id);
+      const latest = resp.total_amount;
+      setChips(latest);
+      setChartData((prev) => {
+        if (!Array.isArray(prev) || prev.length === 0) {
+          return [["Games", "Chip count"], [0, latest]];
+        }
+        return [...prev, [prev.length, latest]];
+      });
+    } catch (e) {
+      console.error("Failed to refresh chips:", e);
     }
   };
 
@@ -74,10 +91,6 @@ const BaccaratPage = () => {
 
   const addGameHistory = (record, newChipCount) => {
     setGameHistory((prev) => [record, ...prev]);
-    setChartData((prev) => [
-      ...prev,
-      [prev.length - 1, newChipCount],
-    ]);
   };
 
   const settleBaccaratPayout = async (
@@ -85,6 +98,10 @@ const BaccaratPage = () => {
     finalPlayerCards,
     finalBankerCards,
   ) => {
+    console.log("Inside settleBaccaratPayout")
+    console.log('winner', winner)
+    console.log('finalPlayerCards', finalPlayerCards)
+    console.log('finalBankerCards', finalBankerCards)
     setBaccaratWinner(winner);
 
     const playerTotal = baccaratTotal(finalPlayerCards);
@@ -107,15 +124,17 @@ const BaccaratPage = () => {
 
     if (winner === GAME_RESULT.GAME_TIE) {
       if (betType === "tie") {
-        const payoutAmount = betAmount * 8;
+        const payoutAmount = betAmount * 9;
         const newChipCount = chips + payoutAmount;
         setDealMessage("Tie bet wins 8:1.");
         setChips(newChipCount);
-        await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
+        // Backend should record net payout (exclude returned stake)
+        await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount - betAmount);
         record.winningMultiplier = 8;
         record.payoutAmt = payoutAmount;
         record.bettorWon = true;
         addGameHistory(record, newChipCount);
+        await refreshChart();
         return;
       }
 
@@ -123,10 +142,12 @@ const BaccaratPage = () => {
       const newChipCount = chips + returnAmount;
       setDealMessage("Tie. Your wager is returned.");
       setChips(newChipCount);
-      await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, returnAmount);
+      // For push/tie where no net change, record a TIE with 0
+      await updateChipCount(CHIP_UPDATE_REASON.TIE, 0);
       record.payoutAmt = returnAmount;
       record.bettorWon = false;
       addGameHistory(record, newChipCount);
+      await refreshChart();
       return;
     }
 
@@ -137,13 +158,15 @@ const BaccaratPage = () => {
     if (!betWins) {
       const newChipCount = chips;
       setDealMessage(
-        `Round complete. ${
-          winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
+        `Round complete. ${winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
         } wins.`,
       );
       record.payoutAmt = 0;
       record.bettorWon = false;
+      // Record loss as negative betAmount
+      await updateChipCount(CHIP_UPDATE_REASON.LOSS, -betAmount);
       addGameHistory(record, newChipCount);
+      await refreshChart();
       return;
     }
 
@@ -153,18 +176,18 @@ const BaccaratPage = () => {
     const newChipCount = chips + payoutAmount;
 
     setDealMessage(
-      `Round complete. ${
-        winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
-      } wins. ${
-        isBankerTiger6 ? "Banker 🐯6 Payout 2:1." : "Payout 1:1."
+      `Round complete. ${winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
+      } wins. ${isBankerTiger6 ? "Banker 🐯6 Payout 2:1." : "Payout 1:1."
       }`,
     );
     setChips(newChipCount);
-    await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
+    // Backend should record net payout (exclude returned stake)
+    await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount - betAmount);
     record.winningMultiplier = isBankerTiger6 ? 1.5 : 1;
     record.payoutAmt = payoutAmount;
     record.bettorWon = true;
     addGameHistory(record, newChipCount);
+    await refreshChart();
   };
 
   useEffect(() => {
@@ -284,9 +307,8 @@ const BaccaratPage = () => {
           throw new Error("Failed to draw the initial baccarat cards.");
         }
 
-        const betDeduction = -betAmount;
-        setChips((prev) => prev + betDeduction);
-        await updateChipCount(CHIP_UPDATE_REASON.ANTE, betDeduction);
+        // Deduct bet locally (no backend call at bet placement)
+        setChips((prev) => prev - betAmount);
 
         const initialSequence = [
           { target: "player", card: openingDraw.cards[0], displayIndex: 1 },
@@ -302,6 +324,8 @@ const BaccaratPage = () => {
           const playerTotal = baccaratTotal(playerStartingCards);
           const bankerTotal = baccaratTotal(bankerStartingCards);
           const natural = playerTotal >= 8 || bankerTotal >= 8;
+
+          console.log("revealign.......")
 
           if (natural) {
             const winner = determineBaccaratWinner(
@@ -389,6 +413,7 @@ const BaccaratPage = () => {
     };
 
     if (gameState === GAME_STATE.PLAYER_ACTED && betType) {
+      console.log("gameState", gameState)
       dealBaccaratRound();
     }
 
@@ -405,7 +430,12 @@ const BaccaratPage = () => {
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
-            <div className="h5 mb-0">Chips:{formatCurrency(chips)}</div>
+            <div className="h5 mb-0">Chips:{" "}
+              {loading ? (
+                <Spinner size="spinner-grow-sm" />
+              ) : (
+                formatCurrency(chips)
+              )}</div>
           </div>
           {gameState !== GAME_STATE.INTRO && (
             <div>
@@ -446,6 +476,7 @@ const BaccaratPage = () => {
       {gameState !== GAME_STATE.INTRO && gameHistory.length > 0 && (
         <>
           <hr />
+          <div className="display-6">{chartData}</div>
           <BigRoad history={gameHistory} />
           <StudPokerLineChart chartData={chartData} />
           <StudPokerHistory SPGames={gameHistory} playerLabel="Player" opponentLabel="Banker" />
