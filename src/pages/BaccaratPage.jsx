@@ -8,6 +8,7 @@ import BaccaratCardsPanel from "../features/games/BaccaratCardsPanel";
 import StudPokerHistory from "../features/games/StudPokerHistory";
 import BigRoad from '../features/games/BigRoad';
 import StudPokerLineChart from '../features/games/StudPokerLineChart';
+import Spinner from "../components/Spinner";
 
 // helpers
 import { GAME_STATE, BETS_SETTINGS, CHIP_UPDATE_REASON, GAME_RESULT } from "../constants/games";
@@ -42,13 +43,13 @@ const BaccaratPage = () => {
   const getChipsHistory = async () => {
     setError("");
     setLoading(true);
-      try {
-        const response = await getChipsHistoryService(user.id);
-        setChips(response.total_amount);
-        setChartData([
-          ["Games", "Chip count"],
-          [0, response.total_amount],
-        ]);
+    try {
+      const response = await getChipsHistoryService(user.id);
+      setChips(response.total_amount);
+      setChartData([
+        ["Games", "Chip count"],
+        [0, response.total_amount],
+      ]);
     } catch (e) {
       setError(e);
       console.error(e);
@@ -137,8 +138,7 @@ const BaccaratPage = () => {
     if (!betWins) {
       const newChipCount = chips;
       setDealMessage(
-        `Round complete. ${
-          winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
+        `Round complete. ${winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
         } wins.`,
       );
       record.payoutAmt = 0;
@@ -153,10 +153,8 @@ const BaccaratPage = () => {
     const newChipCount = chips + payoutAmount;
 
     setDealMessage(
-      `Round complete. ${
-        winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
-      } wins. ${
-        isBankerTiger6 ? "Banker 🐯6 Payout 2:1." : "Payout 1:1."
+      `Round complete. ${winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
+      } wins. ${isBankerTiger6 ? "Banker 🐯6 Payout 2:1." : "Payout 1:1."
       }`,
     );
     setChips(newChipCount);
@@ -405,7 +403,12 @@ const BaccaratPage = () => {
         </div>
         <div className="border border-warning border-opacity-100 border-2 px-3 py-1 mb-1 rounded bg-warning bg-opacity-25 ">
           <div className="d-flex align-items-center gap-2">
-            <div className="h5 mb-0">Chips:{formatCurrency(chips)}</div>
+            <div className="h5 mb-0">Chips:{" "}
+              {loading ? (
+                <Spinner size="spinner-grow-sm" />
+              ) : (
+                formatCurrency(chips)
+              )}</div>
           </div>
           {gameState !== GAME_STATE.INTRO && (
             <div>
