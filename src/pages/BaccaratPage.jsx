@@ -156,7 +156,7 @@ const BaccaratPage = () => {
       `Round complete. ${
         winner === GAME_RESULT.WINNER_PLAYER ? "Player" : "Banker"
       } wins. ${
-        isBankerTiger6 ? "Banker tiger 6 pays half the bet." : "Payout 1:1."
+        isBankerTiger6 ? "Banker 🐯6 Payout 2:1." : "Payout 1:1."
       }`,
     );
     setChips(newChipCount);

@@ -28,7 +28,7 @@ const BaccaratCardsPanel = ({
             </div>
             <div
               className="p-2 rounded bg-success bg-opacity-25 border border-white"
-              style={{ minHeight: "200px" }}
+              style={{ minHeight: "160px" }}
             >
               {playerCards.length > 0 ? (
                 <DisplayCards cards={playerCards} size={100} type="revealAll" />
@@ -46,7 +46,7 @@ const BaccaratCardsPanel = ({
             </div>
             <div
               className="p-2 rounded bg-success bg-opacity-25 border border-white"
-              style={{ minHeight: "200px" }}
+              style={{ minHeight: "160px" }}
             >
               {bankerCards.length > 0 ? (
                 <DisplayCards cards={bankerCards} size={100} type="revealAll" />
