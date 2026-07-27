@@ -90,6 +90,10 @@ const BaccaratPage = () => {
     finalPlayerCards,
     finalBankerCards,
   ) => {
+    console.log("Inside settleBaccaratPayout")
+    console.log('winner', winner)
+    console.log('finalPlayerCards', finalPlayerCards)
+    console.log('finalBankerCards', finalBankerCards)
     setBaccaratWinner(winner);
 
     const playerTotal = baccaratTotal(finalPlayerCards);
@@ -116,7 +120,8 @@ const BaccaratPage = () => {
         const newChipCount = chips + payoutAmount;
         setDealMessage("Tie bet wins 8:1.");
         setChips(newChipCount);
-        await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
+        // Backend should record net payout (exclude returned stake)
+        await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount - betAmount);
         record.winningMultiplier = 8;
         record.payoutAmt = payoutAmount;
         record.bettorWon = true;
@@ -128,7 +133,8 @@ const BaccaratPage = () => {
       const newChipCount = chips + returnAmount;
       setDealMessage("Tie. Your wager is returned.");
       setChips(newChipCount);
-      await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, returnAmount);
+      // For push/tie where no net change, record a TIE with 0
+      await updateChipCount(CHIP_UPDATE_REASON.TIE, 0);
       record.payoutAmt = returnAmount;
       record.bettorWon = false;
       addGameHistory(record, newChipCount);
@@ -147,7 +153,8 @@ const BaccaratPage = () => {
       );
       record.payoutAmt = 0;
       record.bettorWon = false;
-      await updateChipCount(CHIP_UPDATE_REASON.LOSS, 0);
+      // Record loss as negative betAmount
+      await updateChipCount(CHIP_UPDATE_REASON.LOSS, -betAmount);
       addGameHistory(record, newChipCount);
       return;
     }
@@ -163,7 +170,8 @@ const BaccaratPage = () => {
       }`,
     );
     setChips(newChipCount);
-    await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount);
+    // Backend should record net payout (exclude returned stake)
+    await updateChipCount(CHIP_UPDATE_REASON.PAYOUT, payoutAmount - betAmount);
     record.winningMultiplier = isBankerTiger6 ? 1.5 : 1;
     record.payoutAmt = payoutAmount;
     record.bettorWon = true;
@@ -287,9 +295,18 @@ const BaccaratPage = () => {
           throw new Error("Failed to draw the initial baccarat cards.");
         }
 
-        const betDeduction = -betAmount;
-        setChips((prev) => prev + betDeduction);
-        await updateChipCount(CHIP_UPDATE_REASON.BET, betDeduction);
+        // Deduct bet locally (no backend call at bet placement)
+        setChips((prev) => {
+          const newCount = prev - betAmount;
+          setChartData((prevChart) => {
+            if (!Array.isArray(prevChart) || prevChart.length === 0) {
+              return [["Games", "Chip count"], [0, newCount]];
+            }
+            const nextIndex = prevChart.length > 1 ? prevChart.length - 1 : prevChart.length;
+            return [...prevChart, [nextIndex, newCount]];
+          });
+          return newCount;
+        });
 
         const initialSequence = [
           { target: "player", card: openingDraw.cards[0], displayIndex: 1 },
@@ -305,6 +322,8 @@ const BaccaratPage = () => {
           const playerTotal = baccaratTotal(playerStartingCards);
           const bankerTotal = baccaratTotal(bankerStartingCards);
           const natural = playerTotal >= 8 || bankerTotal >= 8;
+
+          console.log("revealign.......")
 
           if (natural) {
             const winner = determineBaccaratWinner(
@@ -392,6 +411,7 @@ const BaccaratPage = () => {
     };
 
     if (gameState === GAME_STATE.PLAYER_ACTED && betType) {
+      console.log("gameState", gameState)
       dealBaccaratRound();
     }
 
