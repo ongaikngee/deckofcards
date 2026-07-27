@@ -58,6 +58,22 @@ const BaccaratPage = () => {
     }
   };
 
+  const refreshChart = async () => {
+    try {
+      const resp = await getChipsHistoryService(user.id);
+      const latest = resp.total_amount;
+      setChips(latest);
+      setChartData((prev) => {
+        if (!Array.isArray(prev) || prev.length === 0) {
+          return [["Games", "Chip count"], [0, latest]];
+        }
+        return [...prev, [prev.length, latest]];
+      });
+    } catch (e) {
+      console.error("Failed to refresh chips:", e);
+    }
+  };
+
   const updateChipCount = async (reason, amount) => {
     setError("");
     try {
@@ -75,14 +91,6 @@ const BaccaratPage = () => {
 
   const addGameHistory = (record, newChipCount) => {
     setGameHistory((prev) => [record, ...prev]);
-    setChartData((prev) => {
-      if (!Array.isArray(prev) || prev.length === 0) {
-        return [["Games", "Chip count"], [0, newChipCount]];
-      }
-
-      const nextIndex = prev.length > 1 ? prev.length - 1 : prev.length;
-      return [...prev, [nextIndex, newChipCount]];
-    });
   };
 
   const settleBaccaratPayout = async (
@@ -126,6 +134,7 @@ const BaccaratPage = () => {
         record.payoutAmt = payoutAmount;
         record.bettorWon = true;
         addGameHistory(record, newChipCount);
+        await refreshChart();
         return;
       }
 
@@ -138,6 +147,7 @@ const BaccaratPage = () => {
       record.payoutAmt = returnAmount;
       record.bettorWon = false;
       addGameHistory(record, newChipCount);
+      await refreshChart();
       return;
     }
 
@@ -156,6 +166,7 @@ const BaccaratPage = () => {
       // Record loss as negative betAmount
       await updateChipCount(CHIP_UPDATE_REASON.LOSS, -betAmount);
       addGameHistory(record, newChipCount);
+      await refreshChart();
       return;
     }
 
@@ -176,6 +187,7 @@ const BaccaratPage = () => {
     record.payoutAmt = payoutAmount;
     record.bettorWon = true;
     addGameHistory(record, newChipCount);
+    await refreshChart();
   };
 
   useEffect(() => {
@@ -296,17 +308,7 @@ const BaccaratPage = () => {
         }
 
         // Deduct bet locally (no backend call at bet placement)
-        setChips((prev) => {
-          const newCount = prev - betAmount;
-          setChartData((prevChart) => {
-            if (!Array.isArray(prevChart) || prevChart.length === 0) {
-              return [["Games", "Chip count"], [0, newCount]];
-            }
-            const nextIndex = prevChart.length > 1 ? prevChart.length - 1 : prevChart.length;
-            return [...prevChart, [nextIndex, newCount]];
-          });
-          return newCount;
-        });
+        setChips((prev) => prev - betAmount);
 
         const initialSequence = [
           { target: "player", card: openingDraw.cards[0], displayIndex: 1 },
