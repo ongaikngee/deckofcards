@@ -476,7 +476,6 @@ const BaccaratPage = () => {
       {gameState !== GAME_STATE.INTRO && gameHistory.length > 0 && (
         <>
           <hr />
-          <div className="display-6">{chartData}</div>
           <BigRoad history={gameHistory} />
           <StudPokerLineChart chartData={chartData} />
           <StudPokerHistory SPGames={gameHistory} playerLabel="Player" opponentLabel="Banker" />
