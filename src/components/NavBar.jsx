@@ -72,7 +72,12 @@ function Navbar() {
                 )}
                 <li className="nav-item">
                   <Link className="nav-link" to="/user" onClick={closeNavbar}>
-                    <div className="border border-danger rounded-circle text-warning p-2">{user.id}</div>
+                    <div
+                      className="border border-white rounded-circle text-white d-flex align-items-center justify-content-center"
+                      style={{ width: "40px", height: "40px" }}
+                    >
+                      {user.username?.charAt(0).toUpperCase()}
+                    </div>
                   </Link>
                 </li>
               </div>
