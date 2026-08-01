@@ -386,7 +386,7 @@ const StudPoker = () => {
       {gameState === GAME_STATE.IDLE && <IntroStudPoker />}
       <div className="bg-success rounded p-3">
         <div>
-          {gameState !== GAME_STATE.IDLE && (
+          {gameState !== GAME_STATE.IDLE && ( 
             <div>
               <div className="mb-3">
                 {/* Dealer title part */}
